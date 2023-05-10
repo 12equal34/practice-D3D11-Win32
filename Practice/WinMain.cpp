@@ -53,7 +53,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
-    case WM_DESTROY: PostQuitMessage(0); return 0;
+    case WM_DESTROY:
+        {
+            PostQuitMessage(0);
+            // puts a WM_QUIT message on the message queue, causing the message
+            // loop to end.
+        }
+        return 0;
 
     case WM_PAINT:
         {
@@ -84,6 +90,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // Clear the update region, which signals to Windows that the window
             // has completed painting itself.
             EndPaint(hwnd, &ps);
+        }
+        return 0;
+
+    case WM_CLOSE:
+        if (MessageBox(hwnd, L"Really quit?", L"*QUIT", MB_OKCANCEL) == IDOK) {
+            DestroyWindow(hwnd);
         }
         return 0;
     }
