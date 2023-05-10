@@ -62,8 +62,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             // All painting occurs here, between BeginPaint and EndPaint.
 
+            // The surrounding frame is automatically painted by the operating
+            // sys.
+            // The portion of the window that must be painted is called the
+            // update region.
+            // The current update region is given in the rcPaint of ps.
+
+            // In the painting code, there is two basic options:
+            // 1. Paint the entire client area regardless of the size of the
+            // update region.
+            // 2. Optimize by painting just the portion of the window inside the
+            // update region. (If complicated painting, more efficient)
+
+            // Just fill the entire client area with a solid color.
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 
+            // The FillRect function is part of GDI (the Graphics Device
+            // Interface). In the versions above Windows Vista, Direct2D is
+            // used. (GDI is still fully supported.)
+
+            // Clear the update region, which signals to Windows that the window
+            // has completed painting itself.
             EndPaint(hwnd, &ps);
         }
         return 0;
