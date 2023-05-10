@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------------
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void             OnSize(HWND hwnd, UINT flag, int width, int height);
 
 //-----------------------------------------------------------------------------
 // Entry point
@@ -42,6 +43,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+        // calls the window procedure of the window that is the target of the
+        // message.
     }
 
     return 0;
@@ -52,52 +55,53 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 //-----------------------------------------------------------------------------
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    // hwnd is a handle to the window.
+    // uMsg is the message code
+    // wParam and lParam contain additional data that pertains to the message.
+    // The meaning of each depends on the message code (uMsg). For each message,
+    // you will need to look up the message code on MSDN and cast the parameters
+    // to the correct data type.
+    //
+    // Return value, LRESULT, is an integer value that
+    // its program returns to Windows.
+
     switch (uMsg) {
-    case WM_DESTROY:
-        {
-            PostQuitMessage(0);
-            // puts a WM_QUIT message on the message queue, causing the message
-            // loop to end.
-        }
-        return 0;
+    case WM_DESTROY: PostQuitMessage(0); break;
 
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC         hdc = BeginPaint(hwnd, &ps);
 
-            // All painting occurs here, between BeginPaint and EndPaint.
-
-            // The surrounding frame is automatically painted by the operating
-            // sys.
-            // The portion of the window that must be painted is called the
-            // update region.
-            // The current update region is given in the rcPaint of ps.
-
-            // In the painting code, there is two basic options:
-            // 1. Paint the entire client area regardless of the size of the
-            // update region.
-            // 2. Optimize by painting just the portion of the window inside the
-            // update region. (If complicated painting, more efficient)
-
-            // Just fill the entire client area with a solid color.
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 
-            // The FillRect function is part of GDI (the Graphics Device
-            // Interface). In the versions above Windows Vista, Direct2D is
-            // used. (GDI is still fully supported.)
-
-            // Clear the update region, which signals to Windows that the window
-            // has completed painting itself.
             EndPaint(hwnd, &ps);
         }
-        return 0;
+        break;
 
     case WM_CLOSE:
         if (MessageBox(hwnd, L"Really quit?", L"*QUIT", MB_OKCANCEL) == IDOK) {
             DestroyWindow(hwnd);
         }
-        return 0;
+        break;
+
+    case WM_SIZE:
+        {
+            int width = LOWORD(lParam); // Macro to get the 16-bit
+            // low-order word from lParam.
+            int height = HIWORD(lParam); // Macro to get the 16-bit
+            // hight-order word from lParam.
+
+            OnSize(hwnd, (UINT)wParam, width, height);
+        }
+        break;
     }
+
+    // perform the default actions for the other messages.
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void OnSize(HWND hwnd, UINT flag, int width, int height)
+{
+    // Handle resizing
 }
