@@ -7,7 +7,6 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-
 //-----------------------------------------------------------------------------
 // Entry point
 //-----------------------------------------------------------------------------
@@ -15,7 +14,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                     _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
-    std::wstring       windowName      = L"Not defined Window Name";
+    std::wstring       windowName      = L"Not Defined Window Name";
     const std::wstring windowClassName = L"Sample Window Class";
 
     WNDCLASS wc = {};
@@ -38,10 +37,36 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     ShowWindow(hWnd, nCmdShow);
 
+    // message pump
+    MSG msg = {};
+    while (GetMessage(&msg, NULL, 0, 0) > 0) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
     return 0;
 }
 
+//-----------------------------------------------------------------------------
+// Window procedure
+//-----------------------------------------------------------------------------
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    return NULL;
+    switch (uMsg) {
+    case WM_DESTROY: PostQuitMessage(0); return 0;
+
+    case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC         hdc = BeginPaint(hwnd, &ps);
+
+            // All painting occurs here, between BeginPaint and EndPaint.
+
+            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+
+            EndPaint(hwnd, &ps);
+        }
+        return 0;
+    }
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
