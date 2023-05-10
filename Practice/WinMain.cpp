@@ -1,16 +1,20 @@
 #include <Windows.h>
 #include <string>
-
-//-----------------------------------------------------------------------------
-// Forward declarations
-//-----------------------------------------------------------------------------
+#include <memory>
+#include <sstream>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-void             OnSize(HWND hwnd, UINT flag, int width, int height);
 
-//-----------------------------------------------------------------------------
-// Entry point
-//-----------------------------------------------------------------------------
+// A window procedure is just a function that gets invoked for every message,
+// so it is inherently stateless. Therefore, you need a way to track the state
+// of your application from one function call to the next.
+// (The simplest approach is to put everything in global variables.)
+
+// Define a structure to hold some state information.
+struct StateInfo {
+    int          someInt;
+    std::wstring someWstr;
+};
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                     _In_ PWSTR pCmdLine, _In_ int nCmdShow)
@@ -26,11 +30,23 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     RegisterClass(&wc);
 
-    // Create the window.
+    // Define a structure to hold some state information.
+    auto pState = std::make_unique<StateInfo>(7, L"Lucky Seven");
+
+    // create the window. (Look at the last parameter.)
     HWND hWnd = CreateWindowEx(0, windowClassName.c_str(), windowName.c_str(),
                                WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                               nullptr, nullptr, hInstance, nullptr);
+                               nullptr, nullptr, hInstance, pState.get());
+    // sends two messages to its window procedure:
+    // WM_NCCREATE (none-client), WM_CREATE
+    // are sent before the window becomes visible.
+    // It can extract the last parameter of CreateWindowEx, pState, from the
+    // message data.
+
+    // When you the WM_NCCREATE and WM_CREATE messages, the lParam is a pointer
+    // to a CREATESTRUCT structure contains the pointer that you passed into
+    // CreateWindowEx: lpCreateParams
 
     if (hWnd == nullptr) {
         return 0;
@@ -43,27 +59,27 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
-        // calls the window procedure of the window that is the target of the
-        // message.
     }
 
     return 0;
 }
 
-//-----------------------------------------------------------------------------
-// Window procedure
-//-----------------------------------------------------------------------------
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    // hwnd is a handle to the window.
-    // uMsg is the message code
-    // wParam and lParam contain additional data that pertains to the message.
-    // The meaning of each depends on the message code (uMsg). For each message,
-    // you will need to look up the message code on MSDN and cast the parameters
-    // to the correct data type.
-    //
-    // Return value, LRESULT, is an integer value that
-    // its program returns to Windows.
+    StateInfo* pState;
+    if (uMsg == WM_CREATE) {
+        CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+        pState = reinterpret_cast<StateInfo*>(pCreate->lpCreateParams);
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pState);
+
+        std::wostringstream wss;
+        wss << pState->someInt << L" : " << pState->someWstr
+            << L" <--- This datas are the members of a StateInfo structure.";
+        SetWindowText(hwnd, wss.str().c_str());
+    } else {
+        LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
+        pState       = reinterpret_cast<StateInfo*>(ptr);
+    }
 
     switch (uMsg) {
     case WM_DESTROY: PostQuitMessage(0); break;
@@ -84,24 +100,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hwnd);
         }
         break;
-
-    case WM_SIZE:
-        {
-            int width = LOWORD(lParam); // Macro to get the 16-bit
-            // low-order word from lParam.
-            int height = HIWORD(lParam); // Macro to get the 16-bit
-            // hight-order word from lParam.
-
-            OnSize(hwnd, (UINT)wParam, width, height);
-        }
-        break;
     }
 
-    // perform the default actions for the other messages.
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
-void OnSize(HWND hwnd, UINT flag, int width, int height)
-{
-    // Handle resizing
 }
