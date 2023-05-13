@@ -21,17 +21,15 @@ LRESULT Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return TRUE;
 }
 
-Window::Window() : m_hIcon(NULL)
+Window::Window()
 {
     WCHAR szExePath[MAX_PATH] = {0};
     GetModuleFileName(NULL, szExePath, MAX_PATH);
 
     // If the icon is nullptr, then use the first one found in the exe
-    if (m_hIcon == NULL) {
-        m_hIcon = ExtractIcon(GetModuleHandle(NULL), szExePath, 0);
-        if (m_hIcon == (HICON)1) {
-            m_hIcon = NULL;
-        }
+    m_hIcon = ExtractIcon(GetModuleHandle(NULL), szExePath, 0);
+    if (m_hIcon == (HICON) 1) {
+        m_hIcon = NULL;
     }
 }
 
