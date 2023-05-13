@@ -25,24 +25,33 @@ public:
                      : DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
 
-    BaseWindow() : m_hwnd(nullptr) { }
+    BaseWindow() : m_hwnd(NULL), m_rc() { }
 
     BOOL Create(PCWSTR lpWindowName, DWORD dwStyle, DWORD dwExStyle = 0,
-                int x = CW_USEDEFAULT, int y = CW_USEDEFAULT,
-                int nWidth = CW_USEDEFAULT, int nHeight = CW_USEDEFAULT,
-                HWND hWndParent = 0, HMENU hMenu = 0)
+                int x = CW_USEDEFAULT, int y = CW_USEDEFAULT)
     {
-        WNDCLASS wc = {0};
-
+        // register the windows class
+        WNDCLASS wc      = {0};
+        wc.style         = CS_DBLCLKS;
         wc.lpfnWndProc   = DerivedType::WindowProc;
-        wc.hInstance     = GetModuleHandle(nullptr);
+        wc.hInstance     = GetModuleHandle(NULL);
+        wc.hIcon         = dynamic_cast<DerivedType*>(this)->GetHIcon();
+        wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
         wc.lpszClassName = ClassName();
 
-        RegisterClass(&wc);
+        if (!RegisterClass(&wc)) {
+            DWORD dwError = GetLastError();
+            if (dwError != ERROR_CLASS_ALREADY_EXISTS) return FALSE;
+        }
 
-        m_hwnd = CreateWindowEx(dwExStyle, ClassName(), lpWindowName, dwStyle,
-                                x, y, nWidth, nHeight, hWndParent, hMenu,
-                                GetModuleHandle(nullptr), this);
+        SetRect(&m_rc, 0, 0, nDefaultWidth, nDefaultHeight);
+        AdjustWindowRect(&m_rc, dwStyle, false);
+
+        m_hwnd =
+            CreateWindowEx(dwExStyle, ClassName(), lpWindowName, dwStyle, x, y,
+                           (m_rc.right - m_rc.left), (m_rc.bottom - m_rc.top),
+                           NULL, NULL, GetModuleHandle(NULL), this);
 
         return m_hwnd ? TRUE : FALSE;
     }
@@ -53,6 +62,10 @@ protected:
     virtual PCWSTR  ClassName() const                                      = 0;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
+    int nDefaultWidth  = 640;
+    int nDefaultHeight = 480;
+
+    RECT m_rc;
     HWND m_hwnd;
 };
 
@@ -63,6 +76,13 @@ public:
 
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+    HICON GetHIcon() const { return m_hIcon; }
+
+    Window();
+    ~Window();
+
 protected:
     static constexpr const wchar_t* sWindowClassName = L"Sample Window Class";
+
+    HICON m_hIcon;
 };
