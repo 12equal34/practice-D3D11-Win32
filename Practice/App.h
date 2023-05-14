@@ -1,5 +1,8 @@
 #pragma once
 #include "Window.h"
+#include "Keyboard.h"
+#include "Mouse.h"
+#include "Timer.h"
 
 class App
 {
@@ -12,5 +15,8 @@ public:
     int Run();
 
 private:
-    Window mainWindow;
+    Window   mainWindow;
+    Keyboard keyboard;
+    Mouse    mouse;
+    Timer    mainTimer;
 };
