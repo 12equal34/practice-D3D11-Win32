@@ -28,7 +28,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         }
 
         if (bGotMsg == -1) {
-            return -1;
+            throw Window::Exception(__LINE__, __FILE__, GetLastError());
         }
 
         return msg.wParam;
