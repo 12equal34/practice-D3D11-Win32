@@ -36,9 +36,14 @@ private:
     LRESULT                 HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                                       LPARAM lParam) noexcept;
 
+#ifdef _DEBUG
+    static void MsgToOutputDebug(UINT msg, WPARAM wParam,
+                                 LPARAM lParam) noexcept;
+#endif
+
 private:
-    int  m_width;
-    int  m_height;
+    int m_width;
+    int m_height;
 
     std::wstring m_titleName;
 

@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Window.h"
 
+#ifdef _DEBUG
+#include "WindowsMessageMap.h"
+#endif
+
 //-----------------------------------------------------------------------------
 // Singleton Window Class
 //-----------------------------------------------------------------------------
@@ -50,7 +54,7 @@ Window::Window(int width, int height, std::wstring_view titleName) noexcept
     DWORD dwStyle = WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
 
     // calculate window size based on desired client region size
-    RECT wr;
+    RECT wr   = {0};
     wr.left   = 100;
     wr.top    = 100;
     wr.right  = wr.left + m_width;
@@ -77,6 +81,9 @@ Window::~Window() { DestroyWindow(m_hwnd); }
 LRESULT Window::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
                                LPARAM lParam) noexcept
 {
+#ifdef _DEBUG
+    MsgToOutputDebug(msg, wParam, lParam);
+#endif
     // use create parameter passed in from CreateWindow() to store window class
     // pointer at WinAPI side
     if (msg == WM_NCCREATE) {
@@ -101,6 +108,9 @@ LRESULT Window::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
 LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
                                  LPARAM lParam) noexcept
 {
+#ifdef _DEBUG
+    MsgToOutputDebug(msg, wParam, lParam);
+#endif
     // retrieve ptr to window class
     Window* const pWnd =
         reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
@@ -111,8 +121,7 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
 LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                           LPARAM lParam) noexcept
 {
-    switch (msg)
-    {
+    switch (msg) {
     case WM_CLOSE:
         PostQuitMessage(0);
         return 0;
@@ -120,3 +129,11 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
+#ifdef _DEBUG
+void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+    static WindowsMessageMap msgMap;
+    OutputDebugStringA(msgMap(msg, wParam, lParam).c_str());
+}
+#endif
