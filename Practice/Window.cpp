@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <sstream>
 #include "Window.h"
+#include "resource.h"
 
 #ifdef _DEBUG
 #include "WindowsMessageMap.h"
@@ -28,12 +29,14 @@ Window::WindowClass::WindowClass() noexcept
     wc.cbClsExtra    = 0;
     wc.cbWndExtra    = 0;
     wc.hInstance     = GetInstance();
-    wc.hIcon         = nullptr;
+    wc.hIcon         = static_cast<HICON>(LoadImage(
+        GetInstance(), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 32, 32, 0));
     wc.hCursor       = nullptr;
     wc.hbrBackground = nullptr;
     wc.lpszMenuName  = nullptr;
     wc.lpszClassName = GetName();
-    wc.hIconSm       = nullptr;
+    wc.hIconSm       = static_cast<HICON>(LoadImage(
+        GetInstance(), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, 0));
     RegisterClassEx(&wc);
 }
 
@@ -173,13 +176,11 @@ std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
 {
     char* pMsgBuf = nullptr;
     DWORD nMsgLen = FormatMessageA(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
         nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr
-    );
-    if (nMsgLen == 0)
-    {
+        reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr);
+    if (nMsgLen == 0) {
         return "Unidentified error code";
     }
     std::string errorString = pMsgBuf;
