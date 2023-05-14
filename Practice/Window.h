@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <string>
+#include "BaseException.h"
 
 class Window
 {
@@ -40,6 +41,19 @@ private:
     static void MsgToOutputDebug(UINT msg, WPARAM wParam,
                                  LPARAM lParam) noexcept;
 #endif
+private:
+    class Exception : public BaseException
+    {
+    public:
+        Exception(int line, const char* file, HRESULT hr) noexcept;
+        const char* what() const noexcept override;
+        virtual const char* GetType() const noexcept;
+        static std::string TranslateErrorCode(HRESULT hr) noexcept;
+        HRESULT GetErrorCode() const noexcept;
+        std::string GetErrorString() const noexcept;
+    private:
+        HRESULT m_hr;
+    };
 
 private:
     int m_width;

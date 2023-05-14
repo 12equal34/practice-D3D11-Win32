@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <sstream>
 #include "Window.h"
 
 #ifdef _DEBUG
@@ -130,6 +131,10 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+//-----------------------------------------------------------------------------
+// Window Debugging
+//-----------------------------------------------------------------------------
+
 #ifdef _DEBUG
 void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -137,3 +142,54 @@ void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
     OutputDebugStringA(msgMap(msg, wParam, lParam).c_str());
 }
 #endif
+
+//-----------------------------------------------------------------------------
+// Window Exceptions
+//-----------------------------------------------------------------------------
+
+Window::Exception::Exception(int line, const char* file, HRESULT hr) noexcept
+    : BaseException(line, file),
+      m_hr(hr)
+{
+}
+
+const char* Window::Exception::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << GetType() << '\n'
+        << GetOriginString() << '\n'
+        << "[ErrorCode] " << GetErrorCode() << '\n'
+        << "[Description] " << GetErrorString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+
+const char* Window::Exception::GetType() const noexcept
+{
+    return "Window::Exception";
+}
+
+std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
+{
+    char* pMsgBuf = nullptr;
+    DWORD nMsgLen = FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr
+    );
+    if (nMsgLen == 0)
+    {
+        return "Unidentified error code";
+    }
+    std::string errorString = pMsgBuf;
+    LocalFree(pMsgBuf);
+    return errorString;
+}
+
+HRESULT Window::Exception::GetErrorCode() const noexcept { return m_hr; }
+
+std::string Window::Exception::GetErrorString() const noexcept
+{
+    return TranslateErrorCode(GetErrorCode());
+}
