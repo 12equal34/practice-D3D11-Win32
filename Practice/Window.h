@@ -11,6 +11,20 @@ public:
     Window(const Window&)            = delete;
     Window& operator=(const Window&) = delete;
 
+    class Exception : public BaseException
+    {
+    public:
+        Exception(int line, const char* file, HRESULT hr) noexcept;
+        const char*         what() const noexcept override;
+        virtual const char* GetType() const noexcept;
+        static std::string  TranslateErrorCode(HRESULT hr) noexcept;
+        HRESULT             GetErrorCode() const noexcept;
+        std::string         GetErrorString() const noexcept;
+
+    private:
+        HRESULT m_hr;
+    };
+
 private:
     class WindowClass
     {
@@ -41,19 +55,6 @@ private:
     static void MsgToOutputDebug(UINT msg, WPARAM wParam,
                                  LPARAM lParam) noexcept;
 #endif
-private:
-    class Exception : public BaseException
-    {
-    public:
-        Exception(int line, const char* file, HRESULT hr) noexcept;
-        const char* what() const noexcept override;
-        virtual const char* GetType() const noexcept;
-        static std::string TranslateErrorCode(HRESULT hr) noexcept;
-        HRESULT GetErrorCode() const noexcept;
-        std::string GetErrorString() const noexcept;
-    private:
-        HRESULT m_hr;
-    };
 
 private:
     int m_width;
