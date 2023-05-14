@@ -1,16 +1,10 @@
-#include <Windows.h>
+#include "pch.h"
 #include "Window.h"
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                     _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
-    Window mainWindow;
-    if (!mainWindow.Create(L"Window Sample", WS_OVERLAPPEDWINDOW)) {
-        return 0;
-    }
-
-    ShowWindow(mainWindow.GetWindowHandle(), nCmdShow);
-
+    Window mainWindow(1000, 600, L"Window Sample");
     
     MSG  msg {};
     msg.message = WM_NULL;
@@ -36,7 +30,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     if (bGotMsg == -1) {
         return -1;
     }
-    else {
-        return msg.wParam;
-    }
+    
+    return msg.wParam;
 }
