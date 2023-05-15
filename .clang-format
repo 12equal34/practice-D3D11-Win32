@@ -46,7 +46,7 @@ BraceWrapping:
   BeforeLambdaBody: false
   BeforeWhile:     false
   IndentBraces:    false
-  SplitEmptyFunction: true
+  SplitEmptyFunction: false
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
 BreakBeforeBinaryOperators: None
@@ -117,7 +117,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
 ReflowComments:  true
-SeparateDefinitionBlocks: Always
+SeparateDefinitionBlocks: Leave
 SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
