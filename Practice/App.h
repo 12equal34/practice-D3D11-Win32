@@ -3,6 +3,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Timer.h"
+#include "Renderer.h"
 
 class App
 {
@@ -15,8 +16,9 @@ public:
     int Run();
 
 private:
-    Window   mainWindow;
-    Keyboard keyboard;
-    Mouse    mouse;
-    Timer    mainTimer;
+    Window   m_mainWindow;
+    Keyboard m_keyboard;
+    Mouse    m_mouse;
+    Timer    m_mainTimer;
+    Renderer m_renderer;
 };

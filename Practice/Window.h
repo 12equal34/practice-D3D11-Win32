@@ -2,15 +2,14 @@
 #include <Windows.h>
 #include <string>
 #include "BaseException.h"
+#include "Keyboard.h"
+#include "Mouse.h"
+#include "Timer.h"
+#include "Renderer.h"
 
 class Window
 {
 public:
-    Window(int width, int height, std::wstring_view titleName) noexcept;
-    ~Window();
-    Window(const Window&)            = delete;
-    Window& operator=(const Window&) = delete;
-
     class Exception : public BaseException
     {
     public:
@@ -24,6 +23,17 @@ public:
     private:
         HRESULT m_hr;
     };
+
+public:
+    Window(int width, int height, std::wstring_view titleName) noexcept;
+    ~Window();
+    Window(const Window&)            = delete;
+    Window& operator=(const Window&) = delete;
+
+    void SetKeyboard(Keyboard* pKeyboard) noexcept;
+    void SetMouse(Mouse* pMouse) noexcept;
+    void SetTimer(Timer* pTimer) noexcept;
+    void SetRenderer(Renderer* pRenderer) noexcept;
 
 private:
     class WindowClass
@@ -63,4 +73,9 @@ private:
     std::wstring m_titleName;
 
     HWND m_hwnd;
+
+    Keyboard* m_pKeyboard;
+    Mouse*    m_pMouse;
+    Timer*    m_pTimer;
+    Renderer* m_pRenderer;
 };

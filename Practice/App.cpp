@@ -2,13 +2,19 @@
 #include "App.h"
 
 App::App() noexcept
-	: mainWindow(1000, 600, L"Window Sample")
-{
+    : m_mainWindow(1000, 600, L"Window Sample"),
+      m_keyboard(),
+      m_mouse(),
+      m_mainTimer(),
+      m_renderer()
+{ 
+    m_mainWindow.SetKeyboard(&m_keyboard);
+    m_mainWindow.SetMouse(&m_mouse);
+    m_mainWindow.SetTimer(&m_mainTimer);
+    m_mainWindow.SetRenderer(&m_renderer);
 }
 
-App::~App()
-{
-}
+App::~App() { }
 
 int App::Run()
 {
@@ -22,6 +28,10 @@ int App::Run()
         if (bGotMsg) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+            if (m_keyboard.KeyIsPressed(VK_SPACE)) {
+                MessageBoxW(nullptr, L"Something Happon!", L"Space Key Was Pressed",
+                            MB_OK | MB_ICONEXCLAMATION);
+            }
         } else {
             // Update the scene.
 

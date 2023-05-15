@@ -46,14 +46,18 @@ Window::WindowClass::~WindowClass()
 }
 
 //-----------------------------------------------------------------------------
-// App Window
+// window for App
 //-----------------------------------------------------------------------------
 
 Window::Window(int width, int height, std::wstring_view titleName) noexcept
     : m_width(width),
       m_height(height),
       m_titleName(titleName),
-      m_hwnd(nullptr)
+      m_hwnd(nullptr),
+      m_pKeyboard(nullptr),
+      m_pMouse(nullptr),
+      m_pTimer(nullptr),
+      m_pRenderer(nullptr)
 {
     DWORD dwStyle = WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
 
@@ -77,6 +81,20 @@ Window::Window(int width, int height, std::wstring_view titleName) noexcept
 }
 
 Window::~Window() { DestroyWindow(m_hwnd); }
+
+void Window::SetKeyboard(Keyboard* pKeyboard) noexcept
+{
+    m_pKeyboard = pKeyboard;
+}
+
+void Window::SetMouse(Mouse* pMouse) noexcept { m_pMouse = pMouse; }
+
+void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
+
+void Window::SetRenderer(Renderer* pRenderer) noexcept
+{
+    m_pRenderer = pRenderer;
+}
 
 //-----------------------------------------------------------------------------
 // Message Handlers
@@ -115,6 +133,7 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
 #ifdef _DEBUG
     MsgToOutputDebug(msg, wParam, lParam);
 #endif
+
     // retrieve ptr to window instance
     Window* const pWnd =
         reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
@@ -122,6 +141,7 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
     return pWnd->HandleMsg(hwnd, msg, wParam, lParam);
 }
 
+// main message handler
 LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                           LPARAM lParam) noexcept
 {
@@ -129,6 +149,22 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     case WM_CLOSE:
         PostQuitMessage(0);
         return 0;
+    case WM_KILLFOCUS:
+        if (m_pKeyboard) m_pKeyboard->ClearState();
+        break;
+    /********** keyboard message **********/
+    case WM_KEYDOWN:
+        if (m_pKeyboard)
+            m_pKeyboard->OnKeyPressed(static_cast<unsigned char>(wParam));
+        break;
+    case WM_KEYUP:
+        if (m_pKeyboard)
+            m_pKeyboard->OnKeyReleased(static_cast<unsigned char>(wParam));
+        break;
+    case WM_CHAR:
+        if (m_pKeyboard)
+            m_pKeyboard->OnChar(static_cast<unsigned char>(wParam));
+        break;
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -153,8 +189,7 @@ void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 Window::Exception::Exception(int line, const char* file, HRESULT hr) noexcept
     : BaseException(line, file),
       m_hr(hr)
-{
-}
+{ }
 
 const char* Window::Exception::what() const noexcept
 {
