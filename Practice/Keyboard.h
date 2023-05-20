@@ -63,11 +63,8 @@ private:
 
     void ClearState() noexcept;
 
-    template <class T> static void TrimBuffer(std::queue<T>& buffer) noexcept;
-
 private:
     static constexpr unsigned int sKeySize    = 256u;
-    static constexpr unsigned int sBufferSize = 16u;
 
     bool                  m_autorepeatedEnabled = false;
     std::bitset<sKeySize> m_keystates;

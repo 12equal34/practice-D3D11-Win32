@@ -1,4 +1,7 @@
 #include "Keyboard.h"
+#include "HardwareHelper.h"
+
+using namespace Hardware::Helper;
 
 //-----------------------------------------------------------------------------
 // key event
@@ -84,11 +87,4 @@ void Keyboard::Flush() noexcept
 
 void Keyboard::ClearState() noexcept { 
     m_keystates.reset();
-}
-
-template <class T> void Keyboard::TrimBuffer(std::queue<T>& buffer) noexcept
-{
-    while (buffer.size() > sBufferSize) {
-        buffer.pop();
-    }
 }
