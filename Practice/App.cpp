@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <sstream>
 #include "App.h"
 
 App::App() noexcept
@@ -32,6 +33,8 @@ int App::Run()
                 MessageBoxW(nullptr, L"Something Happon!", L"Space Key Was Pressed",
                             MB_OK | MB_ICONEXCLAMATION);
             }
+
+            
         } else {
             // Update the scene.
 

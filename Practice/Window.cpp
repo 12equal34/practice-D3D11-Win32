@@ -145,26 +145,152 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
 LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                           LPARAM lParam) noexcept
 {
+    
+
     switch (msg) {
+#pragma region Window Notification Handler
+    case WM_ACTIVATEAPP:
+    case WM_CANCELMODE:
+    case WM_CHILDACTIVATE:
+        break;
     case WM_CLOSE:
+    {
         PostQuitMessage(0);
         return 0;
-    case WM_KILLFOCUS:
-        if (m_pKeyboard) m_pKeyboard->ClearState();
-        break;
-    /********** keyboard message **********/
-    case WM_KEYDOWN:
-        if (m_pKeyboard)
-            m_pKeyboard->OnKeyPressed(static_cast<unsigned char>(wParam));
-        break;
-    case WM_KEYUP:
-        if (m_pKeyboard)
-            m_pKeyboard->OnKeyReleased(static_cast<unsigned char>(wParam));
+    }
+    case WM_COMPACTING:
+    case WM_CREATE:
+    case WM_DESTROY:
+    case WM_DPICHANGED:
+    case WM_ENABLE:
+    case WM_ENTERSIZEMOVE:
+    case WM_EXITSIZEMOVE:
+    case WM_GETICON:
+    case WM_GETMINMAXINFO:
+    case WM_INPUTLANGCHANGE:
+    case WM_INPUTLANGCHANGEREQUEST:
+    case WM_MOVE:
+    case WM_MOVING:
+    case WM_NCACTIVATE:
+    case WM_NCCALCSIZE:
+    case WM_NCCREATE:
+    case WM_NCDESTROY:
+    case WM_NULL:
+    case WM_QUERYDRAGICON:
+    case WM_QUERYOPEN:
+    case WM_QUIT:
+    case WM_SHOWWINDOW:
+    case WM_SIZE:
+    case WM_SIZING:
+    case WM_STYLECHANGED:
+    case WM_STYLECHANGING:
+    case WM_THEMECHANGED:
+    case WM_USERCHANGED:
+    case WM_WINDOWPOSCHANGED:
+    case WM_WINDOWPOSCHANGING:
+#pragma endregion Window Notification Handler
+
+#pragma region Keyboard Notification Handler
+    case WM_ACTIVATE:
+    case WM_APPCOMMAND:
         break;
     case WM_CHAR:
+    {
         if (m_pKeyboard)
             m_pKeyboard->OnChar(static_cast<unsigned char>(wParam));
         break;
+    }
+    case WM_DEADCHAR:
+    case WM_HOTKEY:
+        break;
+    case WM_KEYDOWN:
+    {
+        if (m_pKeyboard)
+            m_pKeyboard->OnKeyPressed(static_cast<unsigned char>(wParam));
+        break;
+    }
+    case WM_KEYUP:
+    {
+        if (m_pKeyboard)
+            m_pKeyboard->OnKeyReleased(static_cast<unsigned char>(wParam));
+        break;
+    }
+    case WM_KILLFOCUS:
+    {
+        if (m_pKeyboard) m_pKeyboard->ClearState();
+        break;
+    }
+    case WM_SETFOCUS:
+    case WM_SYSDEADCHAR:
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
+    case WM_UNICHAR:
+#pragma endregion Keyboard Notification Handler
+
+#pragma region Mouse Notification Handler
+    case WM_CAPTURECHANGED:
+    case WM_LBUTTONDBLCLK:
+        break;
+    case WM_LBUTTONDOWN:
+    {
+        if (m_pMouse) m_pMouse->OnLeftButtonDown();
+        break;
+    }
+    case WM_LBUTTONUP:
+    {
+        if (m_pMouse) m_pMouse->OnLeftButtonUp();
+        break;
+    }
+    case WM_MBUTTONDBLCLK:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_MOUSEACTIVATE:
+    case WM_MOUSEHOVER:
+        break;
+    case WM_MOUSEHWHEEL:
+    {
+    }
+    case WM_MOUSELEAVE:
+    case WM_MOUSEMOVE:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+        if (m_pMouse) m_pMouse->OnMouseMove(pt.x, pt.y);
+        break;
+    }
+    case WM_MOUSEWHEEL:
+    case WM_NCHITTEST:
+    case WM_NCLBUTTONDBLCLK:
+    case WM_NCLBUTTONDOWN:
+    case WM_NCLBUTTONUP:
+    case WM_NCMBUTTONDBLCLK:
+    case WM_NCMBUTTONDOWN:
+    case WM_NCMBUTTONUP:
+    case WM_NCMOUSEHOVER:
+    case WM_NCMOUSELEAVE:
+    case WM_NCMOUSEMOVE:
+    case WM_NCRBUTTONDBLCLK:
+    case WM_NCRBUTTONDOWN:
+    case WM_NCRBUTTONUP:
+    case WM_NCXBUTTONDBLCLK:
+    case WM_NCXBUTTONDOWN:
+    case WM_NCXBUTTONUP:
+    case WM_RBUTTONDBLCLK:
+        break;
+    case WM_RBUTTONDOWN:
+    {
+        if (m_pMouse) m_pMouse->OnRightButtonDown();
+        break;
+    }
+    case WM_RBUTTONUP:
+    {
+        if (m_pMouse) m_pMouse->OnRightButtonUp();
+        break;
+    }
+    case WM_XBUTTONDBLCLK:
+    case WM_XBUTTONDOWN:
+    case WM_XBUTTONUP:
+        break;
+#pragma endregion Mouse Notification Handler
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
