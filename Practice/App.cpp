@@ -30,17 +30,8 @@ int App::Run()
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         } else {
-            m_mainTimer.Mark();
-            // test code
-            std::wostringstream wo;
-            wo << L"Timer : " << m_mainTimer.Amount() << L"s";
-            m_mainWindow.SetTitle(wo.str());
-
-            // Update the scene.
-
-            // Render the frame.
-
-            // Present the frame.
+            float dt = static_cast<float>(m_mainTimer.Mark());
+            RunFrame(dt);
         }
     }
 
@@ -48,4 +39,25 @@ int App::Run()
         throw Hardware::Window::Exception(__LINE__, __FILE__, GetLastError());
     }
     return static_cast<int>(msg.wParam);
+}
+
+void App::RunFrame(float dt)
+{
+    // test code
+    static float           time     = 0.0f;
+    static int             i        = 0;
+    static constexpr float interval = 0.1f;
+    time += dt;
+    if (time > interval * i) {
+        std::wostringstream wo;
+        wo << L"Timer : " << time << L"s";
+        m_mainWindow.SetTitle(wo.str());
+        ++i;
+    }
+
+    // Update the scene.
+
+    // Render the frame.
+
+    // Present the frame.
 }

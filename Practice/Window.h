@@ -16,7 +16,7 @@ namespace Hardware
         {
         public:
             Exception(int line, const char* file, HRESULT hr) noexcept;
-            const char* what() const noexcept override;
+            const char*         what() const noexcept override;
             virtual const char* GetType() const noexcept;
             static std::string  TranslateErrorCode(HRESULT hr) noexcept;
             HRESULT             GetErrorCode() const noexcept;
@@ -29,7 +29,7 @@ namespace Hardware
     public:
         Window(int width, int height, std::wstring_view titleName);
         ~Window();
-        Window(const Window&) = delete;
+        Window(const Window&)            = delete;
         Window& operator=(const Window&) = delete;
 
         void SetKeyboard(Hardware::Keyboard* pKeyboard) noexcept;
@@ -49,7 +49,7 @@ namespace Hardware
         private:
             WindowClass() noexcept;
             ~WindowClass();
-            WindowClass(const WindowClass&) = delete;
+            WindowClass(const WindowClass&)            = delete;
             WindowClass& operator=(const WindowClass&) = delete;
 
             static constexpr const wchar_t* WndClassName =
@@ -58,9 +58,11 @@ namespace Hardware
             HINSTANCE          m_hInst;
         };
 
-        static LRESULT CALLBACK HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
+        static LRESULT CALLBACK HandleMsgSetup(HWND hwnd, UINT msg,
+                                               WPARAM wParam,
                                                LPARAM lParam) noexcept;
-        static LRESULT CALLBACK HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
+        static LRESULT CALLBACK HandleMsgAdapter(HWND hwnd, UINT msg,
+                                                 WPARAM wParam,
                                                  LPARAM lParam) noexcept;
         LRESULT                 HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                                           LPARAM lParam) noexcept;
@@ -79,8 +81,8 @@ namespace Hardware
         HWND m_hwnd;
 
         Hardware::Keyboard* m_pKeyboard;
-        Hardware::Mouse* m_pMouse;
-        Timer* m_pTimer;
-        Renderer* m_pRenderer;
+        Hardware::Mouse*    m_pMouse;
+        Timer*              m_pTimer;
+        Renderer*           m_pRenderer;
     };
 }

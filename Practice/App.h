@@ -14,6 +14,8 @@ public:
     const App& operator=(const App&) = delete;
 
     int Run();
+private:
+    void RunFrame(float dt);
 
 private:
     Hardware::Window   m_mainWindow;
