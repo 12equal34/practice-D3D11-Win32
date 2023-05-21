@@ -4,8 +4,9 @@
 using namespace Hardware;
 using namespace Hardware::Helper;
 
+
 //-----------------------------------------------------------------------------
-// windows message handler
+// event buffer
 //-----------------------------------------------------------------------------
 
 std::optional<Mouse::Event> Mouse::Read() noexcept
@@ -27,6 +28,10 @@ void Mouse::Flush() noexcept
 {
 	m_eventBuffer = std::queue<Event>();
 }
+
+//-----------------------------------------------------------------------------
+// windows message handler
+//-----------------------------------------------------------------------------
 
 void Mouse::OnLeftButtonDown() noexcept
 {
@@ -68,5 +73,19 @@ void Mouse::OnMouseWheelUp() noexcept
 void Mouse::OnMouseWheelDown() noexcept
 {
 	m_eventBuffer.push(Event(Event::Type::WheelDown, m_pos));
+	TrimBuffer(m_eventBuffer);
+}
+
+void Hardware::Mouse::OnMouseEnter() noexcept
+{
+	m_isInWindow = true;
+	m_eventBuffer.push(Event(Event::Type::Enter, m_pos));
+	TrimBuffer(m_eventBuffer);
+}
+
+void Hardware::Mouse::OnMouseLeave() noexcept
+{
+	m_isInWindow = false;
+	m_eventBuffer.push(Event(Event::Type::Leave, m_pos));
 	TrimBuffer(m_eventBuffer);
 }

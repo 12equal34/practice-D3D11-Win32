@@ -72,9 +72,9 @@ namespace Hardware
         int                 GetY() const noexcept { return m_pos.second; }
         std::pair<int, int> GetXY() const noexcept { return m_pos; }
 
-        bool LeftIsPressed() const noexcept { return LPressed; }
-        bool RightIsPressed() const noexcept { return RPressed; }
-        bool IsInWindow() const noexcept { return isInWindow; }
+        bool LeftIsPressed() const noexcept { return m_LPressed; }
+        bool RightIsPressed() const noexcept { return m_RPressed; }
+        bool IsInWindow() const noexcept { return m_isInWindow; }
 
         std::optional<Mouse::Event> Read() noexcept;
         bool                        IsEmpty() const noexcept;
@@ -88,13 +88,15 @@ namespace Hardware
         void OnMouseMove(int xpos, int ypos) noexcept;
         void OnMouseWheelUp() noexcept;
         void OnMouseWheelDown() noexcept;
+        void OnMouseEnter() noexcept;
+        void OnMouseLeave() noexcept;
 
     private:
         std::pair<int, int> m_pos;
         std::queue<Event>   m_eventBuffer;
 
-        bool LPressed   = false;
-        bool RPressed   = false;
-        bool isInWindow = false;
+        bool m_LPressed   = false;
+        bool m_RPressed   = false;
+        bool m_isInWindow = false;
     };
 }
