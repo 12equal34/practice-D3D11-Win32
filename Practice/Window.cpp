@@ -260,6 +260,7 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     {
     }
     case WM_MOUSELEAVE:
+        break;
     case WM_MOUSEMOVE:
     {
         if (!m_pMouse) break;

@@ -29,9 +29,23 @@ int App::Run()
         if (bGotMsg) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            std::wostringstream wo;
-            wo << L"point : " << m_mouse.GetX() << L"," << m_mouse.GetY();
-            m_mainWindow.SetTitle(wo.str().c_str());
+
+            // test code
+            std::optional<Hardware::Mouse::Event> event;
+            while ((event = m_mouse.Read()).has_value())
+            {
+                if (event.value().IsMove()) {
+                    std::wostringstream wo;
+                    wo << L"point : " << m_mouse.GetX() << L"," << m_mouse.GetY();
+                    m_mainWindow.SetTitle(wo.str());
+                }
+                else if (event.value().IsLeave()) {
+                    std::wostringstream wo;
+                    wo << L"Gone!";
+                    m_mainWindow.SetTitle(wo.str());
+                }
+            }
+
         } else {
             // Update the scene.
 
