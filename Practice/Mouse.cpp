@@ -92,6 +92,31 @@ void Mouse::OnMouseWheelDown() noexcept
 	TrimBuffer(m_eventBuffer);
 }
 
+void Hardware::Mouse::OnMouseWheelH(int delta) noexcept
+{
+	m_wheelAmountH += delta;
+	if (m_wheelAmountH >= WHEEL_DELTA) {
+		m_wheelAmountH -= WHEEL_DELTA;
+		OnMouseWheelRight();
+	} else if (m_wheelAmountH <= -WHEEL_DELTA)
+	{
+		m_wheelAmountH += WHEEL_DELTA;
+		OnMouseWheelLeft();
+	}
+}
+
+void Hardware::Mouse::OnMouseWheelLeft() noexcept
+{
+	m_eventBuffer.push(Event(Event::Type::WheelLeft, m_pos));
+	TrimBuffer(m_eventBuffer);
+}
+
+void Hardware::Mouse::OnMouseWheelRight() noexcept
+{
+	m_eventBuffer.push(Event(Event::Type::WheelRight, m_pos));
+	TrimBuffer(m_eventBuffer);
+}
+
 void Hardware::Mouse::OnMouseEnter() noexcept
 {
 	m_isInWindow = true;

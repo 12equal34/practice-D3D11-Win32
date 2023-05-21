@@ -21,6 +21,8 @@ namespace Hardware
                 RRelease,
                 WheelUp,
                 WheelDown,
+                WheelLeft,
+                WheelRight,
                 Move,
                 Enter,
                 Leave,
@@ -89,6 +91,9 @@ namespace Hardware
         void OnMouseWheel(int delta) noexcept;
         void OnMouseWheelUp() noexcept;
         void OnMouseWheelDown() noexcept;
+        void OnMouseWheelH(int delta) noexcept;
+        void OnMouseWheelLeft() noexcept;
+        void OnMouseWheelRight() noexcept;
         void OnMouseEnter() noexcept;
         void OnMouseLeave() noexcept;
 
@@ -101,5 +106,6 @@ namespace Hardware
         bool m_isInWindow = false;
 
         int m_wheelAmount = 0;
+        int m_wheelAmountH = 0;
     };
 }

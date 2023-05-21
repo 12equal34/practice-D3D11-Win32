@@ -33,7 +33,7 @@ int App::Run()
             // test code
             std::optional<Hardware::Mouse::Event> event;
             while ((event = m_mouse.Read()).has_value()) {
-                static int i         = 0;
+                static int i = 0, j = 0;
                 using MouseEventType = Hardware::Mouse::Event::Type;
 
                 switch (event.value().GetType()) {
@@ -41,7 +41,7 @@ int App::Run()
                 {
                     ++i;
                     std::wostringstream wo;
-                    wo << L"wheel : " << i;
+                    wo << L"wheel : " << i << L"," << j;
                     m_mainWindow.SetTitle(wo.str());
                     break;
                 }
@@ -49,7 +49,23 @@ int App::Run()
                 {
                     --i;
                     std::wostringstream wo;
-                    wo << L"wheel : " << i;
+                    wo << L"wheel : " << i << L"," << j;
+                    m_mainWindow.SetTitle(wo.str());
+                    break;
+                }
+                case MouseEventType::WheelRight:
+                {
+                    ++j;
+                    std::wostringstream wo;
+                    wo << L"wheel : " << i << L"," << j;
+                    m_mainWindow.SetTitle(wo.str());
+                    break;
+                }
+                case MouseEventType::WheelLeft:
+                {
+                    --j;
+                    std::wostringstream wo;
+                    wo << L"wheel : " << i << L"," << j;
                     m_mainWindow.SetTitle(wo.str());
                     break;
                 }

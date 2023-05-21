@@ -258,6 +258,11 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
         break;
     case WM_MOUSEHWHEEL:
     {
+        if (!m_pMouse) break;
+
+        const auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+        m_pMouse->OnMouseWheelH(zDelta);
+        break;
     }
     case WM_MOUSELEAVE:
         break;
