@@ -45,7 +45,7 @@ int App::Run()
     }
 
     if (bGotMsg == -1) {
-        throw Window::Exception(__LINE__, __FILE__, GetLastError());
+        throw Hardware::Window::Exception(__LINE__, __FILE__, GetLastError());
     }
     return static_cast<int>(msg.wParam);
 }

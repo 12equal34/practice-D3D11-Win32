@@ -16,9 +16,9 @@ public:
     int Run();
 
 private:
-    Window   m_mainWindow;
-    Keyboard m_keyboard;
-    Mouse    m_mouse;
+    Hardware::Window   m_mainWindow;
+    Hardware::Keyboard m_keyboard;
+    Hardware::Mouse    m_mouse;
     Timer    m_mainTimer;
     Renderer m_renderer;
 };

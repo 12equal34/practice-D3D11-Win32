@@ -1,6 +1,7 @@
 #include "Mouse.h"
 #include "HardwareHelper.h"
 
+using namespace Hardware;
 using namespace Hardware::Helper;
 
 //-----------------------------------------------------------------------------
