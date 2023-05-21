@@ -8,7 +8,7 @@
 class App
 {
 public:
-    App() noexcept;
+    App();
     ~App();
     App(const App&)                  = delete;
     const App& operator=(const App&) = delete;

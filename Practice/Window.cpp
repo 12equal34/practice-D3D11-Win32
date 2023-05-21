@@ -51,7 +51,7 @@ Window::WindowClass::~WindowClass()
 // window for App
 //-----------------------------------------------------------------------------
 
-Window::Window(int width, int height, std::wstring_view titleName) noexcept
+Window::Window(int width, int height, std::wstring_view titleName)
     : m_width(width),
       m_height(height),
       m_titleName(titleName),
@@ -69,7 +69,9 @@ Window::Window(int width, int height, std::wstring_view titleName) noexcept
     wr.top    = 100;
     wr.right  = wr.left + m_width;
     wr.bottom = wr.top + m_height;
-    AdjustWindowRect(&wr, dwStyle, false);
+    if (AdjustWindowRect(&wr, dwStyle, false) == 0) {
+        throw Window::Exception(__LINE__, __FILE__, GetLastError());
+    }
     width  = wr.right - wr.left;
     height = wr.bottom - wr.top;
 
@@ -96,6 +98,13 @@ void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
 void Window::SetRenderer(Renderer* pRenderer) noexcept
 {
     m_pRenderer = pRenderer;
+}
+
+void Hardware::Window::SetTitle(std::wstring_view titleName)
+{
+    if (SetWindowTextW(m_hwnd, titleName.data()) == 0) {
+        throw Window::Exception(__LINE__, __FILE__, GetLastError());
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -147,8 +156,6 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
 LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                           LPARAM lParam) noexcept
 {
-    
-
     switch (msg) {
 #pragma region Window Notification Handler
     case WM_ACTIVATEAPP:

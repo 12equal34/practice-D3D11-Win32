@@ -27,7 +27,7 @@ namespace Hardware
         };
 
     public:
-        Window(int width, int height, std::wstring_view titleName) noexcept;
+        Window(int width, int height, std::wstring_view titleName);
         ~Window();
         Window(const Window&) = delete;
         Window& operator=(const Window&) = delete;
@@ -36,6 +36,8 @@ namespace Hardware
         void SetMouse(Hardware::Mouse* pMouse) noexcept;
         void SetTimer(Timer* pTimer) noexcept;
         void SetRenderer(Renderer* pRenderer) noexcept;
+
+        void SetTitle(std::wstring_view titleName);
 
     private:
         class WindowClass

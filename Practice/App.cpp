@@ -2,7 +2,7 @@
 #include <sstream>
 #include "App.h"
 
-App::App() noexcept
+App::App()
     : m_mainWindow(1000, 600, L"Window Sample"),
       m_keyboard(),
       m_mouse(),
@@ -29,12 +29,9 @@ int App::Run()
         if (bGotMsg) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            if (m_keyboard.KeyIsPressed(VK_SPACE)) {
-                MessageBoxW(nullptr, L"Something Happon!", L"Space Key Was Pressed",
-                            MB_OK | MB_ICONEXCLAMATION);
-            }
-
-            
+            std::wostringstream wo;
+            wo << L"point : " << m_mouse.GetX() << L"," << m_mouse.GetY();
+            m_mainWindow.SetTitle(wo.str().c_str());
         } else {
             // Update the scene.
 
