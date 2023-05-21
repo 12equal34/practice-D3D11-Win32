@@ -8,7 +8,7 @@ App::App()
       m_mouse(),
       m_mainTimer(),
       m_renderer()
-{ 
+{
     m_mainWindow.SetKeyboard(&m_keyboard);
     m_mainWindow.SetMouse(&m_mouse);
     m_mainWindow.SetTimer(&m_mainTimer);
@@ -29,6 +29,33 @@ int App::Run()
         if (bGotMsg) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            // test code
+            std::optional<Hardware::Mouse::Event> event;
+            while ((event = m_mouse.Read()).has_value()) {
+                static int i         = 0;
+                using MouseEventType = Hardware::Mouse::Event::Type;
+
+                switch (event.value().GetType()) {
+                case MouseEventType::WheelUp:
+                {
+                    ++i;
+                    std::wostringstream wo;
+                    wo << L"wheel : " << i;
+                    m_mainWindow.SetTitle(wo.str());
+                    break;
+                }
+                case MouseEventType::WheelDown:
+                {
+                    --i;
+                    std::wostringstream wo;
+                    wo << L"wheel : " << i;
+                    m_mainWindow.SetTitle(wo.str());
+                    break;
+                }
+                }
+            }
+
         } else {
             // Update the scene.
 

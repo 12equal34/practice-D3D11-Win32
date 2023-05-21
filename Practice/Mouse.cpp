@@ -75,7 +75,7 @@ void Hardware::Mouse::OnMouseWheel(int delta) noexcept
 	}
 	else if(m_wheelAmount <= -WHEEL_DELTA)
 	{
-		m_wheelAmount -= WHEEL_DELTA;
+		m_wheelAmount += WHEEL_DELTA;
 		OnMouseWheelDown();
 	}
 }
