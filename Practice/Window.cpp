@@ -286,6 +286,13 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
         break;
     }
     case WM_MOUSEWHEEL:
+    {
+        if (!m_pMouse) break;
+
+        const auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+        m_pMouse->OnMouseWheel(zDelta);
+        break;
+    }
     case WM_NCHITTEST:
     case WM_NCLBUTTONDBLCLK:
     case WM_NCLBUTTONDOWN:

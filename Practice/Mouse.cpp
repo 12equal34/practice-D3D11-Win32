@@ -1,6 +1,8 @@
 #include "Mouse.h"
 #include "HardwareHelper.h"
 
+#define WHEEL_DELTA 120
+
 using namespace Hardware;
 using namespace Hardware::Helper;
 
@@ -62,6 +64,20 @@ void Mouse::OnMouseMove(int xpos, int ypos) noexcept
 	m_pos = { xpos, ypos };
 	m_eventBuffer.push(Event(Event::Type::Move, m_pos));
 	TrimBuffer(m_eventBuffer);
+}
+
+void Hardware::Mouse::OnMouseWheel(int delta) noexcept
+{
+	m_wheelAmount += delta;
+	if (m_wheelAmount >= WHEEL_DELTA) {
+		m_wheelAmount -= WHEEL_DELTA;
+		OnMouseWheelUp();
+	}
+	else if(m_wheelAmount <= -WHEEL_DELTA)
+	{
+		m_wheelAmount -= WHEEL_DELTA;
+		OnMouseWheelDown();
+	}
 }
 
 void Mouse::OnMouseWheelUp() noexcept

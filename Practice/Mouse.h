@@ -86,6 +86,7 @@ namespace Hardware
         void OnRightButtonDown() noexcept;
         void OnRightButtonUp() noexcept;
         void OnMouseMove(int xpos, int ypos) noexcept;
+        void OnMouseWheel(int delta) noexcept;
         void OnMouseWheelUp() noexcept;
         void OnMouseWheelDown() noexcept;
         void OnMouseEnter() noexcept;
@@ -98,5 +99,7 @@ namespace Hardware
         bool m_LPressed   = false;
         bool m_RPressed   = false;
         bool m_isInWindow = false;
+
+        int m_wheelAmount = 0;
     };
 }
