@@ -262,8 +262,26 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     case WM_MOUSELEAVE:
     case WM_MOUSEMOVE:
     {
+        if (!m_pMouse) break;
+
         const POINTS pt = MAKEPOINTS(lParam);
-        if (m_pMouse) m_pMouse->OnMouseMove(pt.x, pt.y);
+        int x = pt.x;
+        int y = pt.y;
+        if (0 <= x && x < m_width && 0<= y && y < m_height) {
+            m_pMouse->OnMouseMove(x, y);
+            if (!m_pMouse->IsInWindow()) {
+                SetCapture(hwnd);
+                m_pMouse->OnMouseEnter();
+            }
+        } else {
+            if (wParam & (MK_LBUTTON | MK_RBUTTON)) {
+                m_pMouse->OnMouseMove(x, y);
+            }
+            else {
+                ReleaseCapture();
+                m_pMouse->OnMouseLeave();
+            }
+        }
         break;
     }
     case WM_MOUSEWHEEL:
