@@ -30,6 +30,12 @@ int App::Run()
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         } else {
+            m_mainTimer.Mark();
+            // test code
+            std::wostringstream wo;
+            wo << L"Timer : " << m_mainTimer.Amount() << L"s";
+            m_mainWindow.SetTitle(wo.str());
+
             // Update the scene.
 
             // Render the frame.

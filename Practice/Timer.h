@@ -5,8 +5,8 @@ class Timer
 {
 public:
     Timer() noexcept;
-    float  Peek() const noexcept;
-    void   Mark() noexcept;
+    double  Peek() const noexcept;
+    double  Mark() noexcept;
     double Amount() const noexcept;
 
     void Stop() noexcept;
@@ -15,7 +15,7 @@ public:
     void Restart() noexcept;
 
 private:
-    std::chrono::time_point<std::chrono::steady_clock> m_last;
+    std::chrono::steady_clock::time_point m_last;
 
     double m_timeAmount     = 0.0;
     double m_stopTimeAmount = 0.0;

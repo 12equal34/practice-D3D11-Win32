@@ -6,17 +6,18 @@ Timer::Timer() noexcept
     : m_last(steady_clock::now())
 { }
 
-float Timer::Peek() const noexcept
+double Timer::Peek() const noexcept
 {
-    duration<float> frameTime = steady_clock::now() - m_last;
+    duration<double> frameTime = steady_clock::now() - m_last;
     return frameTime.count();
 }
-void Timer::Mark() noexcept
+double Timer::Mark() noexcept
 {
-    float frameTime = Peek();
+    double frameTime = Peek();
     m_timeAmount += frameTime;
     if (IsStop()) m_stopTimeAmount += frameTime;
     m_last = steady_clock::now();
+    return frameTime;
 }
 double Timer::Amount() const noexcept
 {
