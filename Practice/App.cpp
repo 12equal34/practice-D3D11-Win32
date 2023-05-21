@@ -29,49 +29,6 @@ int App::Run()
         if (bGotMsg) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-
-            // test code
-            std::optional<Hardware::Mouse::Event> event;
-            while ((event = m_mouse.Read()).has_value()) {
-                static int i = 0, j = 0;
-                using MouseEventType = Hardware::Mouse::Event::Type;
-
-                switch (event.value().GetType()) {
-                case MouseEventType::WheelUp:
-                {
-                    ++i;
-                    std::wostringstream wo;
-                    wo << L"wheel : " << i << L"," << j;
-                    m_mainWindow.SetTitle(wo.str());
-                    break;
-                }
-                case MouseEventType::WheelDown:
-                {
-                    --i;
-                    std::wostringstream wo;
-                    wo << L"wheel : " << i << L"," << j;
-                    m_mainWindow.SetTitle(wo.str());
-                    break;
-                }
-                case MouseEventType::WheelRight:
-                {
-                    ++j;
-                    std::wostringstream wo;
-                    wo << L"wheel : " << i << L"," << j;
-                    m_mainWindow.SetTitle(wo.str());
-                    break;
-                }
-                case MouseEventType::WheelLeft:
-                {
-                    --j;
-                    std::wostringstream wo;
-                    wo << L"wheel : " << i << L"," << j;
-                    m_mainWindow.SetTitle(wo.str());
-                    break;
-                }
-                }
-            }
-
         } else {
             // Update the scene.
 
