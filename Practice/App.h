@@ -3,7 +3,6 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Timer.h"
-#include "Renderer.h"
 
 class App
 {
@@ -11,7 +10,7 @@ public:
     App();
     ~App();
     App(const App&)                  = delete;
-    const App& operator=(const App&) = delete;
+    App& operator=(const App&) = delete;
 
     int Run();
 private:
@@ -22,5 +21,4 @@ private:
     Hardware::Keyboard m_keyboard;
     Hardware::Mouse    m_mouse;
     Timer    m_mainTimer;
-    Renderer m_renderer;
 };

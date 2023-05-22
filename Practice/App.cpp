@@ -7,7 +7,7 @@ App::App()
       m_keyboard(),
       m_mouse(),
       m_mainTimer(),
-      m_renderer()
+      m_renderer(m_mainWindow.GetHwnd())
 {
     m_mainWindow.SetKeyboard(&m_keyboard);
     m_mainWindow.SetMouse(&m_mouse);

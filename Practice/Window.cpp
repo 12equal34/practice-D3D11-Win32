@@ -107,6 +107,11 @@ void Hardware::Window::SetTitle(std::wstring_view titleName)
     }
 }
 
+HWND Hardware::Window::GetHwnd() const noexcept
+{
+    return m_hwnd;
+}
+
 //-----------------------------------------------------------------------------
 // Message Handlers
 //-----------------------------------------------------------------------------
