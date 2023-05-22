@@ -82,6 +82,9 @@ Window::Window(int width, int height, std::wstring_view titleName)
 
     // show window
     ShowWindow(m_hwnd, SW_SHOWDEFAULT);
+
+    // create renderer
+    m_pRenderer = std::make_unique<Hardware::Renderer>(m_hwnd);
 }
 
 Window::~Window() { DestroyWindow(m_hwnd); }
@@ -95,11 +98,6 @@ void Window::SetMouse(Mouse* pMouse) noexcept { m_pMouse = pMouse; }
 
 void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
 
-void Window::SetRenderer(Renderer* pRenderer) noexcept
-{
-    m_pRenderer = pRenderer;
-}
-
 void Hardware::Window::SetTitle(std::wstring_view titleName)
 {
     if (SetWindowTextW(m_hwnd, titleName.data()) == 0) {
@@ -110,6 +108,11 @@ void Hardware::Window::SetTitle(std::wstring_view titleName)
 HWND Hardware::Window::GetHwnd() const noexcept
 {
     return m_hwnd;
+}
+
+Hardware::Renderer& Hardware::Window::Renderer() const noexcept
+{
+    return *m_pRenderer;
 }
 
 //-----------------------------------------------------------------------------

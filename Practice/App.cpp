@@ -3,16 +3,14 @@
 #include "App.h"
 
 App::App()
-    : m_mainWindow(1000, 600, L"Window Sample"),
+    : m_window(1000, 600, L"Window Sample"),
       m_keyboard(),
       m_mouse(),
-      m_mainTimer(),
-      m_renderer(m_mainWindow.GetHwnd())
+      m_mainTimer()
 {
-    m_mainWindow.SetKeyboard(&m_keyboard);
-    m_mainWindow.SetMouse(&m_mouse);
-    m_mainWindow.SetTimer(&m_mainTimer);
-    m_mainWindow.SetRenderer(&m_renderer);
+    m_window.SetKeyboard(&m_keyboard);
+    m_window.SetMouse(&m_mouse);
+    m_window.SetTimer(&m_mainTimer);
 }
 
 App::~App() { }
@@ -51,7 +49,7 @@ void App::RunFrame(float dt)
     if (time > interval * i) {
         std::wostringstream wo;
         wo << L"Timer : " << time << L"s";
-        m_mainWindow.SetTitle(wo.str());
+        m_window.SetTitle(wo.str());
         ++i;
     }
 
@@ -60,4 +58,5 @@ void App::RunFrame(float dt)
     // Render the frame.
 
     // Present the frame.
+    m_window.Renderer().EndFrame();
 }

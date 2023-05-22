@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <string>
+#include <memory>
 #include "BaseException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
@@ -35,10 +36,10 @@ public:
     void SetKeyboard(Hardware::Keyboard* pKeyboard) noexcept;
     void SetMouse(Hardware::Mouse* pMouse) noexcept;
     void SetTimer(Timer* pTimer) noexcept;
-    void SetRenderer(Renderer* pRenderer) noexcept;
 
     void SetTitle(std::wstring_view titleName);
     HWND GetHwnd() const noexcept;
+    Hardware::Renderer& Renderer() const noexcept;
 
 private:
     class WindowClass
@@ -82,6 +83,7 @@ private:
     Hardware::Keyboard* m_pKeyboard;
     Hardware::Mouse*    m_pMouse;
     Timer*              m_pTimer;
-    Renderer*           m_pRenderer;
+
+    std::unique_ptr<Hardware::Renderer> m_pRenderer;
 };
 }

@@ -17,7 +17,7 @@ private:
     void RunFrame(float dt);
 
 private:
-    Hardware::Window   m_mainWindow;
+    Hardware::Window   m_window;
     Hardware::Keyboard m_keyboard;
     Hardware::Mouse    m_mouse;
     Timer    m_mainTimer;
