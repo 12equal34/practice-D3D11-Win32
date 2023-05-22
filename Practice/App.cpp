@@ -41,22 +41,25 @@ int App::Run()
 
 void App::RunFrame(float dt)
 {
-    // test code
+    // write times at the window title
     static float           time     = 0.0f;
     static int             i        = 0;
     static constexpr float interval = 0.1f;
+    static int             frames   = 0;
+    ++frames;
     time += dt;
     if (time > interval * i) {
-        std::wostringstream wo;
-        wo << L"Timer : " << time << L"s";
-        m_window.SetTitle(wo.str());
+        float fps = frames / interval;
+        frames    = 0;
         ++i;
+
+        std::wostringstream wo;
+        wo << L"Timer : " << time << L"s, fps: " << fps;
+        m_window.SetTitle(wo.str());
     }
 
-    // Update the scene.
-
-    // Render the frame.
-
-    // Present the frame.
+    // test code
+    const float color = sinf(time) * 0.5f + 0.5f;
+    m_window.Renderer().ClearBuffer(color, color, 1.0f);
     m_window.Renderer().EndFrame();
 }
