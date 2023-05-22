@@ -30,7 +30,7 @@ Renderer::Renderer(HWND hwnd)
                                   nullptr, 0, D3D11_SDK_VERSION, &sd,
                                   &m_pSwapChain, &m_pDevice, nullptr,
                                   &m_pContext);
-
+    // gain access to texture subresource in swap chain (back buffer)
     ComPtr<ID3D11Resource> pResource;
     m_pSwapChain->GetBuffer(0u, __uuidof(ID3D11Resource), &pResource);
     m_pDevice->CreateRenderTargetView(pResource.Get(), nullptr,
