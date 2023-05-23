@@ -1,4 +1,6 @@
 #include "Renderer.h"
+#include <sstream>
+#include "dxerr.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -36,9 +38,95 @@ Renderer::Renderer(HWND hwnd)
     m_pDevice->CreateRenderTargetView(pResource.Get(), nullptr,
                                       &m_pRenderTargetView);
 }
-void Hardware::Renderer::EndFrame() noexcept { m_pSwapChain->Present(1u, 0u); }
-void Hardware::Renderer::ClearBuffer(float r, float g, float b) noexcept
+void Renderer::EndFrame() noexcept { m_pSwapChain->Present(1u, 0u); }
+void Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
     m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color);
 }
+
+//-----------------------------------------------------------------------------
+// Exceptions
+//-----------------------------------------------------------------------------
+Renderer::InfoException::InfoException(
+    int line, const char* file, std::vector<std::string> infoMsgs) noexcept
+    : Exception(line, file)
+{
+    for (const auto& msg : infoMsgs) {
+        m_info += msg;
+        m_info.push_back('\n');
+    }
+    if (!infoMsgs.empty()) {
+        m_info.pop_back();
+    }
+}
+const char* Renderer::InfoException::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << GetType() << "\n[ErrorInfo] " << GetErrorInfo() << "\n\n";
+    oss << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+const char* Renderer::InfoException::GetType() const noexcept
+{
+    return "Renderer::InfoException";
+}
+std::string Renderer::InfoException::GetErrorInfo() const noexcept
+{
+    return m_info;
+}
+//-----------------------------------------------------------------------------
+Renderer::HrException::HrException(int line, const char* file, HRESULT hr,
+                                   std::vector<std::string> infoMsgs) noexcept
+    : Exception(line, file),
+      m_hr(hr)
+{
+    for (const auto& msg : infoMsgs) {
+        m_info += msg;
+        m_info.push_back('\n');
+    }
+    if (!infoMsgs.empty()) {
+        m_info.pop_back();
+    }
+}
+const char* Renderer::HrException::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << GetType()
+        << "\n[ErrorCode] 0x" << std::hex << std::uppercase << GetErrorCode()
+        << std::dec << " (" << (unsigned long)GetErrorCode() << ")\n"
+        << "[ErrorString] " << GetErrorString() << '\n'
+        << "[Description] " << GetErrorDescription() << '\n';
+    if (!m_info.empty()) {
+        oss << "[ErrorInfo] " << GetErrorInfo() << "\n\n";
+    }
+    oss << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+const char* Renderer::HrException::GetType() const noexcept
+{
+    return "Renderer::HrException";
+}
+HRESULT Renderer::HrException::GetErrorCode() const noexcept { return m_hr; }
+std::string Renderer::HrException::GetErrorString() const noexcept
+{
+    return DXGetErrorStringA(m_hr);
+}
+std::string Renderer::HrException::GetErrorDescription() const noexcept 
+{ 
+    char buf[512];
+    DXGetErrorDescriptionA(m_hr, buf, sizeof(buf));
+    return buf;
+}
+std::string Renderer::HrException::GetErrorInfo() const noexcept
+{
+    return m_info;
+}
+//-----------------------------------------------------------------------------
+const char* Renderer::DeviceRemovedException::GetType() const noexcept
+{
+    return "Renderer::DeviceRemovedException";
+}
+//-----------------------------------------------------------------------------

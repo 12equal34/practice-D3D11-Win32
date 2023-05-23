@@ -1,6 +1,3 @@
-#include "pch.h"
-#include "Window.h"
-#include "BaseException.h"
 #include "App.h"
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,

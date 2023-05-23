@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include <sstream>
 #include "App.h"
 
@@ -34,7 +33,7 @@ int App::Run()
     }
 
     if (bGotMsg == -1) {
-        throw Hardware::Window::Exception(__LINE__, __FILE__, GetLastError());
+        throw Hardware::Window::HrException(__LINE__, __FILE__, GetLastError());
     }
     return static_cast<int>(msg.wParam);
 }

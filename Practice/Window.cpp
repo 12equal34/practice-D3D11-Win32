@@ -1,4 +1,3 @@
-#include "pch.h"
 #include <sstream>
 #include "Window.h"
 #include "resource.h"
@@ -8,19 +7,15 @@
 #endif
 
 using namespace Hardware;
-
 //-----------------------------------------------------------------------------
 // Singleton Window Class
 //-----------------------------------------------------------------------------
 Window::WindowClass Window::WindowClass::WndClass;
-
 const wchar_t* Window::WindowClass::GetName() noexcept { return WndClassName; }
-
-HINSTANCE Window::WindowClass::GetInstance() noexcept
+HINSTANCE      Window::WindowClass::GetInstance() noexcept
 {
     return WndClass.m_hInst;
 }
-
 Window::WindowClass::WindowClass() noexcept
     : m_hInst(GetModuleHandle(nullptr))
 {
@@ -41,16 +36,13 @@ Window::WindowClass::WindowClass() noexcept
         GetInstance(), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, 0));
     RegisterClassEx(&wc);
 }
-
 Window::WindowClass::~WindowClass()
 {
     UnregisterClass(GetName(), GetInstance());
 }
-
 //-----------------------------------------------------------------------------
 // window for App
 //-----------------------------------------------------------------------------
-
 Window::Window(int width, int height, std::wstring_view titleName)
     : m_width(width),
       m_height(height),
@@ -70,7 +62,7 @@ Window::Window(int width, int height, std::wstring_view titleName)
     wr.right  = wr.left + m_width;
     wr.bottom = wr.top + m_height;
     if (AdjustWindowRect(&wr, dwStyle, false) == 0) {
-        throw Window::Exception(__LINE__, __FILE__, GetLastError());
+        throw Window::HrException(__LINE__, __FILE__, GetLastError());
     }
     width  = wr.right - wr.left;
     height = wr.bottom - wr.top;
@@ -86,39 +78,27 @@ Window::Window(int width, int height, std::wstring_view titleName)
     // create renderer
     m_pRenderer = std::make_unique<Hardware::Renderer>(m_hwnd);
 }
-
 Window::~Window() { DestroyWindow(m_hwnd); }
-
 void Window::SetKeyboard(Keyboard* pKeyboard) noexcept
 {
     m_pKeyboard = pKeyboard;
 }
-
 void Window::SetMouse(Mouse* pMouse) noexcept { m_pMouse = pMouse; }
-
 void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
-
 void Hardware::Window::SetTitle(std::wstring_view titleName)
 {
     if (SetWindowTextW(m_hwnd, titleName.data()) == 0) {
-        throw Window::Exception(__LINE__, __FILE__, GetLastError());
+        throw Window::HrException(__LINE__, __FILE__, GetLastError());
     }
 }
-
-HWND Hardware::Window::GetHwnd() const noexcept
-{
-    return m_hwnd;
-}
-
+HWND Hardware::Window::GetHwnd() const noexcept { return m_hwnd; }
 Hardware::Renderer& Hardware::Window::Renderer() const noexcept
 {
     return *m_pRenderer;
 }
-
 //-----------------------------------------------------------------------------
 // Message Handlers
 //-----------------------------------------------------------------------------
-
 LRESULT Window::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
                                LPARAM lParam) noexcept
 {
@@ -145,7 +125,6 @@ LRESULT Window::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
     // handler
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-
 LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
                                  LPARAM lParam) noexcept
 {
@@ -159,7 +138,6 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
     // forward message to window instance handler
     return pWnd->HandleMsg(hwnd, msg, wParam, lParam);
 }
-
 // main message handler
 LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                           LPARAM lParam) noexcept
@@ -206,8 +184,7 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     case WM_WINDOWPOSCHANGED:
     case WM_WINDOWPOSCHANGING:
 #pragma endregion Window Notification Handler
-
-#pragma region Keyboard Notification Handler
+#pragma region Keyboard Notification  Handler
     case WM_ACTIVATE:
     case WM_APPCOMMAND:
         break;
@@ -243,8 +220,7 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     case WM_SYSKEYUP:
     case WM_UNICHAR:
 #pragma endregion Keyboard Notification Handler
-
-#pragma region Mouse Notification Handler
+#pragma region Mouse Notification       Handler
     case WM_CAPTURECHANGED:
     case WM_LBUTTONDBLCLK:
         break;
@@ -279,9 +255,9 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
         if (!m_pMouse) break;
 
         const POINTS pt = MAKEPOINTS(lParam);
-        int x = pt.x;
-        int y = pt.y;
-        if (0 <= x && x < m_width && 0<= y && y < m_height) {
+        int          x  = pt.x;
+        int          y  = pt.y;
+        if (0 <= x && x < m_width && 0 <= y && y < m_height) {
             m_pMouse->OnMouseMove(x, y);
             if (!m_pMouse->IsInWindow()) {
                 SetCapture(hwnd);
@@ -290,8 +266,7 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
         } else {
             if (wParam & (MK_LBUTTON | MK_RBUTTON)) {
                 m_pMouse->OnMouseMove(x, y);
-            }
-            else {
+            } else {
                 ReleaseCapture();
                 m_pMouse->OnMouseLeave();
             }
@@ -340,14 +315,11 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
         break;
 #pragma endregion Mouse Notification Handler
     }
-
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-
 //-----------------------------------------------------------------------------
 // Window Debugging
 //-----------------------------------------------------------------------------
-
 #ifdef _DEBUG
 void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -355,51 +327,53 @@ void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
     OutputDebugStringA(msgMap(msg, wParam, lParam).c_str());
 }
 #endif
-
 //-----------------------------------------------------------------------------
 // Window Exceptions
 //-----------------------------------------------------------------------------
-
-Window::Exception::Exception(int line, const char* file, HRESULT hr) noexcept
-    : BaseException(line, file),
-      m_hr(hr)
-{ }
-
-const char* Window::Exception::what() const noexcept
-{
-    std::ostringstream oss;
-    oss << GetType() << '\n'
-        << GetOriginString() << '\n'
-        << "[ErrorCode] " << GetErrorCode() << '\n'
-        << "[Description] " << GetErrorString();
-    whatBuffer = oss.str();
-    return whatBuffer.c_str();
-}
-
-const char* Window::Exception::GetType() const noexcept
-{
-    return "Window::Exception";
-}
-
 std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
 {
-    char* pMsgBuf = nullptr;
-    DWORD nMsgLen = FormatMessageA(
+    char*       pMsgBuf = nullptr;
+    // windows will allocate memory for err string and make our pointer point to it
+    const DWORD nMsgLen = FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
             FORMAT_MESSAGE_IGNORE_INSERTS,
         nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr);
+    // 0 string length returned indicates a failure
     if (nMsgLen == 0) {
         return "Unidentified error code";
     }
+    // copy error string from windows-allocated buffer to std::string
     std::string errorString = pMsgBuf;
     LocalFree(pMsgBuf);
     return errorString;
 }
-
-HRESULT Window::Exception::GetErrorCode() const noexcept { return m_hr; }
-
-std::string Window::Exception::GetErrorString() const noexcept
+Window::HrException::HrException(int line, const char* file,
+                                 HRESULT hr) noexcept
+    : Exception(line, file),
+      m_hr(hr)
+{ }
+const char* Window::HrException::what() const noexcept
 {
-    return TranslateErrorCode(GetErrorCode());
+    std::ostringstream oss;
+    oss << GetType() << '\n'
+        << "[ErrorCode] 0x" << std::hex << std::uppercase << GetErrorCode()
+        << std::dec << " (" << (unsigned long)GetErrorCode() << ")\n"
+        << "[Description] " << GetErrorDescription() << '\n'
+        << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+const char* Window::HrException::GetType() const noexcept
+{
+    return "Window::HrException";
+}
+HRESULT     Window::HrException::GetErrorCode() const noexcept { return m_hr; }
+std::string Window::HrException::GetErrorDescription() const noexcept
+{
+    return Exception::TranslateErrorCode(GetErrorCode());
+}
+const char* Window::NoRendererException::GetType() const noexcept
+{
+    return "Window::NoRendererException";
 }

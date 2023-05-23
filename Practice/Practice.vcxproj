@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BaseException.cpp" />
+    <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
@@ -172,11 +173,12 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="BaseException.h" />
+    <ClInclude Include="dxerr.h" />
     <ClInclude Include="HardwareHelper.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mouse.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="WindowsHeader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
@@ -187,6 +189,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DXGetErrorDescription.inl" />
+    <None Include="DXGetErrorString.inl" />
+    <None Include="DXTrace.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

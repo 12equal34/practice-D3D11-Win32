@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+#include "WindowsHeader.h"
 #include <string>
 #include <memory>
 #include "BaseException.h"
@@ -15,16 +15,26 @@ class Window
 public:
     class Exception : public BaseException
     {
+        using BaseException::BaseException;
     public:
-        Exception(int line, const char* file, HRESULT hr) noexcept;
-        const char*         what() const noexcept override;
-        virtual const char* GetType() const noexcept;
-        static std::string  TranslateErrorCode(HRESULT hr) noexcept;
-        HRESULT             GetErrorCode() const noexcept;
-        std::string         GetErrorString() const noexcept;
-
+        static std::string TranslateErrorCode(HRESULT hr) noexcept;
+    };
+    class HrException : public Exception
+    {
+    public:
+        HrException(int line, const char* file, HRESULT hr) noexcept;
+        const char* what() const noexcept override;
+        const char* GetType() const noexcept override;
+        HRESULT     GetErrorCode() const noexcept;
+        std::string GetErrorDescription() const noexcept;
     private:
         HRESULT m_hr;
+    };
+    class NoRendererException : public Exception
+    {
+    public:
+        using Exception::Exception;
+        const char* GetType() const noexcept override;
     };
 
 public:
@@ -37,8 +47,8 @@ public:
     void SetMouse(Hardware::Mouse* pMouse) noexcept;
     void SetTimer(Timer* pTimer) noexcept;
 
-    void SetTitle(std::wstring_view titleName);
-    HWND GetHwnd() const noexcept;
+    void                SetTitle(std::wstring_view titleName);
+    HWND                GetHwnd() const noexcept;
     Hardware::Renderer& Renderer() const noexcept;
 
 private:
