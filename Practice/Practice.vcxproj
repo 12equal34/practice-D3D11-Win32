@@ -162,6 +162,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BaseException.cpp" />
     <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="DxgiInfoManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="BaseException.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="DxgiInfoManager.h" />
     <ClInclude Include="HardwareHelper.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Keyboard.h" />
