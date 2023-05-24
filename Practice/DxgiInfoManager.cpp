@@ -1,8 +1,6 @@
 #include "DxgiInfoManager.h"
 #include "Window.h"
 #include "Renderer.h"
-#include <dxgidebug.h>
-#include <memory>
 
 #pragma comment(lib, "dxguid.lib")
 
