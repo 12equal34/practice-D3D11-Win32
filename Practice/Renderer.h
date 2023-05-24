@@ -6,7 +6,7 @@
 #include <string>
 #include "BaseException.h"
 
-namespace Hardware
+namespace Hardware::DX
 {
 class Renderer
 {
@@ -19,7 +19,7 @@ public:
     {
     public:
         InfoException(int line, const char* file,
-                      std::vector<std::string> infoMsgs) noexcept;
+                      const std::vector<std::string>& infoMsgs) noexcept;
         const char* what() const noexcept override;
         const char* GetType() const noexcept override;
         std::string GetErrorInfo() const noexcept;
@@ -56,7 +56,7 @@ public:
     Renderer(const Renderer&)            = delete;
     Renderer& operator=(const Renderer&) = delete;
 
-    void EndFrame() noexcept;
+    void EndFrame();
     void ClearBuffer(float r, float g, float b) noexcept;
 
 private:

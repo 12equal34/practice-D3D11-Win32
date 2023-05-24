@@ -2,7 +2,10 @@
 #include "Window.h"
 #include "resource.h"
 
-#ifdef _DEBUG
+// if you want to map windows messages to the output
+// #define DEBUG_WINMSG
+
+#if (!defined NDEBUG && defined DEBUG_WINMSG)
 #include "WindowsMessageMap.h"
 #endif
 
@@ -76,7 +79,7 @@ Window::Window(int width, int height, std::wstring_view titleName)
     ShowWindow(m_hwnd, SW_SHOWDEFAULT);
 
     // create renderer
-    m_pRenderer = std::make_unique<Hardware::Renderer>(m_hwnd);
+    m_pRenderer = std::make_unique<Hardware::DX::Renderer>(m_hwnd);
 }
 Window::~Window() { DestroyWindow(m_hwnd); }
 void Window::SetKeyboard(Keyboard* pKeyboard) noexcept
@@ -92,7 +95,7 @@ void Hardware::Window::SetTitle(std::wstring_view titleName)
     }
 }
 HWND Hardware::Window::GetHwnd() const noexcept { return m_hwnd; }
-Hardware::Renderer& Hardware::Window::Renderer() const noexcept
+Hardware::DX::Renderer& Hardware::Window::Renderer() const noexcept
 {
     return *m_pRenderer;
 }
@@ -102,7 +105,7 @@ Hardware::Renderer& Hardware::Window::Renderer() const noexcept
 LRESULT Window::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
                                LPARAM lParam) noexcept
 {
-#ifdef _DEBUG
+#if (!defined NDEBUG && defined DEBUG_WINMSG)
     MsgToOutputDebug(msg, wParam, lParam);
 #endif
     // use create parameter passed in from CreateWindow() to store window
@@ -128,7 +131,7 @@ LRESULT Window::HandleMsgSetup(HWND hwnd, UINT msg, WPARAM wParam,
 LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
                                  LPARAM lParam) noexcept
 {
-#ifdef _DEBUG
+#if (!defined NDEBUG && defined DEBUG_WINMSG)
     MsgToOutputDebug(msg, wParam, lParam);
 #endif
 
@@ -320,7 +323,7 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
 //-----------------------------------------------------------------------------
 // Window Debugging
 //-----------------------------------------------------------------------------
-#ifdef _DEBUG
+#if (!defined NDEBUG && defined DEBUG_WINMSG)
 void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
     static WindowsMessageMap msgMap;

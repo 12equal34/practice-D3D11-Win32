@@ -49,7 +49,7 @@ public:
 
     void                SetTitle(std::wstring_view titleName);
     HWND                GetHwnd() const noexcept;
-    Hardware::Renderer& Renderer() const noexcept;
+    Hardware::DX::Renderer& Renderer() const noexcept;
 
 private:
     class WindowClass
@@ -77,7 +77,7 @@ private:
     LRESULT                 HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                                       LPARAM lParam) noexcept;
 
-#ifdef _DEBUG
+#if (!defined NDEBUG && defined DEBUG_WINMSG)
     static void MsgToOutputDebug(UINT msg, WPARAM wParam,
                                  LPARAM lParam) noexcept;
 #endif
@@ -94,6 +94,6 @@ private:
     Hardware::Mouse*    m_pMouse;
     Timer*              m_pTimer;
 
-    std::unique_ptr<Hardware::Renderer> m_pRenderer;
+    std::unique_ptr<Hardware::DX::Renderer> m_pRenderer;
 };
 }

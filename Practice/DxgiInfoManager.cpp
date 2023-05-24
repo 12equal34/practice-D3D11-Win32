@@ -7,6 +7,7 @@
 #pragma comment(lib, "dxguid.lib")
 
 using namespace Hardware;
+using namespace Hardware::DX;
 
 DxgiInfoManager::DxgiInfoManager()
 {
