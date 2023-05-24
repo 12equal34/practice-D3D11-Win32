@@ -175,6 +175,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="BaseException.h" />
     <ClInclude Include="dxerr.h" />
+    <ClInclude Include="DXExceptionHelper.h" />
     <ClInclude Include="DxgiInfoManager.h" />
     <ClInclude Include="HardwareHelper.h" />
     <ClInclude Include="Renderer.h" />

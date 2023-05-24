@@ -1,10 +1,11 @@
 #include "Renderer.h"
 #include <sstream>
 #include "dxerr.h"
+#include "DXExceptionHelper.h"
 
 #pragma comment(lib, "d3d11.lib")
 
-using namespace Hardware;
+using namespace Hardware::DX;
 using namespace Microsoft::WRL;
 
 Renderer::Renderer(HWND hwnd)
@@ -26,30 +27,40 @@ Renderer::Renderer(HWND hwnd)
     sd.SwapEffect                  = DXGI_SWAP_EFFECT_DISCARD;
     sd.Flags                       = 0;
 
+    UINT swapCreateFlags = 0u;
+#ifndef NDEBUG
+    swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
     // create device and front/back buffers, and swap chain and rendering
     // context
-    D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
-                                  nullptr, 0, D3D11_SDK_VERSION, &sd,
-                                  &m_pSwapChain, &m_pDevice, nullptr,
-                                  &m_pContext);
+    ThrowIfFailed(D3D11CreateDeviceAndSwapChain(
+        nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapCreateFlags, nullptr, 0,
+        D3D11_SDK_VERSION, &sd, &m_pSwapChain, &m_pDevice, nullptr,
+        &m_pContext));
+
     // gain access to texture subresource in swap chain (back buffer)
     ComPtr<ID3D11Resource> pResource;
-    m_pSwapChain->GetBuffer(0u, __uuidof(ID3D11Resource), &pResource);
-    m_pDevice->CreateRenderTargetView(pResource.Get(), nullptr,
-                                      &m_pRenderTargetView);
+    ThrowIfFailed(
+        m_pSwapChain->GetBuffer(0u, __uuidof(ID3D11Resource), &pResource));
+    ThrowIfFailed(m_pDevice->CreateRenderTargetView(pResource.Get(), nullptr,
+                                                    &m_pRenderTargetView));
 }
-void Renderer::EndFrame() noexcept { m_pSwapChain->Present(1u, 0u); }
+void Renderer::EndFrame() 
+{ 
+    ThrowIfFailed(m_pSwapChain->Present(1u, 0u)); 
+}
 void Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
     m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color);
 }
-
 //-----------------------------------------------------------------------------
 // Exceptions
 //-----------------------------------------------------------------------------
 Renderer::InfoException::InfoException(
-    int line, const char* file, std::vector<std::string> infoMsgs) noexcept
+    int line, const char* file,
+    const std::vector<std::string>& infoMsgs) noexcept
     : Exception(line, file)
 {
     for (const auto& msg : infoMsgs) {
@@ -93,9 +104,9 @@ Renderer::HrException::HrException(int line, const char* file, HRESULT hr,
 const char* Renderer::HrException::what() const noexcept
 {
     std::ostringstream oss;
-    oss << GetType()
-        << "\n[ErrorCode] 0x" << std::hex << std::uppercase << GetErrorCode()
-        << std::dec << " (" << (unsigned long)GetErrorCode() << ")\n"
+    oss << GetType() << "\n[ErrorCode] 0x" << std::hex << std::uppercase
+        << GetErrorCode() << std::dec << " (" << (unsigned long)GetErrorCode()
+        << ")\n"
         << "[ErrorString] " << GetErrorString() << '\n'
         << "[Description] " << GetErrorDescription() << '\n';
     if (!m_info.empty()) {
@@ -114,8 +125,8 @@ std::string Renderer::HrException::GetErrorString() const noexcept
 {
     return DXGetErrorStringA(m_hr);
 }
-std::string Renderer::HrException::GetErrorDescription() const noexcept 
-{ 
+std::string Renderer::HrException::GetErrorDescription() const noexcept
+{
     char buf[512];
     DXGetErrorDescriptionA(m_hr, buf, sizeof(buf));
     return buf;
