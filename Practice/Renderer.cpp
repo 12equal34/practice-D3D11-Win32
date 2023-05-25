@@ -84,14 +84,22 @@ void Hardware::DX::Renderer::DrawTest()
 
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 
+    // for a vertex/pixel shader
+    ComPtr<ID3DBlob> pBlob;
+
     // create a vertex shader
     ComPtr<ID3D11VertexShader> pVertexShader;
-    ComPtr<ID3DBlob> pBlob;
     ThrowIfFailed(D3DReadFileToBlob(L"Shaders/VertexShader.cso", &pBlob));
     ThrowIfFailed(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
-
     // bind a vertex shader
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+
+    // create a pixel shader
+    ComPtr<ID3D11PixelShader> pPixelShader;
+    ThrowIfFailed(D3DReadFileToBlob(L"Shaders/PixelShader.cso", &pBlob));
+    ThrowIfFailed(m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
+    // bind a pixel shader
+    m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
 
     ThrowIfInfoGot(m_pContext->Draw(3u, 0u));
 }
