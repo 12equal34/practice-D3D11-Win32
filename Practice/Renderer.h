@@ -56,7 +56,7 @@ public:
     Renderer& operator=(const Renderer&) = delete;
 
     void EndFrame();
-    void ClearBuffer(float r, float g, float b) noexcept;
+    void ClearBuffer(float r, float g, float b);
     void DrawTest();
 
 private:

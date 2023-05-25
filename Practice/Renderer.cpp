@@ -45,17 +45,18 @@ Renderer::Renderer(HWND hwnd)
         &m_pContext));
 
     // gain access to texture subresource in swap chain (back buffer)
-    ComPtr<ID3D11Resource> pResource;
+    ComPtr<ID3D11Resource> pBackBuffer;
     ThrowIfFailed(
-        m_pSwapChain->GetBuffer(0u, __uuidof(ID3D11Resource), &pResource));
-    ThrowIfFailed(m_pDevice->CreateRenderTargetView(pResource.Get(), nullptr,
+        m_pSwapChain->GetBuffer(0u, __uuidof(ID3D11Resource), &pBackBuffer));
+    ThrowIfFailed(m_pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr,
                                                     &m_pRenderTargetView));
 }
 void Renderer::EndFrame() { ThrowIfFailed(m_pSwapChain->Present(1u, 0u)); }
-void Renderer::ClearBuffer(float r, float g, float b) noexcept
+void Renderer::ClearBuffer(float r, float g, float b)
 {
     const float color[] = {r, g, b, 1.0f};
-    m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color);
+    ThrowIfInfoGot(
+        m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color));
 }
 void Hardware::DX::Renderer::DrawTest()
 {
@@ -69,7 +70,9 @@ void Hardware::DX::Renderer::DrawTest()
         {0.5f,  -0.5f},
         {-0.5f, -0.5f}
     };
+    const UINT numVertices = static_cast<UINT>(std::size(vertices));
 
+    // create vertex buffer
     ComPtr<ID3D11Buffer> pVertexBuffer;
     D3D11_BUFFER_DESC    bd   = {};
     bd.Usage                  = D3D11_USAGE_DEFAULT;
@@ -84,9 +87,10 @@ void Hardware::DX::Renderer::DrawTest()
 
     const UINT stride = sizeof(Vertex);
     const UINT offset = 0u;
-    m_pContext->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
+    m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 
-    m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+    // set primitive topology
+    m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // for a vertex/pixel shader
     ComPtr<ID3DBlob> pBlob;
@@ -100,6 +104,19 @@ void Hardware::DX::Renderer::DrawTest()
     // bind a vertex shader
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
 
+    // create input layout
+    ComPtr<ID3D11InputLayout>      pInputLayout;
+    const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
+        {"POSITION", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, 0u,
+         D3D11_INPUT_PER_VERTEX_DATA, 0u}
+    };
+    const UINT numInputElements =
+        static_cast<UINT>(std::size(inputElementDesc));
+    ThrowIfFailed(m_pDevice->CreateInputLayout(
+        inputElementDesc, numInputElements, pBlob->GetBufferPointer(),
+        pBlob->GetBufferSize(), &pInputLayout));
+    m_pContext->IASetInputLayout(pInputLayout.Get());
+
     // create a pixel shader
     ComPtr<ID3D11PixelShader> pPixelShader;
     ThrowIfFailed(D3DReadFileToBlob(L"Shaders/PixelShader.cso", &pBlob));
@@ -110,7 +127,8 @@ void Hardware::DX::Renderer::DrawTest()
     m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
 
     // bind a render target
-    m_pContext->OMSetRenderTargets(1u, &m_pRenderTargetView, nullptr);
+    m_pContext->OMSetRenderTargets(1u, m_pRenderTargetView.GetAddressOf(),
+                                   nullptr);
 
     // configure a viewport
     RECT cr = {0};
@@ -124,7 +142,7 @@ void Hardware::DX::Renderer::DrawTest()
     vp.MaxDepth       = 1;
     m_pContext->RSSetViewports(1u, &vp);
 
-    ThrowIfInfoGot(m_pContext->Draw(3u, 0u));
+    ThrowIfInfoGot(m_pContext->Draw(numVertices, 0u));
 }
 //-----------------------------------------------------------------------------
 // Exceptions
