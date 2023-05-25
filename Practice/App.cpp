@@ -59,6 +59,10 @@ void App::RunFrame(float dt)
 
     // test code
     const float color = sinf(time) * 0.5f + 0.5f;
-    m_window.Renderer().ClearBuffer(color, color, 1.0f);
-    m_window.Renderer().EndFrame();
+
+    auto& renderer = m_window.Renderer();
+
+    renderer.ClearBuffer(color, color, 1.0f);
+    renderer.DrawTest();
+    renderer.EndFrame();
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "WindowsHeader.h"
 #include <d3d11.h>
+#include <d3dcompiler.h>
 #include <wrl.h>
 #include <vector>
 #include <string>
@@ -46,8 +47,6 @@ public:
         using HrException::HrException;
     public:
         const char* GetType() const noexcept override;
-    private:
-        std::string m_reason;
     };
 
 public:
@@ -58,6 +57,7 @@ public:
 
     void EndFrame();
     void ClearBuffer(float r, float g, float b) noexcept;
+    void DrawTest();
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Device>           m_pDevice;

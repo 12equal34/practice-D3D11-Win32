@@ -4,6 +4,7 @@
 #include "DXExceptionHelper.h"
 
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "D3DCompiler.lib")
 
 using namespace Hardware::DX;
 using namespace Microsoft::WRL;
@@ -46,14 +47,53 @@ Renderer::Renderer(HWND hwnd)
     ThrowIfFailed(m_pDevice->CreateRenderTargetView(pResource.Get(), nullptr,
                                                     &m_pRenderTargetView));
 }
-void Renderer::EndFrame() 
-{ 
-    ThrowIfFailed(m_pSwapChain->Present(1u, 0u)); 
-}
+void Renderer::EndFrame() { ThrowIfFailed(m_pSwapChain->Present(1u, 0u)); }
 void Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
     m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color);
+}
+void Hardware::DX::Renderer::DrawTest()
+{
+    struct Vertex {
+        float x;
+        float y;
+    };
+
+    const Vertex vertices[] = {
+        {0.0f,  0.5f },
+        {0.5f,  -0.5f},
+        {-0.5f, -0.5f}
+    };
+
+    ComPtr<ID3D11Buffer> pVertexBuffer;
+    D3D11_BUFFER_DESC    bd   = {};
+    bd.Usage                  = D3D11_USAGE_DEFAULT;
+    bd.BindFlags              = D3D11_BIND_VERTEX_BUFFER;
+    bd.CPUAccessFlags         = 0u;
+    bd.MiscFlags              = 0u;
+    bd.ByteWidth              = sizeof(vertices);
+    bd.StructureByteStride    = sizeof(Vertex);
+    D3D11_SUBRESOURCE_DATA sd = {};
+    sd.pSysMem                = vertices;
+    ThrowIfFailed(m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
+
+    const UINT stride = sizeof(Vertex);
+    const UINT offset = 0u;
+    m_pContext->IASetVertexBuffers(0u, 1u, &pVertexBuffer, &stride, &offset);
+
+    m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+
+    // create a vertex shader
+    ComPtr<ID3D11VertexShader> pVertexShader;
+    ComPtr<ID3DBlob> pBlob;
+    ThrowIfFailed(D3DReadFileToBlob(L"Shaders/VertexShader.cso", &pBlob));
+    ThrowIfFailed(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
+
+    // bind a vertex shader
+    m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+
+    ThrowIfInfoGot(m_pContext->Draw(3u, 0u));
 }
 //-----------------------------------------------------------------------------
 // Exceptions
