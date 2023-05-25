@@ -1,6 +1,7 @@
 #include <sstream>
 #include "Window.h"
 #include "resource.h"
+#include "WinExceptionHelper.h"
 
 // if you want to map windows messages to the output
 // #define DEBUG_WINMSG
@@ -10,6 +11,7 @@
 #endif
 
 using namespace Hardware;
+using namespace Hardware::Win;
 //-----------------------------------------------------------------------------
 // Singleton Window Class
 //-----------------------------------------------------------------------------
@@ -19,7 +21,7 @@ HINSTANCE      Window::WindowClass::GetInstance() noexcept
 {
     return WndClass.m_hInst;
 }
-Window::WindowClass::WindowClass() noexcept
+Window::WindowClass::WindowClass()
     : m_hInst(GetModuleHandle(nullptr))
 {
     WNDCLASSEX wc    = {0};
@@ -37,7 +39,7 @@ Window::WindowClass::WindowClass() noexcept
     wc.lpszClassName = GetName();
     wc.hIconSm       = static_cast<HICON>(LoadImage(
         GetInstance(), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, 0));
-    RegisterClassEx(&wc);
+    ThrowIfNull(RegisterClassEx(&wc));
 }
 Window::WindowClass::~WindowClass()
 {
@@ -64,19 +66,20 @@ Window::Window(int width, int height, std::wstring_view titleName)
     wr.top    = 100;
     wr.right  = wr.left + m_width;
     wr.bottom = wr.top + m_height;
-    if (AdjustWindowRect(&wr, dwStyle, false) == 0) {
-        throw Window::HrException(__LINE__, __FILE__, GetLastError());
-    }
+    ThrowIfNull(AdjustWindowRect(&wr, dwStyle, false));
+
     width  = wr.right - wr.left;
     height = wr.bottom - wr.top;
 
     // create window & get hwnd
-    m_hwnd = CreateWindow(WindowClass::GetName(), titleName.data(), dwStyle,
-                          CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr,
-                          nullptr, WindowClass::GetInstance(), this);
+    ThrowIfNull(m_hwnd = CreateWindow(WindowClass::GetName(), titleName.data(),
+                                      dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+                                      width, height, nullptr, nullptr,
+                                      WindowClass::GetInstance(), this));
 
     // show window
-    ShowWindow(m_hwnd, SW_SHOWDEFAULT);
+    ShowWindow(m_hwnd, SW_SHOWDEFAULT); // If the window was previously hidden,
+                                        // the return value is zero.
 
     // create renderer
     m_pRenderer = std::make_unique<Hardware::DX::Renderer>(m_hwnd);
@@ -90,9 +93,7 @@ void Window::SetMouse(Mouse* pMouse) noexcept { m_pMouse = pMouse; }
 void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
 void Hardware::Window::SetTitle(std::wstring_view titleName)
 {
-    if (SetWindowTextW(m_hwnd, titleName.data()) == 0) {
-        throw Window::HrException(__LINE__, __FILE__, GetLastError());
-    }
+    ThrowIfNull(SetWindowTextW(m_hwnd, titleName.data()));
 }
 HWND Hardware::Window::GetHwnd() const noexcept { return m_hwnd; }
 Hardware::DX::Renderer& Hardware::Window::Renderer() const noexcept
@@ -335,8 +336,9 @@ void Window::MsgToOutputDebug(UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 //-----------------------------------------------------------------------------
 std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
 {
-    char*       pMsgBuf = nullptr;
-    // windows will allocate memory for err string and make our pointer point to it
+    char* pMsgBuf = nullptr;
+    // windows will allocate memory for err string and make our pointer point to
+    // it
     const DWORD nMsgLen = FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
             FORMAT_MESSAGE_IGNORE_INSERTS,

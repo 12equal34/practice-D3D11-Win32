@@ -95,6 +95,9 @@
     <ClInclude Include="DXExceptionHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WinExceptionHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Practice.rc">

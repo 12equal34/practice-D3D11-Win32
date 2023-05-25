@@ -192,6 +192,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowsMessageMap.h" />
+    <ClInclude Include="WinExceptionHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Practice.rc" />

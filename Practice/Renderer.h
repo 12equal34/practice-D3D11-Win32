@@ -60,6 +60,8 @@ public:
     void DrawTest();
 
 private:
+    HWND m_hwnd;
+
     Microsoft::WRL::ComPtr<ID3D11Device>           m_pDevice;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_pContext;
     Microsoft::WRL::ComPtr<IDXGISwapChain>         m_pSwapChain;

@@ -2,14 +2,18 @@
 #include <sstream>
 #include "dxerr.h"
 #include "DXExceptionHelper.h"
+#include "WinExceptionHelper.h"
+#include "Window.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
+using namespace Hardware;
 using namespace Hardware::DX;
 using namespace Microsoft::WRL;
 
 Renderer::Renderer(HWND hwnd)
+    : m_hwnd(hwnd)
 {
     DXGI_SWAP_CHAIN_DESC sd               = {0};
     sd.BufferDesc.Width                   = 0;
@@ -23,7 +27,7 @@ Renderer::Renderer(HWND hwnd)
     sd.SampleDesc.Quality          = 0;
     sd.BufferUsage                 = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     sd.BufferCount                 = 1;
-    sd.OutputWindow                = hwnd;
+    sd.OutputWindow                = m_hwnd;
     sd.Windowed                    = TRUE;
     sd.SwapEffect                  = DXGI_SWAP_EFFECT_DISCARD;
     sd.Flags                       = 0;
@@ -90,16 +94,35 @@ void Hardware::DX::Renderer::DrawTest()
     // create a vertex shader
     ComPtr<ID3D11VertexShader> pVertexShader;
     ThrowIfFailed(D3DReadFileToBlob(L"Shaders/VertexShader.cso", &pBlob));
-    ThrowIfFailed(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
+    ThrowIfFailed(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(),
+                                                pBlob->GetBufferSize(), nullptr,
+                                                &pVertexShader));
     // bind a vertex shader
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
 
     // create a pixel shader
     ComPtr<ID3D11PixelShader> pPixelShader;
     ThrowIfFailed(D3DReadFileToBlob(L"Shaders/PixelShader.cso", &pBlob));
-    ThrowIfFailed(m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
+    ThrowIfFailed(m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(),
+                                               pBlob->GetBufferSize(), nullptr,
+                                               &pPixelShader));
     // bind a pixel shader
     m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+
+    // bind a render target
+    m_pContext->OMSetRenderTargets(1u, &m_pRenderTargetView, nullptr);
+
+    // configure a viewport
+    RECT cr = {0};
+    Win::ThrowIfNull(GetClientRect(m_hwnd, &cr));
+    D3D11_VIEWPORT vp = {0};
+    vp.TopLeftX       = static_cast<FLOAT>(cr.left);
+    vp.TopLeftY       = static_cast<FLOAT>(cr.top);
+    vp.Width          = static_cast<FLOAT>(cr.right);
+    vp.Height         = static_cast<FLOAT>(cr.bottom);
+    vp.MinDepth       = 0;
+    vp.MaxDepth       = 1;
+    m_pContext->RSSetViewports(1u, &vp);
 
     ThrowIfInfoGot(m_pContext->Draw(3u, 0u));
 }

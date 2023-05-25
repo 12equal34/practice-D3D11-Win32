@@ -59,7 +59,7 @@ private:
         static HINSTANCE      GetInstance() noexcept;
 
     private:
-        WindowClass() noexcept;
+        WindowClass();
         ~WindowClass();
         WindowClass(const WindowClass&)            = delete;
         WindowClass& operator=(const WindowClass&) = delete;
