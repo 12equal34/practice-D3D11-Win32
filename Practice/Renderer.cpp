@@ -61,17 +61,22 @@ void Renderer::ClearBuffer(float r, float g, float b)
 void Hardware::DX::Renderer::DrawTest()
 {
     struct Vertex {
-        float x;
-        float y;
-        float r;
-        float g;
-        float b;
+        struct {
+            float x;
+            float y;
+        } pos;
+        struct {
+            unsigned char r;
+            unsigned char g;
+            unsigned char b;
+            unsigned char a;
+        } color;
     };
 
     const Vertex vertices[] = {
-        {0.0f,  0.5f,  1.0f, 1.0f, 1.0f},
-        {0.5f,  -0.5f, 1.0f, 1.0f, 1.0f},
-        {-0.5f, -0.5f, 1.0f, 1.0f, 1.0f}
+        {0.0f,  0.5f,  255, 0,   0,   0},
+        {0.5f,  -0.5f, 0,   255, 0,   0},
+        {-0.5f, -0.5f, 0,   0,   255, 0}
     };
     const UINT numVertices = static_cast<UINT>(std::size(vertices));
 
@@ -111,9 +116,9 @@ void Hardware::DX::Renderer::DrawTest()
     // create input layout
     ComPtr<ID3D11InputLayout>      pInputLayout;
     const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
-        {"Position", 0u, DXGI_FORMAT_R32G32_FLOAT,    0u, 0u,
+        {"Position", 0u, DXGI_FORMAT_R32G32_FLOAT,  0u, 0u,
          D3D11_INPUT_PER_VERTEX_DATA, 0u},
-        {"Color",    0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 8u,
+        {"Color",    0u, DXGI_FORMAT_R8G8B8A8_UINT, 0u, 8u,
          D3D11_INPUT_PER_VERTEX_DATA, 0u},
     };
     const UINT numInputElements =
