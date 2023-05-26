@@ -60,12 +60,15 @@ void Renderer::ClearBuffer(float r, float g, float b)
 }
 void Hardware::DX::Renderer::DrawTest()
 {
-    struct Vertex {
-        struct {
+    struct Vertex
+    {
+        struct
+        {
             float x;
             float y;
         } pos;
-        struct {
+        struct
+        {
             unsigned char r;
             unsigned char g;
             unsigned char b;
@@ -76,9 +79,18 @@ void Hardware::DX::Renderer::DrawTest()
     const Vertex vertices[] = {
         {0.0f,  0.5f,  255, 0,   0,   0},
         {0.5f,  -0.5f, 0,   255, 0,   0},
-        {-0.5f, -0.5f, 0,   0,   255, 0}
+        {-0.5f, -0.5f, 0,   0,   255, 0},
+        {-0.5f,  0.5f,  255,   0,   255, 0},
+        {0.5f,  0.5f,  255,   0,   255, 0},
+        {0.0f,  -0.5f,  255,   0,   255, 0},
     };
     const UINT numVertices = static_cast<UINT>(std::size(vertices));
+
+    const unsigned short indices[] = {
+        0,1,2,
+        3,4,5,
+    };
+    const UINT numIndices = static_cast<UINT>(std::size(indices));
 
     // create vertex buffer
     ComPtr<ID3D11Buffer> pVertexBuffer;
@@ -93,10 +105,27 @@ void Hardware::DX::Renderer::DrawTest()
     sd.pSysMem                = vertices;
     ThrowIfFailed(m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
 
+    // bind vertex buffer
     const UINT stride = sizeof(Vertex);
     const UINT offset = 0u;
     m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(),
                                    &stride, &offset);
+
+    // create index buffer
+    ComPtr<ID3D11Buffer> pIndexBuffer;
+    bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bd.CPUAccessFlags = 0u;
+    bd.MiscFlags = 0u;
+    bd.ByteWidth = sizeof(indices);
+    bd.StructureByteStride = sizeof(unsigned short);
+    sd = {};
+    sd.pSysMem = indices;
+    ThrowIfFailed(m_pDevice->CreateBuffer(&bd, &sd, &pIndexBuffer));
+    
+    // bind index buffer
+    m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 
     // set primitive topology
     m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -153,7 +182,7 @@ void Hardware::DX::Renderer::DrawTest()
     vp.MaxDepth       = 1;
     m_pContext->RSSetViewports(1u, &vp);
 
-    ThrowIfInfoGot(m_pContext->Draw(numVertices, 0u));
+    ThrowIfInfoGot(m_pContext->DrawIndexed(numIndices, 0u, 0u));
 }
 //-----------------------------------------------------------------------------
 // Exceptions
