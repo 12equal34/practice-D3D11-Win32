@@ -58,17 +58,14 @@ void Renderer::ClearBuffer(float r, float g, float b)
     ThrowIfInfoGot(
         m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color));
 }
-void Hardware::DX::Renderer::DrawTest()
+void Hardware::DX::Renderer::DrawTest(float angle)
 {
-    struct Vertex
-    {
-        struct
-        {
+    struct Vertex {
+        struct {
             float x;
             float y;
         } pos;
-        struct
-        {
+        struct {
             unsigned char r;
             unsigned char g;
             unsigned char b;
@@ -80,17 +77,30 @@ void Hardware::DX::Renderer::DrawTest()
         {0.0f,  0.5f,  255, 0,   0,   0},
         {0.5f,  -0.5f, 0,   255, 0,   0},
         {-0.5f, -0.5f, 0,   0,   255, 0},
-        {-0.5f,  0.5f,  255,   0,   255, 0},
-        {0.5f,  0.5f,  255,   0,   255, 0},
-        {0.0f,  -0.5f,  255,   0,   255, 0},
+        {-0.5f, 0.5f,  255, 0,   255, 0},
+        {0.5f,  0.5f,  255, 0,   255, 0},
+        {0.0f,  -0.5f, 255, 0,   255, 0},
     };
     const UINT numVertices = static_cast<UINT>(std::size(vertices));
 
     const unsigned short indices[] = {
-        0,1,2,
-        3,4,5,
+        0, 1, 2, 3, 4, 5,
     };
     const UINT numIndices = static_cast<UINT>(std::size(indices));
+
+    struct ConstantBuffer {
+        struct {
+            float element[4][4];
+        } transform;
+    };
+    // clang-format off
+    const ConstantBuffer cbuf = {
+        std::cos(angle),  std::sin(angle), 0.0f, 0.0f,
+        -std::sin(angle), std::cos(angle), 0.0f, 0.0f,
+        0.0f,             0.0f,            1.0f, 0.0f,
+        0.0f,             0.0f,            0.0f, 1.0f,
+    };
+    // clang-format on
 
     // create vertex buffer
     ComPtr<ID3D11Buffer> pVertexBuffer;
@@ -113,17 +123,17 @@ void Hardware::DX::Renderer::DrawTest()
 
     // create index buffer
     ComPtr<ID3D11Buffer> pIndexBuffer;
-    bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    bd.CPUAccessFlags = 0u;
-    bd.MiscFlags = 0u;
-    bd.ByteWidth = sizeof(indices);
+    bd                     = {};
+    bd.Usage               = D3D11_USAGE_DEFAULT;
+    bd.BindFlags           = D3D11_BIND_INDEX_BUFFER;
+    bd.CPUAccessFlags      = 0u;
+    bd.MiscFlags           = 0u;
+    bd.ByteWidth           = sizeof(indices);
     bd.StructureByteStride = sizeof(unsigned short);
-    sd = {};
-    sd.pSysMem = indices;
+    sd                     = {};
+    sd.pSysMem             = indices;
     ThrowIfFailed(m_pDevice->CreateBuffer(&bd, &sd, &pIndexBuffer));
-    
+
     // bind index buffer
     m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 
@@ -139,6 +149,23 @@ void Hardware::DX::Renderer::DrawTest()
     ThrowIfFailed(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(),
                                                 pBlob->GetBufferSize(), nullptr,
                                                 &pVertexShader));
+
+    // create constant buffer
+    ComPtr<ID3D11Buffer> pConstantBuffer;
+    D3D11_BUFFER_DESC    cbd = {};
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.MiscFlags = 0u;
+    cbd.ByteWidth = sizeof(cbuf);
+    cbd.StructureByteStride = 0u;
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem = &cbuf;
+    ThrowIfFailed(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
+
+    // bind constant buffer
+    m_pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
+
     // bind a vertex shader
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
 

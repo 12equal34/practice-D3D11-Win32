@@ -63,6 +63,6 @@ void App::RunFrame(float dt)
     auto& renderer = m_window.Renderer();
 
     renderer.ClearBuffer(color, color, 1.0f);
-    renderer.DrawTest();
+    renderer.DrawTest(time);
     renderer.EndFrame();
 }

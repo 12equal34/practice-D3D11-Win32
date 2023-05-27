@@ -57,7 +57,7 @@ public:
 
     void EndFrame();
     void ClearBuffer(float r, float g, float b);
-    void DrawTest();
+    void DrawTest(float angle);
 
 private:
     HWND m_hwnd;
