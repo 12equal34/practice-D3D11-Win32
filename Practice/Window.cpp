@@ -239,6 +239,8 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     case WM_LBUTTONDOWN:
     {
         if (m_pMouse) m_pMouse->OnLeftButtonDown();
+        // bring window to foreground on lclick client region
+        SetForegroundWindow(hwnd);
         break;
     }
     case WM_LBUTTONUP:
