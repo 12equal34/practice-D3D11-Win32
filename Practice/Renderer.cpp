@@ -66,35 +66,61 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
         struct {
             float x;
             float y;
+            float z;
         } pos;
-        struct {
-            unsigned char r;
-            unsigned char g;
-            unsigned char b;
-            unsigned char a;
-        } color;
     };
-
     const Vertex vertices[] = {
-        {0.0f,  0.5f,  255, 0,   0,   0},
-        {0.5f,  -0.5f, 0,   255, 0,   0},
-        {-0.5f, -0.5f, 0,   0,   255, 0},
-        {-0.5f, 0.5f,  255, 0,   255, 0},
-        {0.5f,  0.5f,  255, 0,   255, 0},
-        {0.0f,  -0.5f, 255, 0,   255, 0},
+        {-1.0f, -1.0f, -1.0f},
+        {1.0f,  -1.0f, -1.0f},
+        {-1.0f, 1.0f,  -1.0f},
+        {1.0f,  1.0f,  -1.0f},
+        {-1.0f, -1.0f, 1.0f },
+        {1.0f,  -1.0f, 1.0f },
+        {-1.0f, 1.0f,  1.0f },
+        {1.0f,  1.0f,  1.0f },
     };
-    const UINT numVertices = static_cast<UINT>(std::size(vertices));
 
     const unsigned short indices[] = {
-        0, 1, 2, 3, 4, 5,
+        /* clang-format off */
+        0,2,1, 2,3,1,
+        1,3,5, 3,7,5,
+        2,6,3, 3,6,7,
+        4,5,7, 4,7,6,
+        0,4,2, 2,4,6,
+        0,1,4, 1,5,4,
+        /* clang-format on */
     };
-    const UINT numIndices = static_cast<UINT>(std::size(indices));
 
-    struct ConstantBuffer {
+    struct ConstantBuffer1 {
         XMMATRIX transform;
     };
-    const ConstantBuffer cbuf = {
-        {XMMatrixTranspose(XMMatrixTranslation(x, y, 0.0f))}};
+    const ConstantBuffer1 cbuf1 = {XMMatrixTranspose(
+        /* clang-format off */
+        XMMatrixRotationZ(angle) * 
+        XMMatrixRotationX(angle) *
+        XMMatrixTranslation(x, y, 4.0f) *
+        XMMatrixPerspectiveLH(1.0f, 0.6f, 0.5f, 10.0f)
+        /* clang-format on */
+        )};
+
+    struct ConstantBuffer2 {
+        struct {
+            float r;
+            float g;
+            float b;
+            float a;
+        } faceColor[6];
+    };
+    const ConstantBuffer2 cbuf2 = {
+        {
+         {1.0f, 0.0f, 1.0f, 1.0f},
+         {1.0f, 0.0f, 0.0f, 1.0f},
+         {0.0f, 1.0f, 0.0f, 1.0f},
+         {0.0f, 0.0f, 1.0f, 1.0f},
+         {1.0f, 1.0f, 0.0f, 1.0f},
+         {0.0f, 1.0f, 1.0f, 1.0f},
+         }
+    };
 
     // create vertex buffer
     ComPtr<ID3D11Buffer> pVertexBuffer;
@@ -108,7 +134,6 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
     D3D11_SUBRESOURCE_DATA sd = {};
     sd.pSysMem                = vertices;
     ThrowIfFailed(m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
-
     // bind vertex buffer
     const UINT stride = sizeof(Vertex);
     const UINT offset = 0u;
@@ -127,7 +152,6 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
     sd                     = {};
     sd.pSysMem             = indices;
     ThrowIfFailed(m_pDevice->CreateBuffer(&bd, &sd, &pIndexBuffer));
-
     // bind index buffer
     m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 
@@ -143,39 +167,48 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
     ThrowIfFailed(m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(),
                                                 pBlob->GetBufferSize(), nullptr,
                                                 &pVertexShader));
+    // bind a vertex shader
+    m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
 
-    // create constant buffer
-    ComPtr<ID3D11Buffer> pConstantBuffer;
+    // create constant buffer 1
+    ComPtr<ID3D11Buffer> pConstantBuffer1;
     D3D11_BUFFER_DESC    cbd   = {};
     cbd.Usage                  = D3D11_USAGE_DYNAMIC;
     cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
     cbd.CPUAccessFlags         = D3D11_CPU_ACCESS_WRITE;
     cbd.MiscFlags              = 0u;
-    cbd.ByteWidth              = sizeof(cbuf);
+    cbd.ByteWidth              = sizeof(cbuf1);
     cbd.StructureByteStride    = 0u;
     D3D11_SUBRESOURCE_DATA csd = {};
-    csd.pSysMem                = &cbuf;
-    ThrowIfFailed(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
+    csd.pSysMem                = &cbuf1;
+    ThrowIfFailed(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer1));
+    // bind constant buffer to vertex shader
+    m_pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer1.GetAddressOf());
 
-    // bind constant buffer
-    m_pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
-
-    // bind a vertex shader
-    m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+    // create constant buffer 2
+    ComPtr<ID3D11Buffer> pConstantBuffer2;
+    cbd                     = {};
+    cbd.Usage               = D3D11_USAGE_DEFAULT;
+    cbd.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags      = 0u;
+    cbd.MiscFlags           = 0u;
+    cbd.ByteWidth           = sizeof(cbuf2);
+    cbd.StructureByteStride = 0u;
+    csd                     = {};
+    csd.pSysMem             = &cbuf2;
+    ThrowIfFailed(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer2));
+    // bind constant buffer to pixel shader
+    m_pContext->PSSetConstantBuffers(0u, 1u, pConstantBuffer2.GetAddressOf());
 
     // create input layout
     ComPtr<ID3D11InputLayout>      pInputLayout;
     const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
-        {"Position", 0u, DXGI_FORMAT_R32G32_FLOAT,  0u, 0u,
-         D3D11_INPUT_PER_VERTEX_DATA, 0u},
-        {"Color",    0u, DXGI_FORMAT_R8G8B8A8_UINT, 0u, 8u,
-         D3D11_INPUT_PER_VERTEX_DATA, 0u},
+        {"Position", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u,
+         D3D11_INPUT_PER_VERTEX_DATA, 0u}
     };
-    const UINT numInputElements =
-        static_cast<UINT>(std::size(inputElementDesc));
     ThrowIfFailed(m_pDevice->CreateInputLayout(
-        inputElementDesc, numInputElements, pBlob->GetBufferPointer(),
-        pBlob->GetBufferSize(), &pInputLayout));
+        inputElementDesc, ARRAYSIZE(inputElementDesc),
+        pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
     m_pContext->IASetInputLayout(pInputLayout.Get());
 
     // create a pixel shader
@@ -203,7 +236,7 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
     vp.MaxDepth       = 1;
     m_pContext->RSSetViewports(1u, &vp);
 
-    ThrowIfInfoGot(m_pContext->DrawIndexed(numIndices, 0u, 0u));
+    ThrowIfInfoGot(m_pContext->DrawIndexed(ARRAYSIZE(indices), 0u, 0u));
 }
 //-----------------------------------------------------------------------------
 // Exceptions
