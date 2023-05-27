@@ -41,20 +41,21 @@ int App::Run()
 void App::RunFrame(float dt)
 {
     // write times at the window title
-    static float           time     = 0.0f;
-    static int             i        = 0;
-    static constexpr float interval = 0.1f;
-    static int             frames   = 0;
+    double                  totalTime = m_mainTimer.TimeSinceStart();
+    static float            time      = 0;
+    static int              i         = 0;
+    static constexpr double interval  = 0.1;
+    static int              frames    = 0;
     ++frames;
     time += dt;
-    if (time > interval * i) {
-        float fps = frames / interval;
-        frames    = 0;
+    if (totalTime > interval * i) {
+        double fps = frames / interval;
+        frames     = 0;
         ++i;
 
         std::wostringstream wo;
-        wo << L"Timer : " << std::left << std::setw(16) << time 
-           << L"fps: " << std::left << std::setw(16) << fps;
+        wo << L"Timer : " << std::left << std::setw(16) << totalTime << L"fps: "
+           << std::left << std::setw(16) << fps;
         wo << L"Mouse : (" << m_mouse.GetNormalizedX() << ','
            << m_mouse.GetNormalizedY() << ')';
         m_window.SetTitle(wo.str());

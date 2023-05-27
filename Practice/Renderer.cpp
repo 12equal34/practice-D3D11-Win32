@@ -53,7 +53,7 @@ Renderer::Renderer(HWND hwnd)
     ThrowIfFailed(m_pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr,
                                                     &m_pRenderTargetView));
 }
-void Renderer::EndFrame() { ThrowIfFailed(m_pSwapChain->Present(1u, 0u)); }
+void Renderer::EndFrame() { ThrowIfFailed(m_pSwapChain->Present(0u, 0u)); }
 void Renderer::ClearBuffer(float r, float g, float b)
 {
     const float color[] = {r, g, b, 1.0f};
