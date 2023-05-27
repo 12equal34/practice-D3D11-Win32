@@ -35,7 +35,7 @@ public:
     };
 
 public:
-    Keyboard() noexcept                  = default;
+    Keyboard(Window* owner) noexcept;
     ~Keyboard()                          = default;
     Keyboard(const Keyboard&)            = delete;
     Keyboard& operator=(const Keyboard&) = delete;
@@ -69,6 +69,7 @@ private:
 private:
     static constexpr unsigned int sKeySize = 256u;
 
+    Window* m_pOwner;
     bool                  m_autorepeatedEnabled = false;
     std::bitset<sKeySize> m_keystates;
     std::queue<Event>     m_keybuffer;

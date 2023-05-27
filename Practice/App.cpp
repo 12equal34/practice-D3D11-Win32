@@ -3,8 +3,8 @@
 
 App::App()
     : m_window(1000, 600, L"Window Sample"),
-      m_keyboard(),
-      m_mouse(),
+      m_keyboard(&m_window),
+      m_mouse(&m_window),
       m_mainTimer()
 {
     m_window.SetKeyboard(&m_keyboard);
@@ -53,7 +53,10 @@ void App::RunFrame(float dt)
         ++i;
 
         std::wostringstream wo;
-        wo << L"Timer : " << time << L"s, fps: " << fps;
+        wo << L"Timer : " << std::left << std::setw(16) << time 
+           << L"fps: " << std::left << std::setw(16) << fps;
+        wo << L"Mouse : (" << m_mouse.GetNormalizedX() << ','
+           << m_mouse.GetNormalizedY() << ')';
         m_window.SetTitle(wo.str());
     }
 
@@ -63,6 +66,6 @@ void App::RunFrame(float dt)
     auto& renderer = m_window.Renderer();
 
     renderer.ClearBuffer(color, color, 1.0f);
-    renderer.DrawTest(time);
+    renderer.DrawTest(time, m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY());
     renderer.EndFrame();
 }

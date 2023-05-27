@@ -51,6 +51,9 @@ public:
     HWND                GetHwnd() const noexcept;
     Hardware::DX::Renderer& Renderer() const noexcept;
 
+    int GetWidth() const noexcept;
+    int GetHeight() const noexcept;
+
 private:
     class WindowClass
     {

@@ -100,6 +100,14 @@ Hardware::DX::Renderer& Hardware::Window::Renderer() const noexcept
 {
     return *m_pRenderer;
 }
+int Hardware::Window::GetWidth() const noexcept
+{
+    return m_width;
+}
+int Hardware::Window::GetHeight() const noexcept
+{
+    return m_height;
+}
 //-----------------------------------------------------------------------------
 // Message Handlers
 //-----------------------------------------------------------------------------

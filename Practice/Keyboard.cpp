@@ -1,4 +1,5 @@
 #include "Keyboard.h"
+#include "Window.h"
 #include "HardwareHelper.h"
 
 using namespace Hardware;
@@ -78,7 +79,6 @@ void Keyboard::OnChar(char c) noexcept {
     m_charbuffer.push(c);
     TrimBuffer(m_charbuffer);
 }
-
 //-----------------------------------------------------------------------------
 void Keyboard::Flush() noexcept
 {
@@ -88,4 +88,11 @@ void Keyboard::Flush() noexcept
 
 void Keyboard::ClearState() noexcept { 
     m_keystates.reset();
+}
+//-----------------------------------------------------------------------------
+// Keyboard Interface Definitions
+//-----------------------------------------------------------------------------
+Hardware::Keyboard::Keyboard(Window* owner) noexcept
+    : m_pOwner(owner)
+{
 }

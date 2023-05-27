@@ -58,7 +58,7 @@ void Renderer::ClearBuffer(float r, float g, float b)
     ThrowIfInfoGot(
         m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color));
 }
-void Hardware::DX::Renderer::DrawTest(float angle)
+void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
 {
     struct Vertex {
         struct {
@@ -95,10 +95,10 @@ void Hardware::DX::Renderer::DrawTest(float angle)
     };
     // clang-format off
     const ConstantBuffer cbuf = {
-        6.f/10.f * std::cos(angle),  std::sin(angle), 0.0f, 0.0f,
-        6.f/10.f * -std::sin(angle), std::cos(angle), 0.0f, 0.0f,
-        0.0f,             0.0f,            1.0f, 0.0f,
-        0.0f,             0.0f,            0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        x,    y,    0.0f, 1.0f,
     };
     // clang-format on
 

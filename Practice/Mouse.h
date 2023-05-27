@@ -56,14 +56,17 @@ public:
     };
 
 public:
-    Mouse() noexcept               = default;
+    Mouse(Window* owner) noexcept;
     ~Mouse()                       = default;
     Mouse(const Mouse&)            = delete;
     Mouse& operator=(const Mouse&) = delete;
 
-    int                 GetX() const noexcept { return m_pos.first; }
-    int                 GetY() const noexcept { return m_pos.second; }
-    std::pair<int, int> GetXY() const noexcept { return m_pos; }
+    int                     GetScreenX() const noexcept { return m_pos.first; }
+    int                     GetScreenY() const noexcept { return m_pos.second; }
+    std::pair<int, int>     GetScreenXY() const noexcept { return m_pos; }
+    float                   GetNormalizedX() const noexcept;
+    float                   GetNormalizedY() const noexcept;
+    std::pair<float, float> GetNormalizedXY() const noexcept;
 
     bool LeftIsPressed() const noexcept { return m_LPressed; }
     bool RightIsPressed() const noexcept { return m_RPressed; }
@@ -89,6 +92,7 @@ private:
     void OnMouseLeave() noexcept;
 
 private:
+    Window*             m_pOwner;
     std::pair<int, int> m_pos;
     std::queue<Event>   m_eventBuffer;
 
