@@ -60,7 +60,7 @@ void Renderer::ClearBuffer(float r, float g, float b)
     ThrowIfInfoGot(
         m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color));
 }
-void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
+void Hardware::DX::Renderer::DrawTest(float angle, float x, float z)
 {
     struct Vertex {
         struct {
@@ -98,7 +98,7 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
         /* clang-format off */
         XMMatrixRotationZ(angle) * 
         XMMatrixRotationX(angle) *
-        XMMatrixTranslation(x, y, 4.0f) *
+        XMMatrixTranslation(x, 0.0f, z + 5.0f) *
         XMMatrixPerspectiveLH(1.0f, 0.6f, 0.5f, 10.0f)
         /* clang-format on */
         )};
