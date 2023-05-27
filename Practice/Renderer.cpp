@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <sstream>
+#include <DirectXMath.h>
 #include "dxerr.h"
 #include "DXExceptionHelper.h"
 #include "WinExceptionHelper.h"
@@ -11,6 +12,7 @@
 using namespace Hardware;
 using namespace Hardware::DX;
 using namespace Microsoft::WRL;
+using namespace DirectX;
 
 Renderer::Renderer(HWND hwnd)
     : m_hwnd(hwnd)
@@ -89,18 +91,10 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
     const UINT numIndices = static_cast<UINT>(std::size(indices));
 
     struct ConstantBuffer {
-        struct {
-            float element[4][4];
-        } transform;
+        XMMATRIX transform;
     };
-    // clang-format off
     const ConstantBuffer cbuf = {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        x,    y,    0.0f, 1.0f,
-    };
-    // clang-format on
+        {XMMatrixTranspose(XMMatrixTranslation(x, y, 0.0f))}};
 
     // create vertex buffer
     ComPtr<ID3D11Buffer> pVertexBuffer;
@@ -152,15 +146,15 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float y)
 
     // create constant buffer
     ComPtr<ID3D11Buffer> pConstantBuffer;
-    D3D11_BUFFER_DESC    cbd = {};
-    cbd.Usage = D3D11_USAGE_DYNAMIC;
-    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    cbd.MiscFlags = 0u;
-    cbd.ByteWidth = sizeof(cbuf);
-    cbd.StructureByteStride = 0u;
+    D3D11_BUFFER_DESC    cbd   = {};
+    cbd.Usage                  = D3D11_USAGE_DYNAMIC;
+    cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags         = D3D11_CPU_ACCESS_WRITE;
+    cbd.MiscFlags              = 0u;
+    cbd.ByteWidth              = sizeof(cbuf);
+    cbd.StructureByteStride    = 0u;
     D3D11_SUBRESOURCE_DATA csd = {};
-    csd.pSysMem = &cbuf;
+    csd.pSysMem                = &cbuf;
     ThrowIfFailed(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
 
     // bind constant buffer
