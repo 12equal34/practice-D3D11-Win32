@@ -95,8 +95,8 @@ void Hardware::DX::Renderer::DrawTest(float angle)
     };
     // clang-format off
     const ConstantBuffer cbuf = {
-        std::cos(angle),  std::sin(angle), 0.0f, 0.0f,
-        -std::sin(angle), std::cos(angle), 0.0f, 0.0f,
+        6.f/10.f * std::cos(angle),  std::sin(angle), 0.0f, 0.0f,
+        6.f/10.f * -std::sin(angle), std::cos(angle), 0.0f, 0.0f,
         0.0f,             0.0f,            1.0f, 0.0f,
         0.0f,             0.0f,            0.0f, 1.0f,
     };
