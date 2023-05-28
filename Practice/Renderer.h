@@ -56,8 +56,10 @@ public:
     Renderer& operator=(const Renderer&) = delete;
 
     void EndFrame();
-    void ClearBuffer(float r, float g, float b);
+    void ClearBuffer(float r, float g, float b) noexcept;
     void DrawTest(float angle, float x, float y);
+
+    std::pair<LONG, LONG> GetClientRegionSize() const;
 
 private:
     HWND m_hwnd;
@@ -65,6 +67,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Device>           m_pDevice;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_pContext;
     Microsoft::WRL::ComPtr<IDXGISwapChain>         m_pSwapChain;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pRTV;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDSV;
 };
 }

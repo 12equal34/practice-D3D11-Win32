@@ -17,22 +17,22 @@ using namespace DirectX;
 Renderer::Renderer(HWND hwnd)
     : m_hwnd(hwnd)
 {
-    DXGI_SWAP_CHAIN_DESC sd               = {0};
-    sd.BufferDesc.Width                   = 0;
-    sd.BufferDesc.Height                  = 0;
-    sd.BufferDesc.RefreshRate.Denominator = 0;
-    sd.BufferDesc.RefreshRate.Numerator   = 0;
-    sd.BufferDesc.Format                  = DXGI_FORMAT_B8G8R8A8_UNORM;
-    sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    sd.BufferDesc.Scaling          = DXGI_MODE_SCALING_UNSPECIFIED;
-    sd.SampleDesc.Count            = 1;
-    sd.SampleDesc.Quality          = 0;
-    sd.BufferUsage                 = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.BufferCount                 = 1;
-    sd.OutputWindow                = m_hwnd;
-    sd.Windowed                    = TRUE;
-    sd.SwapEffect                  = DXGI_SWAP_EFFECT_DISCARD;
-    sd.Flags                       = 0;
+    DXGI_SWAP_CHAIN_DESC scDesc               = {0};
+    scDesc.BufferDesc.Width                   = 0;
+    scDesc.BufferDesc.Height                  = 0;
+    scDesc.BufferDesc.RefreshRate.Denominator = 0;
+    scDesc.BufferDesc.RefreshRate.Numerator   = 0;
+    scDesc.BufferDesc.Format                  = DXGI_FORMAT_B8G8R8A8_UNORM;
+    scDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    scDesc.BufferDesc.Scaling          = DXGI_MODE_SCALING_UNSPECIFIED;
+    scDesc.SampleDesc.Count            = 1;
+    scDesc.SampleDesc.Quality          = 0;
+    scDesc.BufferUsage                 = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    scDesc.BufferCount                 = 1;
+    scDesc.OutputWindow                = m_hwnd;
+    scDesc.Windowed                    = TRUE;
+    scDesc.SwapEffect                  = DXGI_SWAP_EFFECT_DISCARD;
+    scDesc.Flags                       = 0;
 
     UINT swapCreateFlags = 0u;
 #ifndef NDEBUG
@@ -43,22 +43,59 @@ Renderer::Renderer(HWND hwnd)
     // context
     ThrowIfFailed(D3D11CreateDeviceAndSwapChain(
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapCreateFlags, nullptr, 0,
-        D3D11_SDK_VERSION, &sd, &m_pSwapChain, &m_pDevice, nullptr,
+        D3D11_SDK_VERSION, &scDesc, &m_pSwapChain, &m_pDevice, nullptr,
         &m_pContext));
 
     // gain access to texture subresource in swap chain (back buffer)
     ComPtr<ID3D11Resource> pBackBuffer;
     ThrowIfFailed(
         m_pSwapChain->GetBuffer(0u, __uuidof(ID3D11Resource), &pBackBuffer));
-    ThrowIfFailed(m_pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr,
-                                                    &m_pRenderTargetView));
+    ThrowIfFailed(
+        m_pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &m_pRTV));
+
+    // create depth stencil desc
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable              = TRUE;
+    dsDesc.DepthFunc                = D3D11_COMPARISON_LESS;
+    dsDesc.DepthWriteMask           = D3D11_DEPTH_WRITE_MASK_ALL;
+    ComPtr<ID3D11DepthStencilState> pDSstate;
+    ThrowIfFailed(m_pDevice->CreateDepthStencilState(&dsDesc, &pDSstate));
+
+    // bind depth stencil state
+    m_pContext->OMSetDepthStencilState(pDSstate.Get(), 1u);
+
+    // create depth stencil texture
+    ComPtr<ID3D11Texture2D> pDepthStencil;
+    D3D11_TEXTURE2D_DESC    txDesc = {};
+    auto [crW, crH]                = GetClientRegionSize();
+    txDesc.Width                   = crW;
+    txDesc.Height                  = crH;
+    txDesc.ArraySize               = 1u;
+    txDesc.MipLevels               = 1u;
+    txDesc.SampleDesc.Count        = 1u;
+    txDesc.SampleDesc.Quality      = 0u;
+    txDesc.CPUAccessFlags          = 0u;
+    txDesc.Usage                   = D3D11_USAGE_DEFAULT;
+    txDesc.Format                  = DXGI_FORMAT_D32_FLOAT;
+    txDesc.BindFlags               = D3D11_BIND_DEPTH_STENCIL;
+    ThrowIfFailed(m_pDevice->CreateTexture2D(&txDesc, nullptr, &pDepthStencil));
+
+    // create view of depth stencil texture
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0u;
+    ThrowIfFailed(m_pDevice->CreateDepthStencilView(pDepthStencil.Get(), &dsvDesc, &m_pDSV));
+
+    // bind depth stencil view to OM
+    m_pContext->OMSetRenderTargets(1u, m_pRTV.GetAddressOf(), m_pDSV.Get());
 }
 void Renderer::EndFrame() { ThrowIfFailed(m_pSwapChain->Present(0u, 0u)); }
-void Renderer::ClearBuffer(float r, float g, float b)
+void Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
-    ThrowIfInfoGot(
-        m_pContext->ClearRenderTargetView(m_pRenderTargetView.Get(), color));
+    m_pContext->ClearRenderTargetView(m_pRTV.Get(), color);
+    m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 void Hardware::DX::Renderer::DrawTest(float angle, float x, float z)
 {
@@ -220,23 +257,24 @@ void Hardware::DX::Renderer::DrawTest(float angle, float x, float z)
     // bind a pixel shader
     m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
 
-    // bind a render target
-    m_pContext->OMSetRenderTargets(1u, m_pRenderTargetView.GetAddressOf(),
-                                   nullptr);
-
     // configure a viewport
-    RECT cr = {0};
-    Win::ThrowIfNull(GetClientRect(m_hwnd, &cr));
+    auto [crW, crH]   = GetClientRegionSize();
     D3D11_VIEWPORT vp = {0};
-    vp.TopLeftX       = static_cast<FLOAT>(cr.left);
-    vp.TopLeftY       = static_cast<FLOAT>(cr.top);
-    vp.Width          = static_cast<FLOAT>(cr.right);
-    vp.Height         = static_cast<FLOAT>(cr.bottom);
+    vp.TopLeftX       = 0;
+    vp.TopLeftY       = 0;
+    vp.Width          = static_cast<FLOAT>(crW);
+    vp.Height         = static_cast<FLOAT>(crH);
     vp.MinDepth       = 0;
     vp.MaxDepth       = 1;
     m_pContext->RSSetViewports(1u, &vp);
 
     ThrowIfInfoGot(m_pContext->DrawIndexed(ARRAYSIZE(indices), 0u, 0u));
+}
+std::pair<LONG, LONG> Hardware::DX::Renderer::GetClientRegionSize() const
+{
+    RECT cr = {};
+    Win::ThrowIfNull(GetClientRect(m_hwnd, &cr));
+    return std::pair<LONG, LONG>(cr.right, cr.bottom);
 }
 //-----------------------------------------------------------------------------
 // Exceptions
