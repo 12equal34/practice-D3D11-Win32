@@ -12,4 +12,4 @@ inline void ThrowIfNull(T returnValue, int line, const char* file)
 }
 }
 
-#define ThrowIfNull(returnValue) ThrowIfNull((returnValue), __LINE__, __FILE__)
+#define ThrowIfNull(returnValue) Hardware::Win::ThrowIfNull((returnValue), __LINE__, __FILE__)

@@ -68,6 +68,5 @@ void App::RunFrame(float dt)
 
     renderer.ClearBuffer(color, color, 1.0f);
     renderer.DrawTest(time, m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY());
-    renderer.DrawTest(-time, 0.0f, 0.0f);
     renderer.EndFrame();
 }
