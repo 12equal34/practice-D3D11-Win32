@@ -62,11 +62,10 @@ void App::RunFrame(float dt)
     }
 
     // test code
-    const float color = sinf(time) * 0.5f + 0.5f;
-
     auto& renderer = m_window.Renderer();
 
-    renderer.ClearBuffer(color, color, 1.0f);
-    renderer.DrawTest(time, m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY());
+    renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
+    // renderer.DrawTest(time, m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY());
+    renderer.DrawTestSurface(m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY(), dt);
     renderer.EndFrame();
 }

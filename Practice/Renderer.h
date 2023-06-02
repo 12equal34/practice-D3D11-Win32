@@ -21,8 +21,8 @@ public:
 
     void EndFrame();
     void ClearBuffer(float r, float g, float b) noexcept;
-    void DrawTest(float dt, float x, float y);
-    void DrawIndexed(UINT numIndex, UINT startIndex, INT startVertex) const noexcept;
+    // void DrawTest(float dt, float x, float y);
+    void DrawTestSurface(float x, float z, float angle);
 
 private:
     DXResources m_dx;

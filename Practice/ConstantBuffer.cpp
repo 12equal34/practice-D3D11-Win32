@@ -5,35 +5,34 @@
 using namespace Hardware::DX;
 using namespace DirectX;
 
-ConstantBuffer::ConstantBuffer(Renderer& renderer, float angle, float x,
-                               float z)
+ConstantBuffer::ConstantBuffer(Renderer& renderer, float x, float z)
 {
-    struct ConstantBuffer1 {
-        XMMATRIX transform;
-    };
-    const ConstantBuffer1 cbuf = {XMMatrixTranspose(
-        /* clang-format off */
-        XMMatrixRotationZ(angle) *
-        XMMatrixRotationX(angle) *
-        XMMatrixTranslation(x, 0.0f, z + 5.0f) *
-        XMMatrixPerspectiveLH(1.0f, 0.6f, 0.5f, 10.0f)
-        /* clang-format on */
-        )};
+    // struct ConstantBuffer1 {
+    //     XMMATRIX transform;
+    // };
+    // const ConstantBuffer1 cbuf = {XMMatrixTranspose(
+    //     /* clang-format off */
+    //     XMMatrixRotationZ(angle) *
+    //     XMMatrixRotationX(angle) *
+    //     XMMatrixTranslation(x, 0.0f, z + 5.0f) *
+    //     XMMatrixPerspectiveLH(1.0f, 0.6f, 0.5f, 10.0f)
+    //     /* clang-format on */
+    //     )};
 
-    // create constant buffer 1
-    D3D11_BUFFER_DESC cbd      = {};
-    cbd.Usage                  = D3D11_USAGE_DYNAMIC;
-    cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.CPUAccessFlags         = D3D11_CPU_ACCESS_WRITE;
-    cbd.MiscFlags              = 0u;
-    cbd.ByteWidth              = sizeof(cbuf);
-    cbd.StructureByteStride    = 0u;
-    D3D11_SUBRESOURCE_DATA csd = {};
-    csd.pSysMem                = &cbuf;
-    ThrowIfFailed(
-        GetDevice(renderer)->CreateBuffer(&cbd, &csd, &m_pConstantBuffer1));
+    //// create constant buffer 1
+    // D3D11_BUFFER_DESC cbd      = {};
+    // cbd.Usage                  = D3D11_USAGE_DYNAMIC;
+    // cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
+    // cbd.CPUAccessFlags         = D3D11_CPU_ACCESS_WRITE;
+    // cbd.MiscFlags              = 0u;
+    // cbd.ByteWidth              = sizeof(cbuf);
+    // cbd.StructureByteStride    = 0u;
+    // D3D11_SUBRESOURCE_DATA csd = {};
+    // csd.pSysMem                = &cbuf;
+    // ThrowIfFailed(
+    //     GetDevice(renderer)->CreateBuffer(&cbd, &csd, &m_pConstantBuffer1));
 
-    struct ConstantBuffer2 {
+    struct ConstantBuffer {
         struct {
             float r;
             float g;
@@ -41,37 +40,30 @@ ConstantBuffer::ConstantBuffer(Renderer& renderer, float angle, float x,
             float a;
         } faceColor[6];
     };
-    const ConstantBuffer2 cbuf2 = {
+    const ConstantBuffer cbuf = {
         {
          {1.0f, 0.0f, 1.0f, 1.0f},
          {1.0f, 0.0f, 0.0f, 1.0f},
-         {0.0f, 1.0f, 0.0f, 1.0f},
-         {0.0f, 0.0f, 1.0f, 1.0f},
-         {1.0f, 1.0f, 0.0f, 1.0f},
-         {0.0f, 1.0f, 1.0f, 1.0f},
          }
     };
 
     // create constant buffer 2
-    cbd                     = {};
-    cbd.Usage               = D3D11_USAGE_DEFAULT;
-    cbd.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.CPUAccessFlags      = 0u;
-    cbd.MiscFlags           = 0u;
-    cbd.ByteWidth           = sizeof(cbuf2);
-    cbd.StructureByteStride = 0u;
-    csd                     = {};
-    csd.pSysMem             = &cbuf2;
+    D3D11_BUFFER_DESC cbd      = {};
+    cbd.Usage                  = D3D11_USAGE_DEFAULT;
+    cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags         = 0u;
+    cbd.MiscFlags              = 0u;
+    cbd.ByteWidth              = sizeof(cbuf);
+    cbd.StructureByteStride    = 0u;
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem                = &cbuf;
     ThrowIfFailed(
-        GetDevice(renderer)->CreateBuffer(&cbd, &csd, &m_pConstantBuffer2));
+        GetDevice(renderer)->CreateBuffer(&cbd, &csd, &m_pConstantBuffer));
 }
 
 void ConstantBuffer::Bind(Renderer& renderer) noexcept
 {
     // bind constant buffer to vertex shader
     GetContext(renderer)->VSSetConstantBuffers(
-        0u, 1u, m_pConstantBuffer1.GetAddressOf());
-    // bind constant buffer to pixel shader
-    GetContext(renderer)->PSSetConstantBuffers(
-        0u, 1u, m_pConstantBuffer2.GetAddressOf());
+        0u, 1u, m_pConstantBuffer.GetAddressOf());
 }

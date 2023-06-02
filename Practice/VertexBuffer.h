@@ -6,11 +6,12 @@ namespace Hardware::DX
 class VertexBuffer : public Bindable
 {
 public:
-    VertexBuffer(Renderer& renderer);
+    VertexBuffer(Renderer& renderer, UINT numVertex, UINT structureByteStride,
+                 const void* vertices);
 
     void Bind(Renderer& renderer) noexcept override;
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
-    UINT m_stride;
+    UINT                                 m_structureByteStride;
 };
 }

@@ -31,7 +31,7 @@ DxgiInfoManager::DxgiInfoManager()
     HRESULT hr = DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue),
                                        (void**)&m_pDxgiInfoQueue);
     if (FAILED(hr)) {
-        throw DX::HrException(__LINE__, __FILE__, hr);
+        throw HrException(__LINE__, __FILE__, hr);
     }
 }
 
@@ -52,7 +52,7 @@ std::vector<std::string> DxgiInfoManager::GetMessages() const
         HRESULT hr = m_pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr,
                                                   &messageLength);
         if (FAILED(hr)) {
-            throw DX::HrException(__LINE__, __FILE__, hr);
+            throw HrException(__LINE__, __FILE__, hr);
         }
         // allocate memory for message
         auto bytes    = std::make_unique<byte[]>(messageLength);
@@ -61,7 +61,7 @@ std::vector<std::string> DxgiInfoManager::GetMessages() const
         hr = m_pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage,
                                           &messageLength);
         if (FAILED(hr)) {
-            throw DX::HrException(__LINE__, __FILE__, hr);
+            throw HrException(__LINE__, __FILE__, hr);
         }
         messages.emplace_back(pMessage->pDescription);
     }
@@ -73,9 +73,9 @@ void DxgiInfoManager::ThrowIfFailed(HRESULT hr, int line, const char* file)
     s_Instance.Set();
     if (FAILED(hr)) {
         if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-            throw DX::DeviceRemovedException(line, file, hr, s_Instance.GetMessages());
+            throw DeviceRemovedException(line, file, hr, s_Instance.GetMessages());
         } else {
-            throw DX::HrException(line, file, hr, s_Instance.GetMessages());
+            throw HrException(line, file, hr, s_Instance.GetMessages());
         }
     }
 }
@@ -83,7 +83,7 @@ void DxgiInfoManager::ThrowIfInfoGot(int line, const char* file)
 {
     auto v = s_Instance.GetMessages();
     if (!v.empty()) {
-        throw DX::InfoException(line, file, v);
+        throw InfoException(line, file, v);
     }
 }
 

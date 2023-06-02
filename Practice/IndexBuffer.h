@@ -6,12 +6,17 @@ namespace Hardware::DX
 class IndexBuffer : public Bindable
 {
 public:
-    IndexBuffer(Renderer& renderer);
+    IndexBuffer(Renderer& renderer, UINT numIndex, UINT structureByteStride,
+                const void* indices);
 
     void Bind(Renderer& renderer) noexcept override;
+    UINT GetIndexCount() const noexcept;
+
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer;
 public:
-    UINT                                 m_numIndices;
+    DXGI_FORMAT m_dxgiFormat;
+    UINT        m_numIndex;
+    UINT        m_structureByteStride;
 };
 }

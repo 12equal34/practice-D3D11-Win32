@@ -5,18 +5,18 @@
 #include "DxgiInfoManager.h"
 
 #define ThrowIfFailed(hr) \
-    Hardware::DX::DxgiInfoManager::ThrowIfFailed((hr), __LINE__, __FILE__)
+    DxgiInfoManager::ThrowIfFailed((hr), __LINE__, __FILE__)
 #define ThrowIfInfoGot(call)    \
-    Hardware::DX::DxgiInfoManager::Setting(); \
+    DxgiInfoManager::Setting(); \
     (call);                     \
-    Hardware::DX::DxgiInfoManager::ThrowIfInfoGot(__LINE__, __FILE__);
+    DxgiInfoManager::ThrowIfInfoGot(__LINE__, __FILE__);
 
 #else
 #define ThrowIfFailed(hr)    if (FAILED((hr))) {
 if ((hr) == DXGI_ERROR_DEVICE_REMOVED) {
-    throw Hardware::DX::DeviceRemovedException(__LINE__, __FILE__, (hr));
+    throw DeviceRemovedException(__LINE__, __FILE__, (hr));
 } else {
-    throw Hardware::DX::HrException(__LINE__, __FILE__, (hr));
+    throw HrException(__LINE__, __FILE__, (hr));
 }
 }
 #define ThrowIfInfoGot(call) (call)

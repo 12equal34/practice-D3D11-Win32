@@ -1,5 +1,4 @@
 #pragma once
-#include "Renderer.h"
 #include "DXGettable.h"
 
 namespace Hardware::DX
