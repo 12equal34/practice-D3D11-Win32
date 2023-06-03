@@ -38,7 +38,7 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
                                              float z, float time)
 {
     constexpr float pi = 3.14159265f;
-    Surface         surface(50, 50);
+    Surface         surface(100, 100);
     surface.Bind(m_dx, *this);
 
     // constant buffer for transform in VS
@@ -67,20 +67,41 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         struct WaveParameter {
             float time;
             float wave_amplitude;
+            float wave_angular_frequency;
             float wave_phase;
-            struct {
-                float x;
-                float z;
-            } wave_direction;
+
+            XMFLOAT2 wave_direction;
+            XMFLOAT2 wave_number_vector;
+
+            float wave_number;
             float _1;
             float _2;
             float _3;
         };
 
-        const WaveParameter wavePrameterData = {time, 2.0f, 1.0f, x, z};
+        auto waveNumberVector = XMVectorSet(0.3f, 0.2f, 0.0f, 0.0f);
+        auto wave_number      = XMVectorGetX(XMVector2Length(waveNumberVector));
+
+        auto     wave_amplitude         = 2.0f;
+        auto     wave_angular_frequency = std::sqrtf(9.8f * wave_number);
+        auto     wave_phase             = 1.0f;
+        XMFLOAT2 wave_direction {0.6f, -0.8f};
+        XMFLOAT2 wave_number_vector;
+        XMStoreFloat2(&wave_number_vector, waveNumberVector);
+
+        const WaveParameter wavePrameterData = {time,
+                                                wave_amplitude,
+                                                wave_angular_frequency,
+                                                wave_phase,
+                                                wave_direction,
+                                                wave_number_vector,
+                                                wave_number,
+                                                0,
+                                                0,
+                                                0};
 
         ConstantBuffer waveParameterCbuf(*this, sizeof(wavePrameterData),
-                                        &wavePrameterData);
+                                         &wavePrameterData);
         waveParameterCbuf.SetToVertexShader(*this, 1u);
     }
 
@@ -109,27 +130,27 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
     m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
 
-    // constant buffer for line color in PS
-    {
-        struct LineColor {
-            struct {
-                float r;
-                float g;
-                float b;
-                float a;
-            } faceColor[2];
-        };
-        const LineColor lineColorBufData = {
-            {
-             {0.0f, 0.0f, 0.0f, 1.0f},
-             {0.0f, 0.0f, 0.0f, 1.0f},
-             }
-        };
-        ConstantBuffer lineColorCbuf(*this, sizeof(lineColorBufData),
-                                     &lineColorBufData);
-        lineColorCbuf.SetToPixelShader(*this, 0u);
-    }
+    //// constant buffer for line color in PS
+    //{
+    //    struct LineColor {
+    //        struct {
+    //            float r;
+    //            float g;
+    //            float b;
+    //            float a;
+    //        } faceColor[2];
+    //    };
+    //    const LineColor lineColorBufData = {
+    //        {
+    //         {0.0f, 0.0f, 0.0f, 1.0f},
+    //         {0.0f, 0.0f, 0.0f, 1.0f},
+    //         }
+    //    };
+    //    ConstantBuffer lineColorCbuf(*this, sizeof(lineColorBufData),
+    //                                 &lineColorBufData);
+    //    lineColorCbuf.SetToPixelShader(*this, 0u);
+    //}
 
-    m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-    m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
+    //m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+    //m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
 }

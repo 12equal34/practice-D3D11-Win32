@@ -67,7 +67,7 @@ UINT Surface::GetIndexCount() const noexcept
 void Surface::Bind(const DXResources& dxResource, Renderer& renderer)
 {
     std::vector<std::unique_ptr<Bindable>> bindings;
-    bindings.push_back(std::move(GetVertexBuffer(renderer, -10.f, -10.f, 1.0f)));
+    bindings.push_back(std::move(GetVertexBuffer(renderer, -20.f, -20.f, 0.5f)));
     bindings.push_back(std::move(GetIndexBuffer(renderer)));
     bindings.push_back(std::move(std::make_unique<Viewport>(
         renderer, static_cast<FLOAT>(dxResource.ClientRect.right),
