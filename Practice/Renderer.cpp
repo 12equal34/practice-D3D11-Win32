@@ -35,15 +35,14 @@ void Renderer::ClearBuffer(float r, float g, float b) noexcept
 }
 
 void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
-                                             float z, float angle)
+                                             float z, float time)
 {
     constexpr float pi = 3.14159265f;
-    Surface         surface(200, 200);
+    Surface         surface(50, 50);
     surface.Bind(m_dx, *this);
 
-    // constant buffer for vs
+    // constant buffer for transform in VS
     {
-
         struct Transform {
             XMMATRIX model;
             XMMATRIX modelView;
@@ -51,29 +50,41 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         };
 
         XMMATRIX model = XMMatrixIdentity();
-        XMMATRIX view   = camera.GetView();
-        XMMATRIX proj   = camera.GetProjection();
+        XMMATRIX view  = camera.GetView();
+        XMMATRIX proj  = camera.GetProjection();
 
         const Transform transBufData = {XMMatrixTranspose(model),
                                         XMMatrixTranspose(model * view),
                                         XMMatrixTranspose(model * view * proj)};
 
-        ComPtr<ID3D11Buffer> pTransBuf;
-        D3D11_BUFFER_DESC    cbd   = {};
-        cbd.Usage                  = D3D11_USAGE_DYNAMIC;
-        cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
-        cbd.CPUAccessFlags         = D3D11_CPU_ACCESS_WRITE;
-        cbd.MiscFlags              = 0u;
-        cbd.ByteWidth              = sizeof(transBufData);
-        cbd.StructureByteStride    = 0u;
-        D3D11_SUBRESOURCE_DATA csd = {};
-        csd.pSysMem                = &transBufData;
-        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd, &csd, &pTransBuf));
-
-        m_dx.Context->VSSetConstantBuffers(0u, 1u, pTransBuf.GetAddressOf());
+        ConstantBuffer transformCbuf(*this, sizeof(transBufData),
+                                     &transBufData);
+        transformCbuf.SetToVertexShader(*this, 0u);
     }
 
-    // constant buffer for ps
+    // constant buffer for wave parameters in VS
+    {
+        struct WaveParameter {
+            float time;
+            float wave_amplitude;
+            float wave_phase;
+            struct {
+                float x;
+                float z;
+            } wave_direction;
+            float _1;
+            float _2;
+            float _3;
+        };
+
+        const WaveParameter wavePrameterData = {time, 2.0f, 1.0f, x, z};
+
+        ConstantBuffer waveParameterCbuf(*this, sizeof(wavePrameterData),
+                                        &wavePrameterData);
+        waveParameterCbuf.SetToVertexShader(*this, 1u);
+    }
+
+    // constant buffer for face color in PS
     {
         struct FaceColor {
             struct {
@@ -90,25 +101,15 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
              }
         };
 
-        ComPtr<ID3D11Buffer> pfaceColorBuf;
-        D3D11_BUFFER_DESC    cbd2   = {};
-        cbd2.Usage                  = D3D11_USAGE_DEFAULT;
-        cbd2.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
-        cbd2.CPUAccessFlags         = 0u;
-        cbd2.MiscFlags              = 0u;
-        cbd2.ByteWidth              = sizeof(faceColorBufData);
-        cbd2.StructureByteStride    = 0u;
-        D3D11_SUBRESOURCE_DATA csd2 = {};
-        csd2.pSysMem                = &faceColorBufData;
-        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd2, &csd2, &pfaceColorBuf));
-
-        m_dx.Context->PSSetConstantBuffers(0u, 1u,
-                                           pfaceColorBuf.GetAddressOf());
+        ConstantBuffer faceColorCbuf(*this, sizeof(faceColorBufData),
+                                     &faceColorBufData);
+        faceColorCbuf.SetToPixelShader(*this, 0u);
     }
 
+    m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
 
-    // constant buffer for ps
+    // constant buffer for line color in PS
     {
         struct LineColor {
             struct {
@@ -124,21 +125,9 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
              {0.0f, 0.0f, 0.0f, 1.0f},
              }
         };
-
-        ComPtr<ID3D11Buffer> plineColorBuf;
-        D3D11_BUFFER_DESC    cbd2   = {};
-        cbd2.Usage                  = D3D11_USAGE_DEFAULT;
-        cbd2.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
-        cbd2.CPUAccessFlags         = 0u;
-        cbd2.MiscFlags              = 0u;
-        cbd2.ByteWidth              = sizeof(lineColorBufData);
-        cbd2.StructureByteStride    = 0u;
-        D3D11_SUBRESOURCE_DATA csd2 = {};
-        csd2.pSysMem                = &lineColorBufData;
-        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd2, &csd2, &plineColorBuf));
-
-        m_dx.Context->PSSetConstantBuffers(0u, 1u,
-                                           plineColorBuf.GetAddressOf());
+        ConstantBuffer lineColorCbuf(*this, sizeof(lineColorBufData),
+                                     &lineColorBufData);
+        lineColorCbuf.SetToPixelShader(*this, 0u);
     }
 
     m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);

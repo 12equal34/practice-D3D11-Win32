@@ -101,7 +101,7 @@ void App::RunFrame(float dt)
 
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
 
-    renderer.DrawTestSurface(m_camera, m_mouse.GetNormalizedX(),
-                             m_mouse.GetNormalizedY(), dt);
+    renderer.DrawTestSurface(m_camera, 1.0f,
+                             1.0f, time);
     renderer.EndFrame();
 }
