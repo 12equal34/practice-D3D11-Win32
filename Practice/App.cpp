@@ -5,11 +5,15 @@ App::App()
     : m_window(1000, 600, L"Window Sample"),
       m_keyboard(&m_window),
       m_mouse(&m_window),
-      m_mainTimer()
+      m_mainTimer(),
+      m_camera(0.6f)
 {
     m_window.SetKeyboard(&m_keyboard);
     m_window.SetMouse(&m_mouse);
     m_window.SetTimer(&m_mainTimer);
+
+    m_camera.SetPosition({0.0f, 3.0f, 0.0f});
+    m_camera.SetRotation(-1.0f, 0.0f, 0.0f);
 }
 
 App::~App() { }
@@ -28,6 +32,7 @@ int App::Run()
             DispatchMessage(&msg);
         } else {
             float dt = static_cast<float>(m_mainTimer.Mark());
+            HandleInput(dt);
             RunFrame(dt);
         }
     }
@@ -38,8 +43,23 @@ int App::Run()
     return static_cast<int>(msg.wParam);
 }
 
+void App::HandleInput(float dt)
+{
+    if (m_keyboard.KeyIsPressed('A')) {
+        m_camera.Translate({-dt, 0.0f, 0.0f});
+    } else if (m_keyboard.KeyIsPressed('D')) {
+        m_camera.Translate({dt, 0.0f, 0.0f});
+    } else if (m_keyboard.KeyIsPressed('W')) {
+        m_camera.Translate({0.0f, dt, 0.0f});
+    } else if (m_keyboard.KeyIsPressed('S')) {
+        m_camera.Translate({0.0f, -dt, 0.0f});
+    }
+}
+
 void App::RunFrame(float dt)
 {
+    m_camera.SetRotation(m_mouse.GetNormalizedX() * 3.145f * 0.5f, 0.0f, 0.0f);
+
     // write times at the window title
     double                  totalTime = m_mainTimer.TimeSinceStart();
     static float            time      = 0;
@@ -53,19 +73,35 @@ void App::RunFrame(float dt)
         frames     = 0;
         ++i;
 
-        std::wostringstream wo;
-        wo << L"Timer : " << std::left << std::setw(16) << totalTime << L"fps: "
+        std::stringstream mouseStr;
+        mouseStr << '(' << m_mouse.GetNormalizedX() << ',' << m_mouse.GetNormalizedY() << ')';
+
+        std::stringstream cameraPosStr;
+        const auto cameraPos = m_camera.GetPosition();
+        cameraPosStr << '(' << cameraPos.x << ',' << cameraPos.y << ',' << cameraPos.z << ')';
+
+        std::stringstream cameraOriStr;
+        const auto cameraOri = m_camera.GetOrientation();
+        cameraOriStr << '(' << cameraOri.x << ',' << cameraOri.y << ',' << cameraOri.z << ')';
+
+        std::stringstream wo;
+        wo << "Timer : " << std::left << std::setw(16) << totalTime << "fps: "
            << std::left << std::setw(16) << fps;
-        wo << L"Mouse : (" << m_mouse.GetNormalizedX() << ','
-           << m_mouse.GetNormalizedY() << ')';
-        m_window.SetTitle(wo.str());
+        wo << "Mouse : " << std::left << std::setw(30) << mouseStr.str();
+        wo << "Camera.pos : " << std::left << std::setw(30) << cameraPosStr.str();
+        wo << "Camera.ori : " << std::left << std::setw(30) << cameraOriStr.str();
+
+        auto str = wo.str();
+        std::wstring title(str.begin(), str.end());
+        m_window.SetTitle(title);
     }
 
     // test code
-    auto& renderer = m_window.Renderer();
+    auto& renderer = m_window.GetRenderer();
 
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
-    // renderer.DrawTest(time, m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY());
-    renderer.DrawTestSurface(m_mouse.GetNormalizedX(), m_mouse.GetNormalizedY(), dt);
+
+    renderer.DrawTestSurface(m_camera, m_mouse.GetNormalizedX(),
+                             m_mouse.GetNormalizedY(), dt);
     renderer.EndFrame();
 }

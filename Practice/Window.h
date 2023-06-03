@@ -49,7 +49,7 @@ public:
 
     void                SetTitle(std::wstring_view titleName);
     HWND                GetHwnd() const noexcept;
-    Hardware::DX::Renderer& Renderer() const noexcept;
+    Hardware::DX::Renderer& GetRenderer() const noexcept;
 
     int GetWidth() const noexcept;
     int GetHeight() const noexcept;

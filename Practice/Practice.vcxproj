@@ -170,6 +170,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BaseException.cpp" />
     <ClCompile Include="Bindable.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="DXException.cpp" />
     <ClCompile Include="DXGettable.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="BaseException.h" />
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="BindableHeader.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DXException.h" />
     <ClInclude Include="DXGettable.h" />

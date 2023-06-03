@@ -91,20 +91,20 @@ void Window::SetKeyboard(Keyboard* pKeyboard) noexcept
 }
 void Window::SetMouse(Mouse* pMouse) noexcept { m_pMouse = pMouse; }
 void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
-void Hardware::Window::SetTitle(std::wstring_view titleName)
+void Window::SetTitle(std::wstring_view titleName)
 {
     ThrowIfNull(SetWindowTextW(m_hwnd, titleName.data()));
 }
-HWND Hardware::Window::GetHwnd() const noexcept { return m_hwnd; }
-Hardware::DX::Renderer& Hardware::Window::Renderer() const noexcept
+HWND Window::GetHwnd() const noexcept { return m_hwnd; }
+DX::Renderer& Window::GetRenderer() const noexcept
 {
     return *m_pRenderer;
 }
-int Hardware::Window::GetWidth() const noexcept
+int Window::GetWidth() const noexcept
 {
     return m_width;
 }
-int Hardware::Window::GetHeight() const noexcept
+int Window::GetHeight() const noexcept
 {
     return m_height;
 }

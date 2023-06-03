@@ -7,6 +7,7 @@
 #include <string>
 #include "BaseException.h"
 #include "DXResources.h"
+#include "Camera.h"
 
 namespace Hardware::DX
 {
@@ -21,8 +22,7 @@ public:
 
     void EndFrame();
     void ClearBuffer(float r, float g, float b) noexcept;
-    // void DrawTest(float dt, float x, float y);
-    void DrawTestSurface(float x, float z, float angle);
+    void DrawTestSurface(const Camera& camera, float x, float z, float angle);
 
 private:
     DXResources m_dx;

@@ -3,6 +3,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Timer.h"
+#include "Camera.h"
 
 class App
 {
@@ -14,6 +15,7 @@ public:
 
     int Run();
 private:
+    void HandleInput(float dt);
     void RunFrame(float dt);
 
 private:
@@ -21,4 +23,5 @@ private:
     Hardware::Keyboard m_keyboard;
     Hardware::Mouse    m_mouse;
     Timer              m_mainTimer;
+    Camera             m_camera;
 };

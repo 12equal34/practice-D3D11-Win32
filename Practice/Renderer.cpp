@@ -34,80 +34,48 @@ void Renderer::ClearBuffer(float r, float g, float b) noexcept
                                         0u);
 }
 
-// test code
-// void Renderer::DrawTest(float dt, float x, float z)
-//{
-//    std::vector<std::unique_ptr<Bindable>> bindings;
-//
-//    bindings.push_back(std::move(std::make_unique<VertexBuffer>(*this)));
-//    bindings.push_back(std::move(std::make_unique<IndexBuffer>(*this)));
-//    bindings.push_back(std::move(std::make_unique<Viewport>(
-//        *this, static_cast<FLOAT>(m_dx.ClientRect.right),
-//        static_cast<FLOAT>(m_dx.ClientRect.bottom))));
-//    bindings.push_back(std::move(
-//        std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)));
-//
-//    auto pVertexShader =
-//        std::make_unique<VertexShader>(*this, L"Shaders/VertexShader.cso");
-//    bindings.push_back(
-//        std::move(std::make_unique<InputLayout>(*this,
-//        *pVertexShader.get())));
-//    bindings.push_back(std::move(pVertexShader));
-//    bindings.push_back(std::move(
-//        std::make_unique<PixelShader>(*this, L"Shaders/PixelShader.cso")));
-//
-//    for (auto& binding : bindings) {
-//        binding->Bind(*this);
-//    }
-//
-//    // cube 1
-//    auto pConstantBuffer = std::make_unique<ConstantBuffer>(*this, dt, x, z);
-//    pConstantBuffer->Bind(*this);
-//    m_dx.Context->DrawIndexed(36u, 0, 0);
-//
-//    // cube 2
-//    pConstantBuffer = std::make_unique<ConstantBuffer>(*this, -dt, 0.0f,
-//    0.0f); pConstantBuffer->Bind(*this); m_dx.Context->DrawIndexed(36u, 0, 0);
-//}
-
-void Hardware::DX::Renderer::DrawTestSurface(float x, float z, float angle)
+void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
+                                             float z, float angle)
 {
     constexpr float pi = 3.14159265f;
-    Surface         surface(20, 20);
+    Surface         surface(200, 200);
     surface.Bind(m_dx, *this);
 
     // constant buffer for vs
     {
-        struct ConstantBuffer1 {
-            XMMATRIX transform;
-        };
-        const ConstantBuffer1 cbuf1 = {XMMatrixTranspose(
-            /* clang-format off */
-            XMMatrixRotationX(x-pi * 0.3f) *
-            XMMatrixRotationZ(z) *
-            XMMatrixTranslation(0.0f, 0.0f, 20.0f) *
-            XMMatrixPerspectiveLH(1.0f, 0.6f, 0.5f, 100.0f)
-            /* clang-format on */
-            )};
 
-        ComPtr<ID3D11Buffer> pCBuf1;
+        struct Transform {
+            XMMATRIX model;
+            XMMATRIX modelView;
+            XMMATRIX modelViewProj;
+        };
+
+        XMMATRIX model = XMMatrixIdentity();
+        XMMATRIX view   = camera.GetView();
+        XMMATRIX proj   = camera.GetProjection();
+
+        const Transform transBufData = {XMMatrixTranspose(model),
+                                        XMMatrixTranspose(model * view),
+                                        XMMatrixTranspose(model * view * proj)};
+
+        ComPtr<ID3D11Buffer> pTransBuf;
         D3D11_BUFFER_DESC    cbd   = {};
         cbd.Usage                  = D3D11_USAGE_DYNAMIC;
         cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
         cbd.CPUAccessFlags         = D3D11_CPU_ACCESS_WRITE;
         cbd.MiscFlags              = 0u;
-        cbd.ByteWidth              = sizeof(cbuf1);
+        cbd.ByteWidth              = sizeof(transBufData);
         cbd.StructureByteStride    = 0u;
         D3D11_SUBRESOURCE_DATA csd = {};
-        csd.pSysMem                = &cbuf1;
-        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd, &csd, &pCBuf1));
+        csd.pSysMem                = &transBufData;
+        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd, &csd, &pTransBuf));
 
-        m_dx.Context->VSSetConstantBuffers(0u, 1u, pCBuf1.GetAddressOf());
+        m_dx.Context->VSSetConstantBuffers(0u, 1u, pTransBuf.GetAddressOf());
     }
 
     // constant buffer for ps
     {
-        struct ConstantBuffer2 {
+        struct FaceColor {
             struct {
                 float r;
                 float g;
@@ -115,62 +83,62 @@ void Hardware::DX::Renderer::DrawTestSurface(float x, float z, float angle)
                 float a;
             } faceColor[2];
         };
-        const ConstantBuffer2 cbuf2 = {
+        const FaceColor faceColorBufData = {
             {
              {0.3f, 0.3f, 1.0f, 1.0f},
              {0.2f, 0.2f, 0.8f, 1.0f},
              }
         };
 
-        ComPtr<ID3D11Buffer> pCBuf2;
+        ComPtr<ID3D11Buffer> pfaceColorBuf;
         D3D11_BUFFER_DESC    cbd2   = {};
         cbd2.Usage                  = D3D11_USAGE_DEFAULT;
         cbd2.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
         cbd2.CPUAccessFlags         = 0u;
         cbd2.MiscFlags              = 0u;
-        cbd2.ByteWidth              = sizeof(cbuf2);
+        cbd2.ByteWidth              = sizeof(faceColorBufData);
         cbd2.StructureByteStride    = 0u;
         D3D11_SUBRESOURCE_DATA csd2 = {};
-        csd2.pSysMem                = &cbuf2;
-        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd2, &csd2, &pCBuf2));
+        csd2.pSysMem                = &faceColorBufData;
+        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd2, &csd2, &pfaceColorBuf));
 
-        m_dx.Context->PSSetConstantBuffers(0u, 1u, pCBuf2.GetAddressOf());
+        m_dx.Context->PSSetConstantBuffers(0u, 1u,
+                                           pfaceColorBuf.GetAddressOf());
     }
 
     m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
 
     // constant buffer for ps
     {
-        struct ConstantBuffer2
-        {
-            struct
-            {
+        struct LineColor {
+            struct {
                 float r;
                 float g;
                 float b;
                 float a;
             } faceColor[2];
         };
-        const ConstantBuffer2 cbuf2 = {
+        const LineColor lineColorBufData = {
             {
              {0.0f, 0.0f, 0.0f, 1.0f},
              {0.0f, 0.0f, 0.0f, 1.0f},
              }
         };
 
-        ComPtr<ID3D11Buffer> pCBuf2;
-        D3D11_BUFFER_DESC    cbd2 = {};
-        cbd2.Usage = D3D11_USAGE_DEFAULT;
-        cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        cbd2.CPUAccessFlags = 0u;
-        cbd2.MiscFlags = 0u;
-        cbd2.ByteWidth = sizeof(cbuf2);
-        cbd2.StructureByteStride = 0u;
+        ComPtr<ID3D11Buffer> plineColorBuf;
+        D3D11_BUFFER_DESC    cbd2   = {};
+        cbd2.Usage                  = D3D11_USAGE_DEFAULT;
+        cbd2.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
+        cbd2.CPUAccessFlags         = 0u;
+        cbd2.MiscFlags              = 0u;
+        cbd2.ByteWidth              = sizeof(lineColorBufData);
+        cbd2.StructureByteStride    = 0u;
         D3D11_SUBRESOURCE_DATA csd2 = {};
-        csd2.pSysMem = &cbuf2;
-        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd2, &csd2, &pCBuf2));
+        csd2.pSysMem                = &lineColorBufData;
+        ThrowIfFailed(m_dx.Device->CreateBuffer(&cbd2, &csd2, &plineColorBuf));
 
-        m_dx.Context->PSSetConstantBuffers(0u, 1u, pCBuf2.GetAddressOf());
+        m_dx.Context->PSSetConstantBuffers(0u, 1u,
+                                           plineColorBuf.GetAddressOf());
     }
 
     m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
