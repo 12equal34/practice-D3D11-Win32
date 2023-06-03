@@ -1,9 +1,29 @@
-cbuffer Cbuf2
+struct VS_Out
 {
-    float4 face_color[2];
+    float4 pos : SV_Position;
+    float3 normal : Normal;
 };
 
-float4 main( float4 pos : SV_Position, uint tid : SV_PrimitiveID) : SV_TARGET
+cbuffer Light : register( b0 )
 {
-    return face_color[tid %2];
+    float4 light_ambient;
+    float4 light_color;
+    float3 light_direction;
+};
+
+float4 main( VS_Out input ) : SV_TARGET
+{
+    float4 baseColor = float4( 0.1f, 0.1f, 1.0f, 1.0f );
+    float3 normal = normalize( input.normal );
+    float3 lightDirection = normalize( light_direction );
+    float3 ambient = light_ambient.rgb * light_ambient.a * baseColor.rgb;
+    
+    float3 diffuse = (float3) 0;
+    float n_dot_l = dot( light_direction, normal );
+    if (n_dot_l > 0)
+    {
+        diffuse = light_color.rgb * light_color.a * n_dot_l * baseColor.rgb;
+    }
+    
+    return float4( ambient + diffuse , baseColor.a );
 }

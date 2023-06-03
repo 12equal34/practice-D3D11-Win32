@@ -65,18 +65,14 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
     // constant buffer for wave parameters in VS
     {
         struct WaveParameter {
-            float time;
+            float wave_time;
             float wave_amplitude;
             float wave_angular_frequency;
             float wave_phase;
 
-            XMFLOAT2 wave_direction;
             XMFLOAT2 wave_number_vector;
-
             float wave_number;
             float _1;
-            float _2;
-            float _3;
         };
 
         auto waveNumberVector = XMVectorSet(0.3f, 0.2f, 0.0f, 0.0f);
@@ -85,7 +81,6 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         auto     wave_amplitude         = 2.0f;
         auto     wave_angular_frequency = std::sqrtf(9.8f * wave_number);
         auto     wave_phase             = 1.0f;
-        XMFLOAT2 wave_direction {0.6f, -0.8f};
         XMFLOAT2 wave_number_vector;
         XMStoreFloat2(&wave_number_vector, waveNumberVector);
 
@@ -93,11 +88,8 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
                                                 wave_amplitude,
                                                 wave_angular_frequency,
                                                 wave_phase,
-                                                wave_direction,
                                                 wave_number_vector,
                                                 wave_number,
-                                                0,
-                                                0,
                                                 0};
 
         ConstantBuffer waveParameterCbuf(*this, sizeof(wavePrameterData),
@@ -107,50 +99,24 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
 
     // constant buffer for face color in PS
     {
-        struct FaceColor {
-            struct {
-                float r;
-                float g;
-                float b;
-                float a;
-            } faceColor[2];
+        struct Light {
+            XMFLOAT4 light_ambient;
+            XMFLOAT4 light_color;
+            XMFLOAT3 light_direction;
+            float    _1;
         };
-        const FaceColor faceColorBufData = {
-            {
-             {0.3f, 0.3f, 1.0f, 1.0f},
-             {0.2f, 0.2f, 0.8f, 1.0f},
-             }
+        const Light lightCbufData = {
+            {0.2f, 0.2f, 0.3f, 1.0f},
+            {1.0f, 1.0f, 1.0f, 1.0f},
+            {0.5f, 2.0f, 0.1f},
+            0.0f
         };
 
-        ConstantBuffer faceColorCbuf(*this, sizeof(faceColorBufData),
-                                     &faceColorBufData);
-        faceColorCbuf.SetToPixelShader(*this, 0u);
+        ConstantBuffer lightCbuf(*this, sizeof(lightCbufData),
+                                     &lightCbufData);
+        lightCbuf.SetToPixelShader(*this, 0u);
     }
 
     m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
-
-    //// constant buffer for line color in PS
-    //{
-    //    struct LineColor {
-    //        struct {
-    //            float r;
-    //            float g;
-    //            float b;
-    //            float a;
-    //        } faceColor[2];
-    //    };
-    //    const LineColor lineColorBufData = {
-    //        {
-    //         {0.0f, 0.0f, 0.0f, 1.0f},
-    //         {0.0f, 0.0f, 0.0f, 1.0f},
-    //         }
-    //    };
-    //    ConstantBuffer lineColorCbuf(*this, sizeof(lineColorBufData),
-    //                                 &lineColorBufData);
-    //    lineColorCbuf.SetToPixelShader(*this, 0u);
-    //}
-
-    //m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-    //m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
 }
