@@ -23,7 +23,7 @@ Renderer::Renderer(HWND hwnd)
     m_dx.CreateDSV();
 
     // bind depth stencil view to OM
-    m_dx.Context->OMSetRenderTargets(1u, m_dx.RTV.GetAddressOf(), nullptr);
+    m_dx.Context->OMSetRenderTargets(1u, m_dx.RTV.GetAddressOf(), m_dx.DSV.Get());
 }
 void Renderer::EndFrame() { ThrowIfFailed(m_dx.SwapChain->Present(0u, 0u)); }
 void Renderer::ClearBuffer(float r, float g, float b) noexcept
@@ -107,10 +107,14 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
             XMFLOAT3 light_direction;
             float    _1;
         };
+
+        XMVECTOR lightDir = XMVector4Normalize(XMVectorSet(0.0f, 1.0f, 0.2f, 0.0f));
+        XMFLOAT3 light_direction {};
+        XMStoreFloat3(&light_direction, lightDir);
         const Light lightCbufData = {
             {0.2f, 0.2f, 0.3f, 1.0f},
             {1.0f, 1.0f, 1.0f, 1.0f},
-            {0.5f, 2.0f, 0.1f},
+            light_direction,
             0.0f
         };
 

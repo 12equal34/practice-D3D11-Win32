@@ -13,9 +13,9 @@ cbuffer Light : register( b0 )
 
 float4 main( VS_Out input ) : SV_TARGET
 {
-    float4 baseColor = float4( 0.1f, 0.1f, 1.0f, 1.0f );
+    static float4 baseColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    
     float3 normal = normalize( input.normal );
-    float3 lightDirection = normalize( light_direction );
     float3 ambient = light_ambient.rgb * light_ambient.a * baseColor.rgb;
     
     float3 diffuse = (float3) 0;
