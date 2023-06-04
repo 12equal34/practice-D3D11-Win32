@@ -23,7 +23,8 @@ Renderer::Renderer(HWND hwnd)
     m_dx.CreateDSV();
 
     // bind depth stencil view to OM
-    m_dx.Context->OMSetRenderTargets(1u, m_dx.RTV.GetAddressOf(), m_dx.DSV.Get());
+    m_dx.Context->OMSetRenderTargets(1u, m_dx.RTV.GetAddressOf(),
+                                     m_dx.DSV.Get());
 }
 void Renderer::EndFrame() { ThrowIfFailed(m_dx.SwapChain->Present(0u, 0u)); }
 void Renderer::ClearBuffer(float r, float g, float b) noexcept
@@ -38,7 +39,7 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
                                              float z, float time)
 {
     constexpr float pi = 3.14159265f;
-    Surface         surface(*this, 100, 100);
+    Surface         surface(*this, 150, 150);
     surface.Bind(*this);
 
     auto pViewport = std::make_unique<Viewport>(
@@ -67,36 +68,58 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         transformCbuf.SetToVertexShader(*this, 0u);
     }
 
+    // constant buffer for global parameters in VS
+    {
+        struct GlobalCbuf
+        {
+            float time;
+            float _1;
+            float _2;
+            float _3;
+        };
+        const GlobalCbuf globalCbufData { time, 0, 0, 0 };
+
+        ConstantBuffer globalCbuf(*this, sizeof(globalCbufData),
+                                  &globalCbufData);
+        globalCbuf.SetToVertexShader(*this, 1u);
+    }
+
     // constant buffer for wave parameters in VS
     {
-        struct WaveParameter {
-            float wave_time;
-            float wave_amplitude;
+        struct Wave {
+            float wave_number_x;
+            float wave_number_z;
+            float wave_number;
             float wave_angular_frequency;
-            float wave_phase;
 
-            XMFLOAT2 wave_number_vector;
-            float    wave_number;
-            float    _1;
+            float wave_amplitude;
+            float wave_phase;
+            float _1, _2;
         };
 
-        auto waveNumberVector = XMVectorSet(0.3f, 0.2f, 0.0f, 0.0f);
-        auto wave_number      = XMVectorGetX(XMVector2Length(waveNumberVector));
+        std::vector<std::tuple<float, float, float, float>> init {
+            {0.32f,  -0.13f, 1.0f, -3.0f},
+            {0.17f,  0.3f,  1.1f, -1.0f},
+            {-0.15f, -0.1f, 1.2f, 0.6f },
+            {-0.15f, 0.1f, 1.4f, 0.5f },
+            {0.15f, -0.1f, 0.8f, 0.4f },
+            {0.15f, 0.1f, 0.3f, 0.3f },
+            {-0.25f, -0.1f, 0.2f, 0.2f },
+            {-0.15f, -0.25f, 0.4f, 0.1f },
+        };
 
-        auto     wave_amplitude         = 2.0f;
-        auto     wave_angular_frequency = std::sqrtf(9.8f * wave_number);
-        auto     wave_phase             = 1.0f;
-        XMFLOAT2 wave_number_vector;
-        XMStoreFloat2(&wave_number_vector, waveNumberVector);
+        std::vector<Wave> waves;
+        waves.reserve(init.size());
+        for (auto [kx, kz, a, phi] : init) {
+            auto k = std::sqrtf(kx * kx + kz * kz);
+            auto w = std::sqrtf(9.8f * k);
+            waves.push_back(Wave(kx, kz, k, w, a, phi, 0, 0));
+        }
 
-        const WaveParameter wavePrameterData = {
-            time,       wave_amplitude,     wave_angular_frequency,
-            wave_phase, wave_number_vector, wave_number,
-            0};
-
-        ConstantBuffer waveParameterCbuf(*this, sizeof(wavePrameterData),
-                                         &wavePrameterData);
-        waveParameterCbuf.SetToVertexShader(*this, 1u);
+        auto byteWidth = static_cast<UINT>(sizeof(Wave) * std::size(waves));
+        ConstantBuffer waveParameterCbuf(*this, byteWidth,
+                                         waves.data());
+        waveParameterCbuf.SetToVertexShader(*this, 2u);
     }
 
     // constant buffer for face color in PS
@@ -108,12 +131,13 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
             float    _1;
         };
 
-        XMVECTOR lightDir = XMVector4Normalize(XMVectorSet(0.0f, 1.0f, 0.2f, 0.0f));
+        XMVECTOR lightDir =
+            XMVector4Normalize(XMVectorSet(0.3f, 1.0f, 0.2f, 0.0f));
         XMFLOAT3 light_direction {};
         XMStoreFloat3(&light_direction, lightDir);
         const Light lightCbufData = {
-            {0.2f, 0.2f, 0.3f, 1.0f},
-            {1.0f, 1.0f, 1.0f, 1.0f},
+            {0.3f, 0.2f, 0.3f, 1.0f},
+            {1.0f, 0.8f, 0.8f, 1.0f},
             light_direction,
             0.0f
         };

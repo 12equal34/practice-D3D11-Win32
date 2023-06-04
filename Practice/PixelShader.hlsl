@@ -13,7 +13,7 @@ cbuffer Light : register( b0 )
 
 float4 main( VS_Out input ) : SV_TARGET
 {
-    static float4 baseColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    static float4 baseColor = float4( 0.4f, 0.4f, 1.0f, 1.0f );
     
     float3 normal = normalize( input.normal );
     float3 ambient = light_ambient.rgb * light_ambient.a * baseColor.rgb;
