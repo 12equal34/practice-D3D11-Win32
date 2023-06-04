@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
+#include "Bindable.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
-class Surface
+class Surface : public Hardware::DX::Bindable
 {
 public:
     using IndexType = unsigned short;
@@ -17,15 +18,17 @@ public:
     };
 
 public:
-    Surface(int numX, int numZ);
+    Surface(Hardware::DX::Renderer& renderer, int numX, int numZ);
     std::unique_ptr<Hardware::DX::VertexBuffer>
     GetVertexBuffer(Hardware::DX::Renderer& renderer, float mx, float mz,
                     float gridSize);
     std::unique_ptr<Hardware::DX::IndexBuffer>
          GetIndexBuffer(Hardware::DX::Renderer& renderer);
     UINT GetIndexCount() const noexcept;
-    void Bind(const Hardware::DX::DXResources& dxResource, Hardware::DX::Renderer& renderer);
+    void Bind(Hardware::DX::Renderer& renderer) noexcept;
 protected:
+    std::vector<std::unique_ptr<Hardware::DX::Bindable>> m_bindings;
+
     UINT                            m_numIndex = 0u;
     int                             m_nx;
     int                             m_nz;

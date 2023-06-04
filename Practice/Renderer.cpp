@@ -38,8 +38,13 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
                                              float z, float time)
 {
     constexpr float pi = 3.14159265f;
-    Surface         surface(100, 100);
-    surface.Bind(m_dx, *this);
+    Surface         surface(*this, 100, 100);
+    surface.Bind(*this);
+
+    auto pViewport = std::make_unique<Viewport>(
+        *this, static_cast<FLOAT>(m_dx.ClientRect.right),
+        static_cast<FLOAT>(m_dx.ClientRect.bottom));
+    pViewport->Bind(*this);
 
     // constant buffer for transform in VS
     {
@@ -71,8 +76,8 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
             float wave_phase;
 
             XMFLOAT2 wave_number_vector;
-            float wave_number;
-            float _1;
+            float    wave_number;
+            float    _1;
         };
 
         auto waveNumberVector = XMVectorSet(0.3f, 0.2f, 0.0f, 0.0f);
@@ -84,13 +89,10 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         XMFLOAT2 wave_number_vector;
         XMStoreFloat2(&wave_number_vector, waveNumberVector);
 
-        const WaveParameter wavePrameterData = {time,
-                                                wave_amplitude,
-                                                wave_angular_frequency,
-                                                wave_phase,
-                                                wave_number_vector,
-                                                wave_number,
-                                                0};
+        const WaveParameter wavePrameterData = {
+            time,       wave_amplitude,     wave_angular_frequency,
+            wave_phase, wave_number_vector, wave_number,
+            0};
 
         ConstantBuffer waveParameterCbuf(*this, sizeof(wavePrameterData),
                                          &wavePrameterData);
@@ -112,8 +114,7 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
             0.0f
         };
 
-        ConstantBuffer lightCbuf(*this, sizeof(lightCbufData),
-                                     &lightCbufData);
+        ConstantBuffer lightCbuf(*this, sizeof(lightCbufData), &lightCbufData);
         lightCbuf.SetToPixelShader(*this, 0u);
     }
 

@@ -4,12 +4,29 @@
 
 using namespace Hardware::DX;
 
-Surface::Surface(int numZ, int numX)
+Surface::Surface(Renderer& renderer, int numZ, int numX)
     : m_nx(numX),
       m_nz(numZ),
-      m_H(m_nx, std::vector<float>(m_nz, 0.0f))
-{ 
-    
+      m_H(m_nx, std::vector<float>(m_nz, 0.0f)),
+      m_bindings()
+{
+    m_bindings.reserve(6);
+
+    // vertex/index buffer
+    m_bindings.push_back(
+        std::move(GetVertexBuffer(renderer, -20.f, -20.f, 0.5f)));
+    m_bindings.push_back(std::move(GetIndexBuffer(renderer)));
+
+    // vertex shader & input layout
+    auto pVertexShader =
+        std::make_unique<VertexShader>(renderer, L"Shaders/VertexShader.cso");
+    m_bindings.push_back(std::move(
+        std::make_unique<InputLayout>(renderer, *pVertexShader.get())));
+    m_bindings.push_back(std::move(pVertexShader));
+
+    // pixel shader
+    m_bindings.push_back(std::move(
+        std::make_unique<PixelShader>(renderer, L"Shaders/PixelShader.cso")));
 }
 
 std::unique_ptr<VertexBuffer>
@@ -28,8 +45,8 @@ Surface::GetVertexBuffer(Renderer& renderer, float mx, float mz, float gridSize)
             };
         }
     }
-    return std::make_unique<VertexBuffer>(renderer, (UINT)numVertex, (UINT)sizeof(Vertex),
-                                          vertices.data());
+    return std::make_unique<VertexBuffer>(
+        renderer, (UINT)numVertex, (UINT)sizeof(Vertex), vertices.data());
 }
 
 std::unique_ptr<IndexBuffer> Surface::GetIndexBuffer(Renderer& renderer)
@@ -55,37 +72,15 @@ std::unique_ptr<IndexBuffer> Surface::GetIndexBuffer(Renderer& renderer)
             ++offset;
         }
     }
-    return std::make_unique<IndexBuffer>(renderer, m_numIndex, (UINT)sizeof(IndexType),
-                                         indices.data());
+    return std::make_unique<IndexBuffer>(
+        renderer, m_numIndex, (UINT)sizeof(IndexType), indices.data());
 }
 
-UINT Surface::GetIndexCount() const noexcept
+UINT Surface::GetIndexCount() const noexcept { return m_numIndex; }
+
+void Surface::Bind(Renderer& renderer) noexcept
 {
-    return m_numIndex;
-}
-
-void Surface::Bind(const DXResources& dxResource, Renderer& renderer)
-{
-    std::vector<std::unique_ptr<Bindable>> bindings;
-    bindings.push_back(std::move(GetVertexBuffer(renderer, -20.f, -20.f, 0.5f)));
-    bindings.push_back(std::move(GetIndexBuffer(renderer)));
-    bindings.push_back(std::move(std::make_unique<Viewport>(
-        renderer, static_cast<FLOAT>(dxResource.ClientRect.right),
-        static_cast<FLOAT>(dxResource.ClientRect.bottom))));
-    bindings.push_back(std::move(
-        std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)));
-
-    auto pVertexShader =
-        std::make_unique<VertexShader>(renderer, L"Shaders/VertexShader.cso");
-
-
-    bindings.push_back(
-        std::move(std::make_unique<InputLayout>(renderer, *pVertexShader.get())));
-    bindings.push_back(std::move(pVertexShader));
-    bindings.push_back(std::move(
-        std::make_unique<PixelShader>(renderer, L"Shaders/PixelShader.cso")));
-
-    for (auto& binding : bindings) {
+    for (auto& binding : m_bindings) {
         binding->Bind(renderer);
     }
 }
