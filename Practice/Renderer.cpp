@@ -57,18 +57,20 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
             XMMATRIX cameraRotation;
         };
 
-        XMMATRIX model = XMMatrixIdentity();
-        XMMATRIX view  = camera.GetView();
-        XMMATRIX proj  = camera.GetProjection();
-        XMMATRIX modelRotation = XMMatrixIdentity();
-        const auto& camOri = camera.GetOrientation();
-        XMMATRIX cameraRotation = XMMatrixRotationRollPitchYaw(camOri.x, camOri.y, camOri.z);
+        XMMATRIX    model         = XMMatrixIdentity();
+        XMMATRIX    view          = camera.GetView();
+        XMMATRIX    proj          = camera.GetProjection();
+        XMMATRIX    modelRotation = XMMatrixIdentity();
+        const auto& camOri        = camera.GetOrientation();
+        XMMATRIX    cameraRotation =
+            XMMatrixRotationRollPitchYaw(camOri.x, camOri.y, camOri.z);
 
-        const Transform transBufData = {XMMatrixTranspose(model),
-                                        XMMatrixTranspose(model * view),
-                                        XMMatrixTranspose(model * view * proj),
-                                        XMMatrixTranspose(modelRotation),
-                                        cameraRotation,
+        const Transform transBufData = {
+            XMMatrixTranspose(model),
+            XMMatrixTranspose(model * view),
+            XMMatrixTranspose(model * view * proj),
+            XMMatrixTranspose(modelRotation),
+            cameraRotation,
         };
 
         ConstantBuffer transformCbuf(*this, sizeof(transBufData),
@@ -78,14 +80,13 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
 
     // constant buffer for global parameters in VS
     {
-        struct GlobalCbuf
-        {
+        struct GlobalCbuf {
             float time;
             float _1;
             float _2;
             float _3;
         };
-        const GlobalCbuf globalCbufData { time, 0, 0, 0 };
+        const GlobalCbuf globalCbufData {time, 0, 0, 0};
 
         ConstantBuffer globalCbuf(*this, sizeof(globalCbufData),
                                   &globalCbufData);
@@ -106,14 +107,19 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         };
 
         std::vector<std::tuple<float, float, float, float>> init {
-            {0.32f,  -0.13f, 1.0f, -3.0f},
-            {0.17f,  0.3f,  1.1f, -1.0f},
-            {-0.15f, -0.1f, 1.2f, 0.6f },
-            {-0.15f, 0.1f, 1.4f, 0.5f },
-            {0.15f, -0.1f, 0.8f, 0.4f },
-            {0.15f, 0.1f, 0.3f, 0.3f },
-            {-0.25f, -0.1f, 0.2f, 0.2f },
-            {-0.15f, -0.25f, 0.4f, 0.1f },
+            {0.3f,   -0.46f, 0.2f,  0.0f },
+            {-0.33f, 0.40f,  0.12f, 0.0f },
+            {0.0f,   0.56f, 0.2f,  0.2f },
+            {-0.33f, 0.0f,  0.12f, 0.3f },
+            {0.3f,   -0.26f, 0.2f,  0.7f },
+            {-0.33f, 0.20f,  0.12f, 0.9f },
+            {0.17f,  0.3f,   0.3f,  -1.0f},
+            {-0.15f, -0.1f,  0.7f,  0.6f },
+            {-0.15f, 0.1f,   0.6f,  0.5f },
+            {0.15f,  -0.1f,  0.8f,  0.4f },
+            {0.15f,  0.1f,   0.3f,  0.3f },
+            {-0.25f, -0.1f,  0.2f,  0.2f },
+            {-0.15f, -0.25f, 0.4f,  0.1f },
         };
 
         std::vector<Wave> waves;
@@ -125,8 +131,7 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         }
 
         auto byteWidth = static_cast<UINT>(sizeof(Wave) * std::size(waves));
-        ConstantBuffer waveParameterCbuf(*this, byteWidth,
-                                         waves.data());
+        ConstantBuffer waveParameterCbuf(*this, byteWidth, waves.data());
         waveParameterCbuf.SetToVertexShader(*this, 2u);
     }
 
