@@ -53,15 +53,23 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
             XMMATRIX model;
             XMMATRIX modelView;
             XMMATRIX modelViewProj;
+            XMMATRIX modelRotation;
+            XMMATRIX cameraRotation;
         };
 
         XMMATRIX model = XMMatrixIdentity();
         XMMATRIX view  = camera.GetView();
         XMMATRIX proj  = camera.GetProjection();
+        XMMATRIX modelRotation = XMMatrixIdentity();
+        const auto& camOri = camera.GetOrientation();
+        XMMATRIX cameraRotation = XMMatrixRotationRollPitchYaw(camOri.x, camOri.y, camOri.z);
 
         const Transform transBufData = {XMMatrixTranspose(model),
                                         XMMatrixTranspose(model * view),
-                                        XMMatrixTranspose(model * view * proj)};
+                                        XMMatrixTranspose(model * view * proj),
+                                        XMMatrixTranspose(modelRotation),
+                                        cameraRotation,
+        };
 
         ConstantBuffer transformCbuf(*this, sizeof(transBufData),
                                      &transBufData);

@@ -14,6 +14,8 @@ cbuffer Transform : register( b0 )
     matrix model;
     matrix modelView;
     matrix modelViewProj;
+    matrix modelRotation;
+    matrix cameraRotation;
 };
 
 cbuffer GlobalParameter : register( b1 )
@@ -85,6 +87,6 @@ VS_Out main( VS_In input )
     float3 normal = cross( dpos_dalhpa, dpos_dbeta );
    
     output.pos = mul( pos, modelViewProj );
-    output.normal = normal;
+    output.normal = (float3) mul( mul( float4( normal, 0.0f ), modelRotation ), cameraRotation );
     return output;
 }
