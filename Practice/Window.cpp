@@ -77,6 +77,14 @@ Window::Window(int width, int height, std::wstring_view titleName)
                                       width, height, nullptr, nullptr,
                                       WindowClass::GetInstance(), this));
 
+    // register mouse raw input device
+    RAWINPUTDEVICE riDevice = {};
+    riDevice.usUsagePage    = 0x01; // generic desktop controls
+    riDevice.usUsage        = 0x02; // mouse usage
+    riDevice.dwFlags        = 0;
+    riDevice.hwndTarget     = m_hwnd;
+    ThrowIfNull(RegisterRawInputDevices(&riDevice, 1u, sizeof(riDevice)));
+
     // show window
     ShowWindow(m_hwnd, SW_SHOWDEFAULT); // If the window was previously hidden,
                                         // the return value is zero.
@@ -95,18 +103,13 @@ void Window::SetTitle(std::wstring_view titleName)
 {
     ThrowIfNull(SetWindowTextW(m_hwnd, titleName.data()));
 }
-HWND Window::GetHwnd() const noexcept { return m_hwnd; }
-DX::Renderer& Window::GetRenderer() const noexcept
+HWND          Window::GetHwnd() const noexcept { return m_hwnd; }
+DX::Renderer& Window::GetRenderer() const noexcept { return *m_pRenderer; }
+int           Window::GetWidth() const noexcept { return m_width; }
+int           Window::GetHeight() const noexcept { return m_height; }
+float Hardware::Window::GetAspectRatio() const noexcept
 {
-    return *m_pRenderer;
-}
-int Window::GetWidth() const noexcept
-{
-    return m_width;
-}
-int Window::GetHeight() const noexcept
-{
-    return m_height;
+    return static_cast<float>(m_height) / m_width;
 }
 //-----------------------------------------------------------------------------
 // Message Handlers
@@ -328,6 +331,45 @@ LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
     case WM_XBUTTONUP:
         break;
 #pragma endregion Mouse Notification Handler
+
+#pragma region Raw Input Notification Handler
+    case WM_INPUT:
+    {
+        if (!m_pMouse) break;
+
+        // first get the size of the raw input data
+        UINT size = 0;
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT,
+                            nullptr, &size, sizeof(RAWINPUTHEADER)) == -1) {
+            // bail message processing if there is an error
+            break;
+        }
+
+        // second read the raw input data
+        std::vector<BYTE> rawBuffer;
+        rawBuffer.reserve(size);
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT,
+                            rawBuffer.data(), &size,
+                            sizeof(RAWINPUTHEADER)) != size) {
+            // bail message processing if there is an error
+            break;
+        }
+
+        // process the raw input data
+        auto& rawInput = reinterpret_cast<const RAWINPUT&>(*rawBuffer.data());
+        if (rawInput.header.dwType == RIM_TYPEMOUSE) {
+            const auto& mouse = rawInput.data.mouse;
+            const auto  dx    = mouse.lLastX;
+            const auto  dy    = mouse.lLastY;
+            if (dx != 0 || dy != 0) {
+                m_pMouse->OnMouseMoveDelta(dx, dy);
+            }
+        }
+        break;
+    }
+    case WM_INPUT_DEVICE_CHANGE:
+        break;
+#pragma endregion Raw Input Notification Handler
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }

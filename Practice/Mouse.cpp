@@ -20,6 +20,16 @@ std::optional<Mouse::Event> Mouse::Read() noexcept
     return {};
 }
 
+std::optional<std::pair<int, int>> Mouse::ReadDelta() noexcept
+{
+    if (!m_deltaBuffer.empty()) {
+        std::pair<int, int> xy = m_deltaBuffer.front();
+        m_deltaBuffer.pop();
+        return xy;
+    }
+    return {};
+}
+
 bool Mouse::IsEmpty() const noexcept { return m_eventBuffer.empty(); }
 
 void Mouse::Flush() noexcept { m_eventBuffer = std::queue<Event>(); }
@@ -59,7 +69,13 @@ void Mouse::OnMouseMove(int xpos, int ypos) noexcept
     TrimBuffer(m_eventBuffer);
 }
 
-void Hardware::Mouse::OnMouseWheel(int delta) noexcept
+void Mouse::OnMouseMoveDelta(int dxpos, int dypos) noexcept
+{
+    m_deltaBuffer.push(std::pair<int, int>(dxpos, dypos));
+    TrimBuffer(m_deltaBuffer);
+}
+
+void Mouse::OnMouseWheel(int delta) noexcept
 {
     m_wheelAmount += delta;
     if (m_wheelAmount >= WHEEL_DELTA) {
@@ -83,7 +99,7 @@ void Mouse::OnMouseWheelDown() noexcept
     TrimBuffer(m_eventBuffer);
 }
 
-void Hardware::Mouse::OnMouseWheelH(int delta) noexcept
+void Mouse::OnMouseWheelH(int delta) noexcept
 {
     m_wheelAmountH += delta;
     if (m_wheelAmountH >= WHEEL_DELTA) {
@@ -95,26 +111,26 @@ void Hardware::Mouse::OnMouseWheelH(int delta) noexcept
     }
 }
 
-void Hardware::Mouse::OnMouseWheelLeft() noexcept
+void Mouse::OnMouseWheelLeft() noexcept
 {
     m_eventBuffer.push(Event(Event::Type::WheelLeft, m_pos));
     TrimBuffer(m_eventBuffer);
 }
 
-void Hardware::Mouse::OnMouseWheelRight() noexcept
+void Mouse::OnMouseWheelRight() noexcept
 {
     m_eventBuffer.push(Event(Event::Type::WheelRight, m_pos));
     TrimBuffer(m_eventBuffer);
 }
 
-void Hardware::Mouse::OnMouseEnter() noexcept
+void Mouse::OnMouseEnter() noexcept
 {
     m_isInWindow = true;
     m_eventBuffer.push(Event(Event::Type::Enter, m_pos));
     TrimBuffer(m_eventBuffer);
 }
 
-void Hardware::Mouse::OnMouseLeave() noexcept
+void Mouse::OnMouseLeave() noexcept
 {
     m_isInWindow = false;
     m_eventBuffer.push(Event(Event::Type::Leave, m_pos));
@@ -123,21 +139,20 @@ void Hardware::Mouse::OnMouseLeave() noexcept
 //-----------------------------------------------------------------------------
 // Mouse Interface Definitions
 //-----------------------------------------------------------------------------
-Hardware::Mouse::Mouse(Window* owner) noexcept
+Mouse::Mouse(Window* owner) noexcept
     : m_pOwner(owner)
 { }
-float Hardware::Mouse::GetNormalizedX() const noexcept
+float Mouse::GetNormalizedX() const noexcept
 {
     float w = static_cast<float>(m_pOwner->GetWidth());
     return 2.0f * GetScreenX() / w - 1.0f;
 }
-
-float Hardware::Mouse::GetNormalizedY() const noexcept
+float Mouse::GetNormalizedY() const noexcept
 {
     float h = static_cast<float>(m_pOwner->GetHeight());
     return -2.0f * GetScreenY() / h + 1.0f;
 }
-std::pair<float, float> Hardware::Mouse::GetNormalizedXY() const noexcept
+std::pair<float, float> Mouse::GetNormalizedXY() const noexcept
 {
     return std::pair<float, float>(GetNormalizedX(), GetNormalizedY());
 }

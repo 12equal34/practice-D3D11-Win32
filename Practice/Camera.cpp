@@ -3,8 +3,7 @@
 Camera::Camera(float viewAspectRatio)
     : m_position(),
       m_viewAspectRatio(viewAspectRatio)
-{
-}
+{ }
 
 void Camera::SetPosition(DirectX::XMFLOAT3 position) noexcept
 {
@@ -21,22 +20,36 @@ void Camera::SetRotation(float pitch, float yaw, float roll) noexcept
 void Camera::Translate(DirectX::XMFLOAT3 dposition) noexcept
 {
     using namespace DirectX;
-    auto       pos  = XMLoadFloat3(&m_position);
-    const auto dpos = XMLoadFloat3(&dposition);
+    const auto dpos = XMVector3Transform(
+        XMLoadFloat3(&dposition),
+        XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, m_roll));
+    const auto pos  = XMLoadFloat3(&m_position);
     XMStoreFloat3(&m_position, pos + dpos);
 }
 
 void Camera::Rotate(float dpitch, float dyaw, float droll) noexcept
 {
+    using namespace DirectX;
+    static auto ParallelTransform = [](float& theta, float period) {
+        if (theta >= period) {
+            theta -= period;
+        } else if (theta < 0) {
+            theta += period;
+        }
+    };
+
     m_pitch += dpitch;
-    m_yaw += dyaw;
-    m_roll += droll;
+    m_yaw   += dyaw;
+    m_roll  += droll;
+
+    if (m_pitch > XM_PIDIV2 || m_pitch < -XM_PIDIV2) {
+        m_pitch -= dpitch;
+    }
+    ParallelTransform(m_yaw, XM_2PI);
+    ParallelTransform(m_roll, XM_2PI);
 }
 
-DirectX::XMFLOAT3 Camera::GetPosition() const noexcept
-{
-    return m_position;
-}
+DirectX::XMFLOAT3 Camera::GetPosition() const noexcept { return m_position; }
 
 DirectX::XMFLOAT3 Camera::GetOrientation() const noexcept
 {
@@ -57,5 +70,6 @@ DirectX::XMMATRIX Camera::GetView() const noexcept
 
 DirectX::XMMATRIX Camera::GetProjection() const noexcept
 {
-    return DirectX::XMMatrixPerspectiveLH(1.0f, m_viewAspectRatio, 0.5f, 100.0f);
+    return DirectX::XMMatrixPerspectiveLH(1.0f, m_viewAspectRatio, 0.5f,
+                                          100.0f);
 }

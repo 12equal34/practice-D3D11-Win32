@@ -53,6 +53,7 @@ public:
 
     int GetWidth() const noexcept;
     int GetHeight() const noexcept;
+    float GetAspectRatio() const noexcept;
 
 private:
     class WindowClass

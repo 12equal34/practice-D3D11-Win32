@@ -72,9 +72,11 @@ public:
     bool RightIsPressed() const noexcept { return m_RPressed; }
     bool IsInWindow() const noexcept { return m_isInWindow; }
 
-    std::optional<Mouse::Event> Read() noexcept;
-    bool                        IsEmpty() const noexcept;
-    void                        Flush() noexcept;
+    std::optional<Mouse::Event>        Read() noexcept;
+    std::optional<std::pair<int, int>> ReadDelta() noexcept;
+
+    bool IsEmpty() const noexcept;
+    void Flush() noexcept;
 
 private:
     void OnLeftButtonDown() noexcept;
@@ -82,6 +84,7 @@ private:
     void OnRightButtonDown() noexcept;
     void OnRightButtonUp() noexcept;
     void OnMouseMove(int xpos, int ypos) noexcept;
+    void OnMouseMoveDelta(int dxpos, int dypos) noexcept;
     void OnMouseWheel(int delta) noexcept;
     void OnMouseWheelUp() noexcept;
     void OnMouseWheelDown() noexcept;
@@ -92,9 +95,10 @@ private:
     void OnMouseLeave() noexcept;
 
 private:
-    Window*             m_pOwner;
-    std::pair<int, int> m_pos;
-    std::queue<Event>   m_eventBuffer;
+    Window*                         m_pOwner;
+    std::pair<int, int>             m_pos;
+    std::queue<Event>               m_eventBuffer;
+    std::queue<std::pair<int, int>> m_deltaBuffer;
 
     bool m_LPressed   = false;
     bool m_RPressed   = false;

@@ -32,11 +32,11 @@ Surface::Surface(Renderer& renderer, int numZ, int numX)
 std::unique_ptr<VertexBuffer>
 Surface::GetVertexBuffer(Renderer& renderer, float mx, float mz, float gridSize)
 {
-    int numVertex = m_nx * m_nz;
+    size_t numVertex = static_cast<size_t>(m_nx * m_nz);
 
     std::vector<Vertex> vertices(numVertex);
-    for (int i = 0; i < m_nx; ++i) {
-        for (int j = 0; j < m_nz; ++j) {
+    for (size_t i = 0; i < m_nx; ++i) {
+        for (size_t j = 0; j < m_nz; ++j) {
             float x                = mx + gridSize * i;
             float z                = mz + gridSize * j;
             float y                = m_H[i][j];
