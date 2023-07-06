@@ -12,8 +12,9 @@ App::App()
     m_window.SetMouse(&m_mouse);
     m_window.SetTimer(&m_mainTimer);
 
-    m_camera.SetPosition({0.0f, 10.0f, 0.0f});
-    m_camera.SetRotation(0.0f, 0.0f, 0.0f);
+    auto& cameraCoord = m_camera.GetCoordinate();
+    cameraCoord.SetPosition({0.0f, 10.0f, 0.0f});
+    cameraCoord.SetOrientation({0.0f, 0.0f, 0.0f});
 }
 
 App::~App() { }
@@ -52,13 +53,15 @@ void App::HandleInput(float dt)
     while (const auto e = m_keyboard.ReadKey()) {
         // omitted
     }
-    const auto step = cameraMoveSpeed * dt;
-    if (m_keyboard.KeyIsPressed('W')) m_camera.Translate({0.0f, 0.0f, step});
-    if (m_keyboard.KeyIsPressed('S')) m_camera.Translate({0.0f, 0.0f, -step});
-    if (m_keyboard.KeyIsPressed('Q')) m_camera.Translate({0.0f, step, 0.0f});
-    if (m_keyboard.KeyIsPressed('E')) m_camera.Translate({0.0f, -step, 0.0f});
-    if (m_keyboard.KeyIsPressed('D')) m_camera.Translate({step, 0.0f, 0.0f});
-    if (m_keyboard.KeyIsPressed('A')) m_camera.Translate({-step, 0.0f, 0.0f});
+
+    auto&      cameraCoord = m_camera.GetCoordinate();
+    const auto step        = cameraMoveSpeed * dt;
+    if (m_keyboard.KeyIsPressed('W')) cameraCoord.GoForward(step);
+    if (m_keyboard.KeyIsPressed('S')) cameraCoord.GoBackward(step);
+    if (m_keyboard.KeyIsPressed('Q')) cameraCoord.GoUp(step);
+    if (m_keyboard.KeyIsPressed('E')) cameraCoord.GoDown(step);
+    if (m_keyboard.KeyIsPressed('D')) cameraCoord.GoRight(step);
+    if (m_keyboard.KeyIsPressed('A')) cameraCoord.GoLeft(step);
 
     // mouse input handles
     while (const auto xy = m_mouse.Read()) {
@@ -67,7 +70,8 @@ void App::HandleInput(float dt)
         const auto& cr_xy = dxy.value();
         auto dyaw   = cameraRotationSpeed * cr_xy.first / m_window.GetWidth();
         auto dpitch = cameraRotationSpeed * cr_xy.second / m_window.GetHeight();
-        m_camera.Rotate(dpitch, dyaw, 0.0f);
+        // m_camera.Rotate(dpitch, dyaw, 0.0f);
+        cameraCoord.Rotate({dpitch, dyaw, 0.0f});
     }
 }
 
@@ -91,14 +95,15 @@ void App::RunFrame(float dt)
                  << m_mouse.GetNormalizedY() << ')';
 
         std::stringstream cameraPosStr;
-        const auto        cameraPos = m_camera.GetPosition();
-        cameraPosStr << '(' << cameraPos.x << ',' << cameraPos.y << ','
-                     << cameraPos.z << ')';
+        auto&             cameraCoord = m_camera.GetCoordinate();
+        cameraPosStr << '(' << cameraCoord.GetPositionX() << ','
+                     << cameraCoord.GetPositionY() << ','
+                     << cameraCoord.GetPositionZ() << ')';
 
         std::stringstream cameraOriStr;
-        const auto        cameraOri = m_camera.GetOrientation();
-        cameraOriStr << '(' << cameraOri.x << ',' << cameraOri.y << ','
-                     << cameraOri.z << ')';
+        cameraOriStr << '(' << cameraCoord.GetOrientationX() << ','
+                     << cameraCoord.GetOrientationY() << ','
+                     << cameraCoord.GetOrientationZ() << ')';
 
         std::stringstream wo;
         wo << "Timer : " << std::left << std::setw(16) << totalTime

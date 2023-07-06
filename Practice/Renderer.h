@@ -22,7 +22,8 @@ public:
 
     void EndFrame();
     void ClearBuffer(float r, float g, float b) noexcept;
-    void DrawTestSurface(const Camera& camera, float x, float z, float time);
+    void DrawTestSurface(const World::Object::Camera& camera, float x, float z,
+                         float time);
 
 private:
     DXResources m_dx;

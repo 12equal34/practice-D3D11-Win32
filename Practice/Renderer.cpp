@@ -35,8 +35,8 @@ void Renderer::ClearBuffer(float r, float g, float b) noexcept
                                         0u);
 }
 
-void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
-                                             float z, float time)
+void Hardware::DX::Renderer::DrawTestSurface(
+    const World::Object::Camera& camera, float x, float z, float time)
 {
     constexpr float pi = 3.14159265f;
     Surface         surface(*this, 150, 150);
@@ -61,7 +61,7 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         XMMATRIX    view          = camera.GetView();
         XMMATRIX    proj          = camera.GetProjection();
         XMMATRIX    modelRotation = XMMatrixIdentity();
-        const auto& camOri        = camera.GetOrientation();
+        const auto& camOri = camera.GetCoordinate().GetOrientation();
         XMMATRIX    cameraRotation =
             XMMatrixRotationRollPitchYaw(camOri.x, camOri.y, camOri.z);
 
@@ -109,8 +109,8 @@ void Hardware::DX::Renderer::DrawTestSurface(const Camera& camera, float x,
         std::vector<std::tuple<float, float, float, float>> init {
             {0.3f,   -0.46f, 0.2f,  0.0f },
             {-0.33f, 0.40f,  0.12f, 0.0f },
-            {0.0f,   0.56f, 0.2f,  0.2f },
-            {-0.33f, 0.0f,  0.12f, 0.3f },
+            {0.0f,   0.56f,  0.2f,  0.2f },
+            {-0.33f, 0.0f,   0.12f, 0.3f },
             {0.3f,   -0.26f, 0.2f,  0.7f },
             {-0.33f, 0.20f,  0.12f, 0.9f },
             {0.17f,  0.3f,   0.3f,  -1.0f},
