@@ -9,12 +9,10 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-using namespace Hardware;
-using namespace Hardware::DX;
-using namespace Microsoft::WRL;
+namespace HDX = Hardware::DX;
 using namespace DirectX;
 
-Renderer::Renderer(HWND hwnd)
+HDX::Renderer::Renderer(HWND hwnd)
 {
     ThrowIfNull(GetClientRect(hwnd, &m_dx.ClientRect));
 
@@ -26,8 +24,8 @@ Renderer::Renderer(HWND hwnd)
     m_dx.Context->OMSetRenderTargets(1u, m_dx.RTV.GetAddressOf(),
                                      m_dx.DSV.Get());
 }
-void Renderer::EndFrame() { ThrowIfFailed(m_dx.SwapChain->Present(0u, 0u)); }
-void Renderer::ClearBuffer(float r, float g, float b) noexcept
+void HDX::Renderer::EndFrame() { ThrowIfFailed(m_dx.SwapChain->Present(0u, 0u)); }
+void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
     m_dx.Context->ClearRenderTargetView(m_dx.RTV.Get(), color);
@@ -35,11 +33,10 @@ void Renderer::ClearBuffer(float r, float g, float b) noexcept
                                         0u);
 }
 
-void Hardware::DX::Renderer::DrawTestSurface(
+void HDX::Renderer::DrawTestSurface(
     const World::Object::Camera& camera, float x, float z, float time)
 {
-    constexpr float pi = 3.14159265f;
-    Surface         surface(*this, 150, 150);
+    World::Object::Surface surface(*this, 150, 150);
     surface.Bind(*this);
 
     auto pViewport = std::make_unique<Viewport>(
@@ -61,7 +58,7 @@ void Hardware::DX::Renderer::DrawTestSurface(
         XMMATRIX    view          = camera.GetView();
         XMMATRIX    proj          = camera.GetProjection();
         XMMATRIX    modelRotation = XMMatrixIdentity();
-        const auto& camOri = camera.GetCoordinate().GetOrientation();
+        const auto& camOri        = camera.GetCoordinate().GetOrientation();
         XMMATRIX    cameraRotation =
             XMMatrixRotationRollPitchYaw(camOri.x, camOri.y, camOri.z);
 

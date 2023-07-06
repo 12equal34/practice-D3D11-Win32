@@ -56,7 +56,8 @@ VS_Out main( VS_In input )
     float S_KzAS = 0.0f;
     for (int m = 0; m < numWave; ++m)
     {
-        float theta = dot( float2( wave[m].kx, wave[m].kz ), pos.xz ) - wave[m].w * time - wave[m].phi;
+        float theta = dot( float2( wave[m].kx, wave[m].kz ), pos.xz ) 
+                        - wave[m].w * time - wave[m].phi;
         float AC = wave[m].a * cos( theta );
         float AS = wave[m].a * sin( theta );
         float KxAS = wave[m].kx * AS;
