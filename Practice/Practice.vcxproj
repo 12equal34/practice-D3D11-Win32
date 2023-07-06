@@ -172,6 +172,7 @@
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="Coordinatable.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="DXException.cpp" />
     <ClCompile Include="DXGettable.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="BindableHeader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Coordinatable.h" />
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="DXException.h" />
     <ClInclude Include="DXGettable.h" />

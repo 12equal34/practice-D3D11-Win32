@@ -1,22 +1,16 @@
 #pragma once
 #include <DirectXMath.h>
-#include "Coordinate.h"
+#include "Coordinatable.h"
 
 namespace World::Object
 {
-class Camera
+class Camera : public Coordinatable
 {
 public:
     Camera(float viewAspectRatio = 1.0f);
-
-    Information::Coordinate& GetCoordinate() noexcept;
-    const Information::Coordinate& GetCoordinate() const noexcept;
-
     DirectX::XMMATRIX GetView() const noexcept;
     DirectX::XMMATRIX GetProjection() const noexcept;
 private:
-    Information::Coordinate m_coordinate;
-
     // clipping
     float m_viewAspectRatio;
 };

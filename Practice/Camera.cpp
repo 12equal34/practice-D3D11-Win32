@@ -3,20 +3,8 @@
 using namespace World::Object;
 
 Camera::Camera(float viewAspectRatio)
-    : m_coordinate(),
-      m_viewAspectRatio(viewAspectRatio)
+    : m_viewAspectRatio(viewAspectRatio)
 { }
-
-Information::Coordinate& Camera::GetCoordinate() noexcept
-{
-    return const_cast<Information::Coordinate&>(
-        static_cast<const Camera*>(this)->GetCoordinate());
-}
-
-const Information::Coordinate& Camera::GetCoordinate() const noexcept
-{
-    return m_coordinate;
-}
 
 DirectX::XMMATRIX Camera::GetView() const noexcept
 {
