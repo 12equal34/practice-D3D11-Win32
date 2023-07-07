@@ -12,11 +12,13 @@ class DxgiInfoManager
 private:
     static DxgiInfoManager Instance;
 public:
+    static void Initialize();
+
     static void ThrowIfFailed(HRESULT hr, int line, const char* file);
     static void ThrowIfInfoGot(int line, const char* file);
     static void Setting() noexcept;
 private:
-    DxgiInfoManager();
+    DxgiInfoManager() noexcept                         = default;
     ~DxgiInfoManager()                                 = default;
     DxgiInfoManager(const DxgiInfoManager&)            = delete;
     DxgiInfoManager& operator=(const DxgiInfoManager&) = delete;

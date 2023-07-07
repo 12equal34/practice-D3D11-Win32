@@ -6,10 +6,6 @@ namespace HDX = Hardware::DX;
 
 HDX::DXResource HDX::DXResource::Instance;
 
-HDX::DXResource::DXResource()
-    : m_clientRect({})
-{ }
-
 void HDX::DXResource::Initialize(HWND hwnd)
 {
     CreateDeviceAndSwapChain(hwnd);

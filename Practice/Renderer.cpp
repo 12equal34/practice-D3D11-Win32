@@ -1,10 +1,13 @@
 #include "Renderer.h"
 #include <sstream>
 #include <DirectXMath.h>
-#include "DXExceptionMacro.h"
 #include "WinExceptionHelper.h"
 #include "BindableHeader.h"
 #include "Surface.h"
+
+#ifndef NDEBUG
+#include "DXExceptionMacro.h"
+#endif
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
@@ -14,6 +17,10 @@ using namespace DirectX;
 
 HDX::Renderer::Renderer(HWND hwnd)
 {
+#ifndef NDEBUG
+    Hardware::DX::DxgiInfoManager::Initialize();
+#endif
+
     ThrowIfNull(GetClientRect(hwnd, &DXResource::GetClientRectangle()));
 
     DXResource::Initialize(hwnd);

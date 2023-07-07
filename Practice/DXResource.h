@@ -24,7 +24,7 @@ public:
     static Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDSV() noexcept;
     static RECT& GetClientRectangle() noexcept;
 private:
-    DXResource();
+    DXResource() noexcept                    = default;
     ~DXResource()                            = default;
     DXResource(const DXResource&)            = delete;
     DXResource& operator=(const DXResource&) = delete;
