@@ -1,4 +1,6 @@
 #include "PixelShader.h"
+
+#include <d3dcompiler.h>
 #include "DXExceptionMacro.h"
 
 namespace HDX = Hardware::DX;

@@ -3,10 +3,22 @@
 
 namespace HDX = Hardware::DX;
 
+HDX::ConstantBuffer::ConstantBuffer(UINT byteWidth)
+{
+    D3D11_BUFFER_DESC cbd = {};
+    cbd.Usage = D3D11_USAGE_DEFAULT;
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags = 0u;
+    cbd.MiscFlags = 0u;
+    cbd.ByteWidth = byteWidth;
+    cbd.StructureByteStride = 0u;
+    ThrowIfFailed(
+        DXResource::GetDevice()->CreateBuffer(&cbd, nullptr, &m_pConstantBuffer));
+}
+
 HDX::ConstantBuffer::ConstantBuffer(UINT        byteWidth,
                                     const void* pConstantBufferData)
 {
-    // create constant buffer 2
     D3D11_BUFFER_DESC cbd      = {};
     cbd.Usage                  = D3D11_USAGE_DEFAULT;
     cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;

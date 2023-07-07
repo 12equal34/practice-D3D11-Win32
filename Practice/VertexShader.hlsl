@@ -15,12 +15,12 @@ cbuffer Transform : register( b0 )
     matrix modelView;
     matrix modelViewProj;
     matrix modelRotation;
-    matrix cameraRotation;
 };
 
-cbuffer GlobalParameter : register( b1 )
+
+cbuffer CameraTransform : register( b1 )
 {
-    float time;
+    matrix cameraRotation;
 }
 
 static const int numWave = 8;
@@ -40,6 +40,10 @@ cbuffer WaveParameter : register( b2 )
     } wave[numWave];
 };
 
+cbuffer GlobalParameter : register( b4 )
+{    
+    float time;
+}
 
 VS_Out main( VS_In input )
 {

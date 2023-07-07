@@ -22,11 +22,23 @@
     <Filter Include="Header Files\Debugging">
       <UniqueIdentifier>{9923c782-d72f-4764-8139-3fd0c1c4a750}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Bindable">
+    <Filter Include="Header Files\Object">
+      <UniqueIdentifier>{4899627e-3e3c-497f-82b1-537154533104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Object\Information">
+      <UniqueIdentifier>{f4bb8bac-dddb-451c-a64a-55d611478f39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gp_math">
+      <UniqueIdentifier>{5b7a267d-1e97-4479-8d0d-69c51839fa4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hardware">
+      <UniqueIdentifier>{89ee7098-463d-4f93-abc2-5162c219f855}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hardware\Bindable">
       <UniqueIdentifier>{b888ad11-4cd7-4fb8-b870-cae3cf607c83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Geometry">
-      <UniqueIdentifier>{8ab105a5-de64-4efa-a7c7-dba23db63914}</UniqueIdentifier>
+    <Filter Include="Header Files\Others">
+      <UniqueIdentifier>{cc9ecfc6-f3d2-42dd-8472-28a10e991a2a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +99,6 @@
     <ClCompile Include="DXException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Viewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -110,35 +119,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="App.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Keyboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BaseException.h">
       <Filter>Header Files\Debugging</Filter>
     </ClInclude>
     <ClInclude Include="DxgiInfoManager.h">
       <Filter>Header Files\Debugging</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowsHeader.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dxerr.h">
       <Filter>Dxerr</Filter>
@@ -147,31 +132,28 @@
       <Filter>Header Files\Debugging</Filter>
     </ClInclude>
     <ClInclude Include="IBindable.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="Topology.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="InputLayout.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="VertexShader.h">
-      <Filter>Header Files\Bindable</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="IndexBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="DXResource.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Hardware\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="DXException.h">
       <Filter>Header Files\Debugging</Filter>
@@ -182,35 +164,56 @@
     <ClInclude Include="WinExceptionHelper.h">
       <Filter>Header Files\Debugging</Filter>
     </ClInclude>
-    <ClInclude Include="HardwareHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Viewport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BindableHeader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="Surface.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Coordinate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="numeric_utility_functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vector3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Coordinatable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="DirectionalLight.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Coordinate.h">
+      <Filter>Header Files\Object\Information</Filter>
+    </ClInclude>
+    <ClInclude Include="Coordinatable.h">
+      <Filter>Header Files\Object\Information</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3D.h">
+      <Filter>Header Files\gp_math</Filter>
+    </ClInclude>
+    <ClInclude Include="numeric_utility_functions.h">
+      <Filter>Header Files\gp_math</Filter>
+    </ClInclude>
+    <ClInclude Include="DXResource.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="HardwareHelper.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Header Files\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsHeader.h">
+      <Filter>Header Files\Others</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

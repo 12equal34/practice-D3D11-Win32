@@ -1,6 +1,9 @@
 #include "Surface.h"
+
 #include "Renderer.h"
-#include "BindableHeader.h"
+#include "VertexShader.h"
+#include "InputLayout.h"
+#include "PixelShader.h"
 
 using namespace Hardware::DX;
 namespace WO = World::Object;

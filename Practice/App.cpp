@@ -1,12 +1,12 @@
 #include <sstream>
 #include "App.h"
+#include "ConstantBuffer.h"
 
 App::App()
     : m_window(1000, 600, L"Window Sample"),
       m_keyboard(&m_window),
       m_mouse(&m_window),
-      m_mainTimer(),
-      m_camera(m_window.GetAspectRatio())
+      m_mainTimer()
 {
     m_window.SetKeyboard(&m_keyboard);
     m_window.SetMouse(&m_mouse);
@@ -79,13 +79,50 @@ void App::RunFrame(float dt)
 {
     DebugHelpWindowTitle(dt);
 
-    // test code
     auto& renderer = m_window.GetRenderer();
+
+    m_camera.Bind();
+
+    // constant buffer for transform in VS
+    {
+        using namespace DirectX;
+        using namespace Hardware::DX;
+
+        struct Transform {
+            XMMATRIX model;
+            XMMATRIX modelView;
+            XMMATRIX modelViewProj;
+            XMMATRIX modelRotation;
+        };
+
+        XMMATRIX    model         = XMMatrixIdentity();
+        XMMATRIX    view          = m_camera.GetView();
+        XMMATRIX    proj          = m_camera.GetProjection();
+        XMMATRIX    modelRotation = XMMatrixIdentity();
+
+        const Transform transBufData = {XMMatrixTranspose(model),
+                                        XMMatrixTranspose(model * view),
+                                        XMMatrixTranspose(model * view * proj),
+                                        XMMatrixTranspose(modelRotation)};
+        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
+        transformCbuf.SetToVertexShader(0u);
+
+        struct GlobalCbuf {
+            float time;
+            float _1;
+            float _2;
+            float _3;
+        };
+        const GlobalCbuf globalCbufData {static_cast<float>(m_mainTimer.Time()),
+                                         0, 0, 0};
+
+        ConstantBuffer globalCbuf(sizeof(globalCbufData), &globalCbufData);
+        globalCbuf.SetToVertexShader(4u);
+    }
 
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
 
-    renderer.DrawTestSurface(m_camera, 1.0f, 1.0f,
-                             static_cast<float>(m_mainTimer.Time()));
+    renderer.DrawTestSurface();
     renderer.EndFrame();
 }
 

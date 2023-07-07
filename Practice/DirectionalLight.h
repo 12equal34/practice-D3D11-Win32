@@ -5,7 +5,7 @@
 
 namespace World::Object
 {
-class DirectionalLight : public Coordinatable, public Hardware::DX::IBindable
+class DirectionalLight : public Information::Coordinatable, public Hardware::DX::IBindable
 {
 public:
     struct Information {

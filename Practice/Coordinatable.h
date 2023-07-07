@@ -1,7 +1,7 @@
 #pragma once
 #include "Coordinate.h"
 
-namespace World::Object
+namespace World::Object::Information
 {
 class Coordinatable
 {

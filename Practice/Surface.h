@@ -8,7 +8,8 @@
 
 namespace World::Object
 {
-class Surface : public Hardware::DX::IBindable, public Coordinatable
+class Surface : public Hardware::DX::IBindable,
+                public Information::Coordinatable
 {
 public:
     using IndexType = unsigned short;

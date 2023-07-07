@@ -127,3 +127,8 @@ vector3D woi::Coordinate::DirBackward() const noexcept
 {
     return vector3D {-LocalDirection(2)};
 }
+
+XMMATRIX woi::Coordinate::GetRotation() const noexcept
+{
+    return XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, m_roll);
+}

@@ -1,14 +1,14 @@
 #include "Coordinatable.h"
 
-using namespace World::Object;
+namespace woi = World::Object::Information;
 
-Information::Coordinate& Coordinatable::GetCoordinate() noexcept
+woi::Coordinate& woi::Coordinatable::GetCoordinate() noexcept
 {
-    return const_cast<Information::Coordinate&>(
+    return const_cast<woi::Coordinate&>(
         static_cast<const Coordinatable*>(this)->GetCoordinate());
 }
 
-const Information::Coordinate& Coordinatable::GetCoordinate() const noexcept
+const woi::Coordinate& woi::Coordinatable::GetCoordinate() const noexcept
 {
     return m_coordinate;
 }

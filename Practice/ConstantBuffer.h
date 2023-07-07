@@ -6,6 +6,7 @@ namespace Hardware::DX
 class ConstantBuffer
 {
 public:
+    ConstantBuffer(UINT byteWidth);
     ConstantBuffer(UINT byteWidth, const void* pConstantBufferData);
 
     void Update(const void* pSrcData);

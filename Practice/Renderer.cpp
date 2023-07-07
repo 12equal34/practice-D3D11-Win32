@@ -1,8 +1,9 @@
 #include "Renderer.h"
+
 #include <sstream>
 #include <DirectXMath.h>
 #include "WinExceptionHelper.h"
-#include "BindableHeader.h"
+#include "DXResource.h"
 #include "Surface.h"
 #include "DirectionalLight.h"
 
@@ -43,60 +44,10 @@ void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
         DXResource::GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
-void HDX::Renderer::DrawTestSurface(const World::Object::Camera& camera,
-                                    float x, float z, float time)
+void HDX::Renderer::DrawTestSurface()
 {
-    World::Object::Surface surface(150, 150);
+    World::Object::Surface surface { 150, 150 };
     surface.Bind();
-
-    const auto& cr = DXResource::GetClientRectangle();
-    auto pViewport = std::make_unique<Viewport>(static_cast<FLOAT>(cr.right),
-                                                static_cast<FLOAT>(cr.bottom));
-    pViewport->Bind();
-
-    // constant buffer for transform in VS
-    {
-        struct Transform {
-            XMMATRIX model;
-            XMMATRIX modelView;
-            XMMATRIX modelViewProj;
-            XMMATRIX modelRotation;
-            XMMATRIX cameraRotation;
-        };
-
-        XMMATRIX    model         = XMMatrixIdentity();
-        XMMATRIX    view          = camera.GetView();
-        XMMATRIX    proj          = camera.GetProjection();
-        XMMATRIX    modelRotation = XMMatrixIdentity();
-        const auto& camOri        = camera.GetCoordinate().GetOrientation();
-        XMMATRIX    cameraRotation =
-            XMMatrixRotationRollPitchYaw(camOri.x, camOri.y, camOri.z);
-
-        const Transform transBufData = {
-            XMMatrixTranspose(model),
-            XMMatrixTranspose(model * view),
-            XMMatrixTranspose(model * view * proj),
-            XMMatrixTranspose(modelRotation),
-            cameraRotation,
-        };
-
-        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
-        transformCbuf.SetToVertexShader(0u);
-    }
-
-    // constant buffer for global parameters in VS
-    {
-        struct GlobalCbuf {
-            float time;
-            float _1;
-            float _2;
-            float _3;
-        };
-        const GlobalCbuf globalCbufData {time, 0, 0, 0};
-
-        ConstantBuffer globalCbuf(sizeof(globalCbufData), &globalCbufData);
-        globalCbuf.SetToVertexShader(1u);
-    }
 
     // constant buffer for wave parameters in VS
     {
