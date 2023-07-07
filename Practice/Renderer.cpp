@@ -14,35 +14,37 @@ using namespace DirectX;
 
 HDX::Renderer::Renderer(HWND hwnd)
 {
-    ThrowIfNull(GetClientRect(hwnd, &m_dx.ClientRect));
+    ThrowIfNull(GetClientRect(hwnd, &DXResource::GetClientRectangle()));
 
-    m_dx.CreateDeviceAndSwapChain(hwnd);
-    m_dx.CreateRTV();
-    m_dx.CreateDSV();
+    DXResource::Initialize(hwnd);
 
     // bind depth stencil view to OM
-    m_dx.Context->OMSetRenderTargets(1u, m_dx.RTV.GetAddressOf(),
-                                     m_dx.DSV.Get());
+    DXResource::GetContext()->OMSetRenderTargets(
+        1u, DXResource::GetRTV().GetAddressOf(), DXResource::GetDSV().Get());
 }
-void HDX::Renderer::EndFrame() { ThrowIfFailed(m_dx.SwapChain->Present(0u, 0u)); }
+void HDX::Renderer::EndFrame()
+{
+    ThrowIfFailed(DXResource::GetSwapchain()->Present(0u, 0u));
+}
 void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
-    m_dx.Context->ClearRenderTargetView(m_dx.RTV.Get(), color);
-    m_dx.Context->ClearDepthStencilView(m_dx.DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f,
-                                        0u);
+    DXResource::GetContext()->ClearRenderTargetView(DXResource::GetRTV().Get(),
+                                                   color);
+    DXResource::GetContext()->ClearDepthStencilView(DXResource::GetDSV().Get(),
+                                                   D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
-void HDX::Renderer::DrawTestSurface(
-    const World::Object::Camera& camera, float x, float z, float time)
+void HDX::Renderer::DrawTestSurface(const World::Object::Camera& camera,
+                                    float x, float z, float time)
 {
-    World::Object::Surface surface(*this, 150, 150);
-    surface.Bind(*this);
+    World::Object::Surface surface(150, 150);
+    surface.Bind();
 
-    auto pViewport = std::make_unique<Viewport>(
-        *this, static_cast<FLOAT>(m_dx.ClientRect.right),
-        static_cast<FLOAT>(m_dx.ClientRect.bottom));
-    pViewport->Bind(*this);
+    const auto& cr = DXResource::GetClientRectangle();
+    auto pViewport = std::make_unique<Viewport>(static_cast<FLOAT>(cr.right),
+                                                static_cast<FLOAT>(cr.bottom));
+    pViewport->Bind();
 
     // constant buffer for transform in VS
     {
@@ -70,9 +72,8 @@ void HDX::Renderer::DrawTestSurface(
             cameraRotation,
         };
 
-        ConstantBuffer transformCbuf(*this, sizeof(transBufData),
-                                     &transBufData);
-        transformCbuf.SetToVertexShader(*this, 0u);
+        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
+        transformCbuf.SetToVertexShader(0u);
     }
 
     // constant buffer for global parameters in VS
@@ -85,9 +86,8 @@ void HDX::Renderer::DrawTestSurface(
         };
         const GlobalCbuf globalCbufData {time, 0, 0, 0};
 
-        ConstantBuffer globalCbuf(*this, sizeof(globalCbufData),
-                                  &globalCbufData);
-        globalCbuf.SetToVertexShader(*this, 1u);
+        ConstantBuffer globalCbuf(sizeof(globalCbufData), &globalCbufData);
+        globalCbuf.SetToVertexShader(1u);
     }
 
     // constant buffer for wave parameters in VS
@@ -128,8 +128,8 @@ void HDX::Renderer::DrawTestSurface(
         }
 
         auto byteWidth = static_cast<UINT>(sizeof(Wave) * std::size(waves));
-        ConstantBuffer waveParameterCbuf(*this, byteWidth, waves.data());
-        waveParameterCbuf.SetToVertexShader(*this, 2u);
+        ConstantBuffer waveParameterCbuf(byteWidth, waves.data());
+        waveParameterCbuf.SetToVertexShader(2u);
     }
 
     // constant buffer for face color in PS
@@ -152,10 +152,11 @@ void HDX::Renderer::DrawTestSurface(
             0.0f
         };
 
-        ConstantBuffer lightCbuf(*this, sizeof(lightCbufData), &lightCbufData);
-        lightCbuf.SetToPixelShader(*this, 0u);
+        ConstantBuffer lightCbuf(sizeof(lightCbufData), &lightCbufData);
+        lightCbuf.SetToPixelShader(0u);
     }
 
-    m_dx.Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    m_dx.Context->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
+    DXResource::GetContext()->IASetPrimitiveTopology(
+        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    DXResource::GetContext()->DrawIndexed(surface.GetIndexCount(), 0u, 0u);
 }

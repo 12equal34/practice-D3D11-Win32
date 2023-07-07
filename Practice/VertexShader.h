@@ -1,13 +1,14 @@
 #pragma once
-#include "Bindable.h"
+#include "IBindable.h"
+#include "DXResource.h"
 
 namespace Hardware::DX
 {
-	class VertexShader : public Bindable
+	class VertexShader : public IBindable
 	{
 	public:
-		VertexShader(Renderer& renderer, std::wstring_view wsv);
-		void Bind(Renderer& renderer) noexcept override;
+		VertexShader(std::wstring_view wsv);
+		void Bind() noexcept override;
 
 		ID3D10Blob* GetBlob() noexcept;
 	private:

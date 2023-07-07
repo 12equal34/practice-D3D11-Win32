@@ -1,10 +1,9 @@
 #include "Viewport.h"
 #include "DXExceptionMacro.h"
 
-using namespace Hardware::DX;
-using namespace Microsoft::WRL;
+namespace HDX = Hardware::DX;
 
-Viewport::Viewport(Renderer& renderer, FLOAT width, FLOAT height)
+HDX::Viewport::Viewport(FLOAT width, FLOAT height)
 {
     // configure a viewport
     m_viewport.TopLeftX = 0;
@@ -15,7 +14,7 @@ Viewport::Viewport(Renderer& renderer, FLOAT width, FLOAT height)
     m_viewport.MaxDepth = 1;
 }
 
-void Viewport::Bind(Renderer& renderer) noexcept
+void HDX::Viewport::Bind() noexcept
 {
-    GetContext(renderer)->RSSetViewports(1u, &m_viewport);
+    DXResource::GetContext()->RSSetViewports(1u, &m_viewport);
 }

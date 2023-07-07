@@ -1,14 +1,14 @@
 #include "Topology.h"
 #include "DXExceptionMacro.h"
 
-using namespace Hardware::DX;
+namespace HDX = Hardware::DX;
 
-Topology::Topology(D3D11_PRIMITIVE_TOPOLOGY topology)
+HDX::Topology::Topology(D3D11_PRIMITIVE_TOPOLOGY topology)
     : m_topology(topology)
 { }
 
-void Topology::Bind(Renderer& renderer) noexcept
+void HDX::Topology::Bind() noexcept
 {
     // set primitive topology
-    GetContext(renderer)->IASetPrimitiveTopology(m_topology);
+    DXResource::GetContext()->IASetPrimitiveTopology(m_topology);
 }

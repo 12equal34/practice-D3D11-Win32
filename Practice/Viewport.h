@@ -1,13 +1,14 @@
 #pragma once
-#include "Bindable.h"
+#include "IBindable.h"
+#include "DXResource.h"
 
 namespace Hardware::DX
 {
-class Viewport : public Bindable
+class Viewport : public IBindable
 {
 public:
-	Viewport(Renderer& renderer, FLOAT width, FLOAT height);
-	void Bind(Renderer& renderer) noexcept override;
+	Viewport(FLOAT width, FLOAT height);
+	void Bind() noexcept override;
 private:
 	D3D11_VIEWPORT m_viewport;
 };

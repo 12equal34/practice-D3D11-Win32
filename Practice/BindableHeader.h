@@ -1,5 +1,5 @@
 #pragma once
-#include "Bindable.h"
+#include "IBindable.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"

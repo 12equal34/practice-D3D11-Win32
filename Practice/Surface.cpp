@@ -5,7 +5,7 @@
 using namespace Hardware::DX;
 namespace WO = World::Object;
 
-WO::Surface::Surface(Renderer& renderer, int numZ, int numX)
+WO::Surface::Surface(int numZ, int numX)
     : m_bindings(),
       m_numIndex(0u),
       m_nx(numX),
@@ -15,23 +15,22 @@ WO::Surface::Surface(Renderer& renderer, int numZ, int numX)
     m_bindings.reserve(6);
 
     // vertex/index buffer
-    m_bindings.push_back(std::move(GetVertexBuffer(renderer, 0.5f)));
-    m_bindings.push_back(std::move(GetIndexBuffer(renderer)));
+    m_bindings.push_back(std::move(GetVertexBuffer(0.5f)));
+    m_bindings.push_back(std::move(GetIndexBuffer()));
 
     // vertex shader & input layout
     auto pVertexShader =
-        std::make_unique<VertexShader>(renderer, L"Shaders/VertexShader.cso");
-    m_bindings.push_back(std::move(
-        std::make_unique<InputLayout>(renderer, *pVertexShader.get())));
+        std::make_unique<VertexShader>(L"Shaders/VertexShader.cso");
+    m_bindings.push_back(
+        std::move(std::make_unique<InputLayout>(*pVertexShader.get())));
     m_bindings.push_back(std::move(pVertexShader));
 
     // pixel shader
-    m_bindings.push_back(std::move(
-        std::make_unique<PixelShader>(renderer, L"Shaders/PixelShader.cso")));
+    m_bindings.push_back(
+        std::move(std::make_unique<PixelShader>(L"Shaders/PixelShader.cso")));
 }
 
-std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer(Renderer& renderer,
-                                                           float     gridSize)
+std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer(float gridSize)
 {
     size_t numVertex = static_cast<size_t>(m_nx * m_nz);
 
@@ -46,10 +45,10 @@ std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer(Renderer& renderer,
         }
     }
     return std::make_unique<VertexBuffer>(
-        renderer, (UINT)numVertex, (UINT)sizeof(VertexType), vertices.data());
+        (UINT)numVertex, (UINT)sizeof(VertexType), vertices.data());
 }
 
-std::unique_ptr<IndexBuffer> WO::Surface::GetIndexBuffer(Renderer& renderer)
+std::unique_ptr<IndexBuffer> WO::Surface::GetIndexBuffer()
 {
     constexpr UINT numIndexOfOneGrid = 6;
 
@@ -72,15 +71,15 @@ std::unique_ptr<IndexBuffer> WO::Surface::GetIndexBuffer(Renderer& renderer)
             ++offset;
         }
     }
-    return std::make_unique<IndexBuffer>(
-        renderer, m_numIndex, (UINT)sizeof(IndexType), indices.data());
+    return std::make_unique<IndexBuffer>(m_numIndex, (UINT)sizeof(IndexType),
+                                         indices.data());
 }
 
 UINT WO::Surface::GetIndexCount() const noexcept { return m_numIndex; }
 
-void WO::Surface::Bind(Renderer& renderer) noexcept
+void WO::Surface::Bind() noexcept
 {
     for (auto& binding : m_bindings) {
-        binding->Bind(renderer);
+        binding->Bind();
     }
 }

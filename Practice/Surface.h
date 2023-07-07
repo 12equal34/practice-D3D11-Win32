@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
-#include "Bindable.h"
+#include "IBindable.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "Coordinatable.h"
+#include <memory>
 
 namespace World::Object
 {
-class Surface : public Hardware::DX::Bindable, public Coordinatable
+class Surface : public Hardware::DX::IBindable, public Coordinatable
 {
 public:
     using IndexType = unsigned short;
@@ -17,15 +18,13 @@ public:
     };
 
 public:
-    Surface(Hardware::DX::Renderer& renderer, int numX, int numZ);
-    std::unique_ptr<Hardware::DX::VertexBuffer>
-    GetVertexBuffer(Hardware::DX::Renderer& renderer, float gridSize);
-    std::unique_ptr<Hardware::DX::IndexBuffer>
-         GetIndexBuffer(Hardware::DX::Renderer& renderer);
-    UINT GetIndexCount() const noexcept;
-    void Bind(Hardware::DX::Renderer& renderer) noexcept;
+    Surface(int numX, int numZ);
+    std::unique_ptr<Hardware::DX::VertexBuffer> GetVertexBuffer(float gridSize);
+    std::unique_ptr<Hardware::DX::IndexBuffer>  GetIndexBuffer();
+    UINT                                        GetIndexCount() const noexcept;
+    void                                        Bind() noexcept;
 protected:
-    std::vector<std::unique_ptr<Hardware::DX::Bindable>> m_bindings;
+    std::vector<std::unique_ptr<Hardware::DX::IBindable>> m_bindings;
 
     UINT                            m_numIndex;
     int                             m_nx;

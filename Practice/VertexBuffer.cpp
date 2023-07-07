@@ -1,9 +1,9 @@
 #include "VertexBuffer.h"
 #include "DXExceptionMacro.h"
 
-using namespace Hardware::DX;
+namespace HDX = Hardware::DX;
 
-VertexBuffer::VertexBuffer(Renderer& renderer, UINT numVertex,
+HDX::VertexBuffer::VertexBuffer(UINT numVertex,
                            UINT structureByteStride, const void* vertices)
     : m_structureByteStride(structureByteStride)
 {
@@ -18,14 +18,14 @@ VertexBuffer::VertexBuffer(Renderer& renderer, UINT numVertex,
     D3D11_SUBRESOURCE_DATA sd = {};
     sd.pSysMem                = vertices;
     ThrowIfFailed(
-        GetDevice(renderer)->CreateBuffer(&bd, &sd, &m_pVertexBuffer));
+        DXResource::GetDevice()->CreateBuffer(&bd, &sd, &m_pVertexBuffer));
 }
 
-void VertexBuffer::Bind(Renderer& renderer) noexcept
+void HDX::VertexBuffer::Bind() noexcept
 {
     // bind vertex buffer
     const UINT offset = 0u;
-    GetContext(renderer)->IASetVertexBuffers(0u, 1u,
+    DXResource::GetContext()->IASetVertexBuffers(0u, 1u,
                                              m_pVertexBuffer.GetAddressOf(),
                                              &m_structureByteStride, &offset);
 }

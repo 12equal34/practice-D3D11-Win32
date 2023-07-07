@@ -1,13 +1,14 @@
 #pragma once
-#include "Bindable.h"
+#include "IBindable.h"
+#include "DXResource.h"
 
 namespace Hardware::DX
 {
-class PixelShader : public Bindable
+class PixelShader : public IBindable
 {
 public:
-    PixelShader(Renderer& renderer, std::wstring_view wsv);
-    void        Bind(Renderer& renderer) noexcept override;
+    PixelShader(std::wstring_view wsv);
+    void        Bind() noexcept override;
     ID3D10Blob* GetBlob() noexcept;
 private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader;

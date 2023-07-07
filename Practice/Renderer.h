@@ -6,14 +6,13 @@
 #include <vector>
 #include <string>
 #include "BaseException.h"
-#include "DXResources.h"
+#include "DXResource.h"
 #include "Camera.h"
 
 namespace Hardware::DX
 {
 class Renderer
 {
-    friend class DXGettable;
 public:
     Renderer(HWND hwnd);
     ~Renderer()                          = default;
@@ -24,8 +23,5 @@ public:
     void ClearBuffer(float r, float g, float b) noexcept;
     void DrawTestSurface(const World::Object::Camera& camera, float x, float z,
                          float time);
-
-private:
-    DXResources m_dx;
 };
 }

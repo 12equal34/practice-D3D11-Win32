@@ -77,14 +77,26 @@ void App::HandleInput(float dt)
 
 void App::RunFrame(float dt)
 {
+    DebugHelpWindowTitle(dt);
+
+    // test code
+    auto& renderer = m_window.GetRenderer();
+
+    renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
+
+    renderer.DrawTestSurface(m_camera, 1.0f, 1.0f,
+                             static_cast<float>(m_mainTimer.Time()));
+    renderer.EndFrame();
+}
+
+void App::DebugHelpWindowTitle(float dt)
+{
     // write times at the window title
     double                  totalTime = m_mainTimer.TimeSinceStart();
-    static float            time      = 0;
     static int              i         = 0;
     static constexpr double interval  = 0.1;
     static int              frames    = 0;
     ++frames;
-    time += dt;
     if (totalTime > interval * i) {
         double fps = frames / interval;
         frames     = 0;
@@ -118,12 +130,4 @@ void App::RunFrame(float dt)
         std::wstring title(str.begin(), str.end());
         m_window.SetTitle(title);
     }
-
-    // test code
-    auto& renderer = m_window.GetRenderer();
-
-    renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
-
-    renderer.DrawTestSurface(m_camera, 1.0f, 1.0f, time);
-    renderer.EndFrame();
 }

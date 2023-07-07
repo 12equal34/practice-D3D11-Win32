@@ -1,9 +1,9 @@
 #include "InputLayout.h"
 #include "DXExceptionMacro.h"
 
-using namespace Hardware::DX;
+namespace HDX = Hardware::DX;
 
-InputLayout::InputLayout(Renderer& renderer, VertexShader& vertexShader)
+HDX::InputLayout::InputLayout(VertexShader& vertexShader)
 {
     // create input layout
     const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
@@ -13,13 +13,13 @@ InputLayout::InputLayout(Renderer& renderer, VertexShader& vertexShader)
 
     auto pVShaderBlob = vertexShader.GetBlob();
 
-    ThrowIfFailed(GetDevice(renderer)->CreateInputLayout(
+    ThrowIfFailed(DXResource::GetDevice()->CreateInputLayout(
         inputElementDesc, ARRAYSIZE(inputElementDesc),
         pVShaderBlob->GetBufferPointer(), pVShaderBlob->GetBufferSize(),
         &m_pInputLayout));
 }
 
-void InputLayout::Bind(Renderer& renderer) noexcept
+void HDX::InputLayout::Bind() noexcept
 {
-    GetContext(renderer)->IASetInputLayout(m_pInputLayout.Get());
+    DXResource::GetContext()->IASetInputLayout(m_pInputLayout.Get());
 }

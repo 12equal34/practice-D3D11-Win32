@@ -1,16 +1,16 @@
 #pragma once
-#include "DXGettable.h"
+#include "DXResource.h"
 
 namespace Hardware::DX
 {
-class ConstantBuffer : public DXGettable
+class ConstantBuffer
 {
 public:
-    ConstantBuffer(Renderer& renderer, UINT byteWidth,
+    ConstantBuffer(UINT byteWidth,
                    const void* pConstantBufferData);
 
-    void SetToVertexShader(Renderer& renderer, UINT startSlot) noexcept;
-    void SetToPixelShader(Renderer& renderer, UINT startSlot) noexcept;
+    void SetToVertexShader(UINT startSlot) noexcept;
+    void SetToPixelShader(UINT startSlot) noexcept;
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;

@@ -169,18 +169,17 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="BaseException.cpp" />
-    <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Coordinatable.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="DXException.cpp" />
-    <ClCompile Include="DXGettable.cpp" />
-    <ClCompile Include="DXResources.cpp" />
+    <ClCompile Include="DXResource.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DxgiInfoManager.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Keyboard.cpp" />
@@ -198,21 +197,21 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="BaseException.h" />
-    <ClInclude Include="Bindable.h" />
+    <ClInclude Include="IBindable.h" />
     <ClInclude Include="BindableHeader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Coordinatable.h" />
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="DXException.h" />
-    <ClInclude Include="DXGettable.h" />
-    <ClInclude Include="DXResources.h" />
+    <ClInclude Include="DXResource.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="DXExceptionMacro.h" />
     <ClInclude Include="DxgiInfoManager.h" />
     <ClInclude Include="HardwareHelper.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="numeric_utility_functions.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Renderer.h" />

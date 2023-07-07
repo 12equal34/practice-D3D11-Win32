@@ -1,15 +1,16 @@
 #pragma once
-#include "Bindable.h"
+#include "IBindable.h"
+#include "DXResource.h"
 
 namespace Hardware::DX
 {
-class IndexBuffer : public Bindable
+class IndexBuffer : public IBindable
 {
 public:
-    IndexBuffer(Renderer& renderer, UINT numIndex, UINT structureByteStride,
+    IndexBuffer(UINT numIndex, UINT structureByteStride,
                 const void* indices);
 
-    void Bind(Renderer& renderer) noexcept override;
+    void Bind() noexcept override;
     UINT GetIndexCount() const noexcept;
 
 private:

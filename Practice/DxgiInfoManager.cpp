@@ -6,7 +6,7 @@
 
 using namespace Hardware::DX;
 
-DxgiInfoManager DxgiInfoManager::s_Instance;
+DxgiInfoManager DxgiInfoManager::Instance;
 
 DxgiInfoManager::DxgiInfoManager()
 {
@@ -70,18 +70,18 @@ std::vector<std::string> DxgiInfoManager::GetMessages() const
 
 void DxgiInfoManager::ThrowIfFailed(HRESULT hr, int line, const char* file)
 {
-    s_Instance.Set();
+    Instance.Set();
     if (FAILED(hr)) {
         if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-            throw DeviceRemovedException(line, file, hr, s_Instance.GetMessages());
+            throw DeviceRemovedException(line, file, hr, Instance.GetMessages());
         } else {
-            throw HrException(line, file, hr, s_Instance.GetMessages());
+            throw HrException(line, file, hr, Instance.GetMessages());
         }
     }
 }
 void DxgiInfoManager::ThrowIfInfoGot(int line, const char* file)
 {
-    auto v = s_Instance.GetMessages();
+    auto v = Instance.GetMessages();
     if (!v.empty()) {
         throw InfoException(line, file, v);
     }
@@ -89,5 +89,5 @@ void DxgiInfoManager::ThrowIfInfoGot(int line, const char* file)
 
 void DxgiInfoManager::Setting() noexcept
 {
-    s_Instance.Set();
+    Instance.Set();
 }

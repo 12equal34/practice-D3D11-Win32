@@ -9,11 +9,12 @@ namespace Hardware::DX
 {
 class DxgiInfoManager
 {
+private:
+    static DxgiInfoManager Instance;
 public:
     static void ThrowIfFailed(HRESULT hr, int line, const char* file);
     static void ThrowIfInfoGot(int line, const char* file);
     static void Setting() noexcept;
-
 private:
     DxgiInfoManager();
     ~DxgiInfoManager()                                 = default;
@@ -22,11 +23,8 @@ private:
 
     void                     Set() noexcept;
     std::vector<std::string> GetMessages() const;
-
 private:
     unsigned long long                     m_next = 0u;
     Microsoft::WRL::ComPtr<IDXGIInfoQueue> m_pDxgiInfoQueue;
-
-    static DxgiInfoManager s_Instance;
 };
 }

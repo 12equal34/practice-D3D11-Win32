@@ -1,11 +1,10 @@
 #include "IndexBuffer.h"
 #include "DXExceptionMacro.h"
 
-using namespace Microsoft::WRL;
-using namespace Hardware::DX;
+namespace HDX = Hardware::DX;
 
-IndexBuffer::IndexBuffer(Renderer& renderer, UINT numIndex,
-                         UINT structureByteStride, const void* indices)
+HDX::IndexBuffer::IndexBuffer(UINT numIndex, UINT structureByteStride,
+                              const void* indices)
     : m_numIndex(numIndex),
       m_structureByteStride(structureByteStride),
       m_dxgiFormat(DXGI_FORMAT_R16_UINT)
@@ -26,17 +25,15 @@ IndexBuffer::IndexBuffer(Renderer& renderer, UINT numIndex,
     bd.StructureByteStride    = m_structureByteStride;
     D3D11_SUBRESOURCE_DATA sd = {};
     sd.pSysMem                = indices;
-    ThrowIfFailed(GetDevice(renderer)->CreateBuffer(&bd, &sd, &m_pIndexBuffer));
+    ThrowIfFailed(
+        DXResource::GetDevice()->CreateBuffer(&bd, &sd, &m_pIndexBuffer));
 }
 
-void IndexBuffer::Bind(Renderer& renderer) noexcept
+void HDX::IndexBuffer::Bind() noexcept
 {
     // bind index buffer
-    GetContext(renderer)->IASetIndexBuffer(m_pIndexBuffer.Get(), m_dxgiFormat,
-                                           0u);
+    DXResource::GetContext()->IASetIndexBuffer(m_pIndexBuffer.Get(),
+                                              m_dxgiFormat, 0u);
 }
 
-UINT Hardware::DX::IndexBuffer::GetIndexCount() const noexcept
-{
-    return m_numIndex;
-}
+UINT HDX::IndexBuffer::GetIndexCount() const noexcept { return m_numIndex; }

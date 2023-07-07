@@ -18,6 +18,8 @@ private:
     void HandleInput(float dt);
     void RunFrame(float dt);
 
+    void DebugHelpWindowTitle(float dt);
+
 private:
     Hardware::Window      m_window;
     Hardware::Keyboard    m_keyboard;

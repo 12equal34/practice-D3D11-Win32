@@ -63,9 +63,6 @@
     <ClCompile Include="WindowsMessageMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bindable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InputLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,13 +81,10 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DXResources.cpp">
+    <ClCompile Include="DXResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DXException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DXGettable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Viewport.cpp">
@@ -109,6 +103,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Coordinatable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,7 +146,7 @@
     <ClInclude Include="WindowsMessageMap.h">
       <Filter>Header Files\Debugging</Filter>
     </ClInclude>
-    <ClInclude Include="Bindable.h">
+    <ClInclude Include="IBindable.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="Topology.h">
@@ -173,7 +170,7 @@
     <ClInclude Include="IndexBuffer.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="DXResources.h">
+    <ClInclude Include="DXResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DXException.h">
@@ -186,9 +183,6 @@
       <Filter>Header Files\Debugging</Filter>
     </ClInclude>
     <ClInclude Include="HardwareHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DXGettable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Viewport.h">
@@ -213,6 +207,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Coordinatable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
