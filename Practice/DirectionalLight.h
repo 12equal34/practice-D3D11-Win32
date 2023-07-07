@@ -13,8 +13,8 @@ public:
         alignas(16) DirectX::XMFLOAT3 light_direction;
     };
 
-    DirectionalLight();
-    DirectionalLight(DirectX::XMFLOAT4 lightColor);
+    DirectionalLight() noexcept;
+    DirectionalLight(DirectX::XMFLOAT4 lightColor) noexcept;
 
     void Bind() noexcept override;
     void SetLightColor(float r, float g, float b, float a) noexcept;

@@ -1,18 +1,22 @@
 #include "DirectionalLight.h"
 
 namespace WO = World::Object;
+namespace HDX = Hardware::DX;
 
-WO::DirectionalLight::DirectionalLight() 
+WO::DirectionalLight::DirectionalLight() noexcept
     : DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f })
 { }
 
-WO::DirectionalLight::DirectionalLight(DirectX::XMFLOAT4 lightColor)
+WO::DirectionalLight::DirectionalLight(DirectX::XMFLOAT4 lightColor) noexcept
     : m_information {lightColor, {0.0f, 0.0f, 1.0f}},
       m_cbuf(sizeof(Information), &m_information)
 { }
 
 void World::Object::DirectionalLight::Bind() noexcept
 {
+    const auto& ori = m_coordinate.GetOrientation();
+    m_information.light_direction = ori;
+    m_cbuf.Update(&m_information);
 }
 
 void WO::DirectionalLight::SetLightColor(float r, float g, float b,

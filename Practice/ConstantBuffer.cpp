@@ -20,6 +20,12 @@ HDX::ConstantBuffer::ConstantBuffer(UINT        byteWidth,
         DXResource::GetDevice()->CreateBuffer(&cbd, &csd, &m_pConstantBuffer));
 }
 
+void Hardware::DX::ConstantBuffer::Update(const void* pSrcData)
+{
+    DXResource::GetContext()->UpdateSubresource(m_pConstantBuffer.Get(), 0u,
+                                                nullptr, pSrcData, 0u, 0u);
+}
+
 void HDX::ConstantBuffer::SetToVertexShader(UINT startSlot) noexcept
 {
     DXResource::GetContext()->VSSetConstantBuffers(

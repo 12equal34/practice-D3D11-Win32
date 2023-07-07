@@ -4,6 +4,7 @@
 #include "WinExceptionHelper.h"
 #include "BindableHeader.h"
 #include "Surface.h"
+#include "DirectionalLight.h"
 
 #ifndef NDEBUG
 #include "DXExceptionMacro.h"
@@ -37,9 +38,9 @@ void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
     DXResource::GetContext()->ClearRenderTargetView(DXResource::GetRTV().Get(),
-                                                   color);
-    DXResource::GetContext()->ClearDepthStencilView(DXResource::GetDSV().Get(),
-                                                   D3D11_CLEAR_DEPTH, 1.0f, 0u);
+                                                    color);
+    DXResource::GetContext()->ClearDepthStencilView(
+        DXResource::GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
 void HDX::Renderer::DrawTestSurface(const World::Object::Camera& camera,
@@ -139,29 +140,10 @@ void HDX::Renderer::DrawTestSurface(const World::Object::Camera& camera,
         waveParameterCbuf.SetToVertexShader(2u);
     }
 
-    // constant buffer for face color in PS
-    {
-        struct Light {
-            XMFLOAT4 light_ambient;
-            XMFLOAT4 light_color;
-            XMFLOAT3 light_direction;
-            float    _1;
-        };
-
-        XMVECTOR lightDir =
-            XMVector4Normalize(XMVectorSet(0.3f, 1.0f, 0.2f, 0.0f));
-        XMFLOAT3 light_direction {};
-        XMStoreFloat3(&light_direction, lightDir);
-        const Light lightCbufData = {
-            {0.3f, 0.2f, 0.3f, 1.0f},
-            {1.0f, 0.8f, 0.8f, 1.0f},
-            light_direction,
-            0.0f
-        };
-
-        ConstantBuffer lightCbuf(sizeof(lightCbufData), &lightCbufData);
-        lightCbuf.SetToPixelShader(0u);
-    }
+    World::Object::DirectionalLight directionalLight;
+    directionalLight.SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
+    directionalLight.GetCoordinate().SetOrientation({-XM_PIDIV2, 0.0f, 0.0f});
+    directionalLight.Bind();
 
     DXResource::GetContext()->IASetPrimitiveTopology(
         D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
