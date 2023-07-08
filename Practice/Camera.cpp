@@ -43,7 +43,7 @@ void WO::Camera::Bind() noexcept
 {
     DXResource::GetContext()->RSSetViewports(1u, &m_viewport);
 
-    const auto cameraRotation = XMMatrixTranspose(m_coordinate.GetRotation());
+    const auto cameraRotation = XMMatrixTranspose(m_coordinate.GetModelRotation());
     m_cbuf.Update(&cameraRotation);
-    m_cbuf.SetToVertexShader(4u);
+    m_cbuf.SetToVertexShader(1u);
 }

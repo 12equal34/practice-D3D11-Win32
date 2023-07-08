@@ -56,8 +56,8 @@ void woi::Coordinate::SetOrientationZ(float roll) noexcept { m_roll = roll; }
 
 void woi::Coordinate::LocalTranslate(int index, float scale) noexcept
 {
-    const auto dir    = LocalDirection(index);
-    const auto displacement  = XMVectorScale(dir, scale);
+    const auto dir          = LocalDirection(index);
+    const auto displacement = XMVectorScale(dir, scale);
 
     XMFLOAT3 dpos;
     XMStoreFloat3(&dpos, displacement);
@@ -128,7 +128,19 @@ vector3D woi::Coordinate::DirBackward() const noexcept
     return vector3D {-LocalDirection(2)};
 }
 
-XMMATRIX woi::Coordinate::GetRotation() const noexcept
+XMMATRIX woi::Coordinate::GetModelRotation() const noexcept
 {
     return XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, m_roll);
+}
+
+XMMATRIX
+woi::Coordinate::GetModelTranslation() const noexcept
+{
+    return XMMatrixTranslation(m_x, m_y, m_z);
+}
+
+XMMATRIX
+woi::Coordinate::GetModelMatrix() const noexcept
+{
+    return GetModelRotation() * GetModelTranslation();
 }

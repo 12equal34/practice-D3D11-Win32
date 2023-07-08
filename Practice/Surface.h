@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include "IBindable.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "Coordinatable.h"
-#include <memory>
 
 namespace World::Object
 {

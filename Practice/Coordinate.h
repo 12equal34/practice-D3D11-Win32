@@ -54,8 +54,9 @@ namespace Object::Information
         vector3D DirForward() const noexcept;
         vector3D DirBackward() const noexcept;
 
-        DirectX::XMMATRIX GetRotation() const noexcept;
-    
+        DirectX::XMMATRIX GetModelRotation() const noexcept;
+        DirectX::XMMATRIX GetModelTranslation() const noexcept;
+        DirectX::XMMATRIX GetModelMatrix() const noexcept;
     private:
         void LocalTranslate(int index, float scale) noexcept;
         DirectX::XMVECTOR LocalDirection(int index) const noexcept;

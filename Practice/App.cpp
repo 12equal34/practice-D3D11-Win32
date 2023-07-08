@@ -2,6 +2,10 @@
 #include "App.h"
 #include "ConstantBuffer.h"
 
+#include "DXResource.h"
+#include "DirectionalLight.h"
+#include "WaterSurface.h"
+
 App::App()
     : m_window(1000, 600, L"Window Sample"),
       m_keyboard(&m_window),
@@ -33,6 +37,7 @@ int App::Run()
             DispatchMessage(&msg);
         } else {
             float dt = static_cast<float>(m_mainTimer.Mark());
+            DebugHelpWindowTitle(dt);
             HandleInput(dt);
             RunFrame(dt);
         }
@@ -77,36 +82,16 @@ void App::HandleInput(float dt)
 
 void App::RunFrame(float dt)
 {
-    DebugHelpWindowTitle(dt);
+    using namespace DirectX;
+    using namespace Hardware::DX;
 
     auto& renderer = m_window.GetRenderer();
 
+    XMMATRIX view     = m_camera.GetView();
+    XMMATRIX viewProj = view * m_camera.GetProjection();
     m_camera.Bind();
 
-    // constant buffer for transform in VS
     {
-        using namespace DirectX;
-        using namespace Hardware::DX;
-
-        struct Transform {
-            XMMATRIX model;
-            XMMATRIX modelView;
-            XMMATRIX modelViewProj;
-            XMMATRIX modelRotation;
-        };
-
-        XMMATRIX    model         = XMMatrixIdentity();
-        XMMATRIX    view          = m_camera.GetView();
-        XMMATRIX    proj          = m_camera.GetProjection();
-        XMMATRIX    modelRotation = XMMatrixIdentity();
-
-        const Transform transBufData = {XMMatrixTranspose(model),
-                                        XMMatrixTranspose(model * view),
-                                        XMMatrixTranspose(model * view * proj),
-                                        XMMatrixTranspose(modelRotation)};
-        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
-        transformCbuf.SetToVertexShader(0u);
-
         struct GlobalCbuf {
             float time;
             float _1;
@@ -120,9 +105,43 @@ void App::RunFrame(float dt)
         globalCbuf.SetToVertexShader(4u);
     }
 
+    World::Object::WaterSurface waterSurface {
+        150, 150, World::Object::WaterSurface::TestWaveGenerator()};
+    {
+        struct Transform {
+            XMMATRIX model;
+            XMMATRIX modelView;
+            XMMATRIX modelViewProj;
+            XMMATRIX modelRotation;
+        };
+
+        auto&    watSurfCoord  = waterSurface.GetCoordinate();
+        XMMATRIX modelRotation = watSurfCoord.GetModelRotation();
+        XMMATRIX model         = watSurfCoord.GetModelMatrix();
+        XMMATRIX modelView     = model * view;
+        XMMATRIX modelViewProj = model * viewProj;
+
+        const Transform transBufData = {
+            XMMatrixTranspose(model), XMMatrixTranspose(modelView),
+            XMMatrixTranspose(modelViewProj), XMMatrixTranspose(modelRotation)};
+
+        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
+        transformCbuf.SetToVertexShader(0u);
+    }
+    waterSurface.Bind();
+
+    World::Object::DirectionalLight directionalLight;
+    directionalLight.SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
+    directionalLight.GetCoordinate().SetOrientation({-XM_PIDIV2, 0.0f, 0.0f});
+    directionalLight.Bind();
+
+    DXResource::GetContext()->IASetPrimitiveTopology(
+        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
 
-    renderer.DrawTestSurface();
+    DXResource::GetContext()->DrawIndexed(waterSurface.GetIndexCount(), 0u, 0u);
+
     renderer.EndFrame();
 }
 
