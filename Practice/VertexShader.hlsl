@@ -25,7 +25,7 @@ cbuffer CameraTransform : register( b1 )
 
 static const int numWave = 8;
 
-cbuffer WaveParameter : register( b2 )
+cbuffer GerstnerWaveParam : register( b2 )
 {
     struct
     {

@@ -177,6 +177,8 @@
     <ClCompile Include="DXResource.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DxgiInfoManager.cpp" />
+    <ClCompile Include="GerstnerWave.cpp" />
+    <ClCompile Include="GerstnerWaveContainer.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
@@ -189,6 +191,7 @@
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
+    <ClCompile Include="WaterSurface.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WindowsMessageMap.cpp" />
     <ClCompile Include="WinMain.cpp" />
@@ -196,6 +199,8 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="BaseException.h" />
+    <ClInclude Include="GerstnerWave.h" />
+    <ClInclude Include="GerstnerWaveContainer.h" />
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
@@ -220,6 +225,7 @@
     <ClInclude Include="vector3D.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexShader.h" />
+    <ClInclude Include="WaterSurface.h" />
     <ClInclude Include="WindowsHeader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Timer.h" />

@@ -23,7 +23,7 @@ public:
     std::unique_ptr<Hardware::DX::VertexBuffer> GetVertexBuffer(float gridSize);
     std::unique_ptr<Hardware::DX::IndexBuffer>  GetIndexBuffer();
     UINT                                        GetIndexCount() const noexcept;
-    void                                        Bind() noexcept;
+    void                                        Bind() noexcept override;
 protected:
     std::vector<std::unique_ptr<Hardware::DX::IBindable>> m_bindings;
 
