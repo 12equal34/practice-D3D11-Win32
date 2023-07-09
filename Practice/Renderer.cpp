@@ -41,3 +41,29 @@ void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
     DXResource::GetContext()->ClearDepthStencilView(
         DXResource::GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
+
+void HDX::Renderer::DrawObjects(
+    const World::Object::Camera&                               camera,
+    const std::vector<std::unique_ptr<World::Object::Object>>& objects)
+{
+    
+
+    XMMATRIX view     = camera.GetView();
+    XMMATRIX viewProj = view * camera.GetProjection();
+
+    for (const auto& obj : objects) {
+        XMMATRIX modelRotation = obj->GetModelRotation();
+        XMMATRIX model         = obj->GetModelMatrix();
+        XMMATRIX modelView     = model * view;
+        XMMATRIX modelViewProj = model * viewProj;
+
+        const Transform transBufData = {
+            XMMatrixTranspose(model), XMMatrixTranspose(modelView),
+            XMMatrixTranspose(modelViewProj), XMMatrixTranspose(modelRotation)};
+
+        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
+        transformCbuf.SetToVertexShader(0u);
+
+        DXResource::GetContext()->DrawIndexed(obj->GetIndexCount(), 0u, 0u);
+    }
+}

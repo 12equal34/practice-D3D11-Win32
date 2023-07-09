@@ -20,6 +20,6 @@ public:
     void SetLightColor(float r, float g, float b, float a) noexcept;
 private:
     Information                  m_information;
-    Hardware::DX::ConstantBuffer m_cbuf;
+    Hardware::DX::ConstantBuffer m_infoCbuf;
 };
 }

@@ -126,6 +126,9 @@
     <ClCompile Include="GerstnerWaveContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseException.h">
@@ -224,14 +227,17 @@
     <ClInclude Include="WindowsHeader.h">
       <Filter>Header Files\Others</Filter>
     </ClInclude>
-    <ClInclude Include="GerstnerWave.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="WaterSurface.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GerstnerWave.h">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="GerstnerWaveContainer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterSurface.h">
+      <Filter>Header Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

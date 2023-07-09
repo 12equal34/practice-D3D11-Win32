@@ -29,6 +29,6 @@ private:
     float m_waveAngFreq;
     float m_waveAmp;
     float m_wavePhase;
-    float _1, _2;
+    float _1,_2;
 };
 }

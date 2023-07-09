@@ -8,9 +8,9 @@ namespace World::Object
 class WaterSurface : public Surface
 {
 public:
-    WaterSurface(int numX, int numZ,
+    WaterSurface(int numX, int numZ, float gridSize,
                  Simulation::GerstnerWaveContainer&& waveContainer)
-        : Surface(numX, numZ),
+        : Surface(numX, numZ, gridSize),
           m_waveContainer(std::move(waveContainer)),
           m_gerstnerWaveParamCbuf(
               static_cast<UINT>(m_waveContainer.GetByteWidth()))
@@ -20,7 +20,8 @@ public:
 
     void Bind() noexcept override;
 
-    static Simulation::GerstnerWaveContainer TestWaveGenerator() noexcept;
+    static Simulation::GerstnerWaveContainer
+    TestWaveGenerator(float time) noexcept;
 
 private:
     Simulation::GerstnerWaveContainer m_waveContainer;

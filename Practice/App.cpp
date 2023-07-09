@@ -84,64 +84,28 @@ void App::RunFrame(float dt)
 {
     using namespace DirectX;
     using namespace Hardware::DX;
-
     auto& renderer = m_window.GetRenderer();
 
-    XMMATRIX view     = m_camera.GetView();
-    XMMATRIX viewProj = view * m_camera.GetProjection();
-    m_camera.Bind();
+    auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
+    directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
+    directionalLight->GetCoordinate().SetOrientation({-XM_PIDIV2, 0.0f, 0.0f});
+    directionalLight->Bind();
 
-    {
-        struct GlobalCbuf {
-            float time;
-            float _1;
-            float _2;
-            float _3;
-        };
-        const GlobalCbuf globalCbufData {static_cast<float>(m_mainTimer.Time()),
-                                         0, 0, 0};
+    std::vector<std::unique_ptr<World::Object::Object>> objects;
+    auto waterSurface = std::make_unique<World::Object::WaterSurface>(
+        150, 150, 0.5f,
+        World::Object::WaterSurface::TestWaveGenerator(
+            static_cast<float>(m_mainTimer.Time())));
+    waterSurface->Bind();
 
-        ConstantBuffer globalCbuf(sizeof(globalCbufData), &globalCbufData);
-        globalCbuf.SetToVertexShader(4u);
-    }
-
-    World::Object::WaterSurface waterSurface {
-        150, 150, World::Object::WaterSurface::TestWaveGenerator()};
-    {
-        struct Transform {
-            XMMATRIX model;
-            XMMATRIX modelView;
-            XMMATRIX modelViewProj;
-            XMMATRIX modelRotation;
-        };
-
-        auto&    watSurfCoord  = waterSurface.GetCoordinate();
-        XMMATRIX modelRotation = watSurfCoord.GetModelRotation();
-        XMMATRIX model         = watSurfCoord.GetModelMatrix();
-        XMMATRIX modelView     = model * view;
-        XMMATRIX modelViewProj = model * viewProj;
-
-        const Transform transBufData = {
-            XMMatrixTranspose(model), XMMatrixTranspose(modelView),
-            XMMatrixTranspose(modelViewProj), XMMatrixTranspose(modelRotation)};
-
-        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
-        transformCbuf.SetToVertexShader(0u);
-    }
-    waterSurface.Bind();
-
-    World::Object::DirectionalLight directionalLight;
-    directionalLight.SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
-    directionalLight.GetCoordinate().SetOrientation({-XM_PIDIV2, 0.0f, 0.0f});
-    directionalLight.Bind();
+    objects.push_back(std::move(waterSurface));
 
     DXResource::GetContext()->IASetPrimitiveTopology(
         D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
-
-    DXResource::GetContext()->DrawIndexed(waterSurface.GetIndexCount(), 0u, 0u);
-
+    m_camera.Bind();
+    renderer.DrawObjects(m_camera, objects);
     renderer.EndFrame();
 }
 

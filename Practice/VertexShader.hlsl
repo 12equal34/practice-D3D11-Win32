@@ -34,16 +34,11 @@ cbuffer GerstnerWaveParam : register( b2 )
         float k;
         float w;
         float a;
-        float phi;
+        float phase;
         float _1;
         float _2;
     } wave[numWave];
 };
-
-cbuffer GlobalParameter : register( b4 )
-{    
-    float time;
-}
 
 VS_Out main( VS_In input )
 {
@@ -61,7 +56,7 @@ VS_Out main( VS_In input )
     for (int m = 0; m < numWave; ++m)
     {
         float theta = dot( float2( wave[m].kx, wave[m].kz ), pos.xz ) 
-                        - wave[m].w * time - wave[m].phi;
+                        - wave[m].phase;
         float AC = wave[m].a * cos( theta );
         float AS = wave[m].a * sin( theta );
         float KxAS = wave[m].kx * AS;

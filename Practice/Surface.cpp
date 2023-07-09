@@ -8,17 +8,16 @@
 using namespace Hardware::DX;
 namespace WO = World::Object;
 
-WO::Surface::Surface(int numZ, int numX)
-    : m_bindings(),
-      m_numIndex(0u),
-      m_nx(numX),
+WO::Surface::Surface(int numZ, int numX, float gridSize)
+    : m_nx(numX),
       m_nz(numZ),
+      m_gridSize(gridSize),
       m_H(m_nx, std::vector<float>(m_nz, 0.0f))
 {
     m_bindings.reserve(6);
 
     // vertex/index buffer
-    m_bindings.push_back(std::move(GetVertexBuffer(0.5f)));
+    m_bindings.push_back(std::move(GetVertexBuffer()));
     m_bindings.push_back(std::move(GetIndexBuffer()));
 
     // vertex shader & input layout
@@ -33,7 +32,7 @@ WO::Surface::Surface(int numZ, int numX)
         std::move(std::make_unique<PixelShader>(L"Shaders/PixelShader.cso")));
 }
 
-std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer(float gridSize)
+std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer()
 {
     size_t numVertex = static_cast<size_t>(m_nx * m_nz);
 
@@ -41,8 +40,8 @@ std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer(float gridSize)
     vertices.reserve(numVertex);
     for (size_t i = 0; i < m_nx; ++i) {
         for (size_t j = 0; j < m_nz; ++j) {
-            float x = m_coordinate.GetPositionX() + gridSize * i;
-            float z = m_coordinate.GetPositionZ() + gridSize * j;
+            float x = m_coordinate.GetPositionX() + m_gridSize * i;
+            float z = m_coordinate.GetPositionZ() + m_gridSize * j;
             float y = m_H[i][j];
             vertices.emplace_back(x, y, z);
         }

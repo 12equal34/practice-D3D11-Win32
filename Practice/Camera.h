@@ -7,7 +7,7 @@
 
 namespace World::Object
 {
-class Camera : public Information::Coordinatable, public Hardware::DX::IBindable
+class Camera : public Hardware::DX::IBindable, public Information::Coordinatable
 {
 public:
     Camera(float viewAspectRatio = 1.0f) noexcept;
