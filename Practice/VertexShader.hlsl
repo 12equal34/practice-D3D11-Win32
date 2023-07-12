@@ -11,17 +11,9 @@ struct VS_Out
 
 cbuffer Transform : register( b0 )
 {
-    matrix model;
     matrix modelView;
     matrix modelViewProj;
-    matrix modelRotation;
 };
-
-
-cbuffer CameraTransform : register( b1 )
-{
-    matrix cameraRotation;
-}
 
 static const int numWave = 8;
 
@@ -55,7 +47,7 @@ VS_Out main( VS_In input )
     float S_KzAS = 0.0f;
     for (int m = 0; m < numWave; ++m)
     {
-        float theta = dot( float2( wave[m].kx, wave[m].kz ), pos.xz ) 
+        float theta = dot( float2( wave[m].kx, wave[m].kz ), pos.xz )
                         - wave[m].phase;
         float AC = wave[m].a * cos( theta );
         float AS = wave[m].a * sin( theta );
@@ -87,6 +79,6 @@ VS_Out main( VS_In input )
     float3 normal = cross( dpos_dalhpa, dpos_dbeta );
    
     output.pos = mul( pos, modelViewProj );
-    output.normal = (float3) mul( mul( float4( normal, 0.0f ), modelRotation ), cameraRotation );
+    output.normal = mul( normal, (float3x3) modelView );
     return output;
 }

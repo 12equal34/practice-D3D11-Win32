@@ -20,6 +20,5 @@ public:
 private:
     D3D11_VIEWPORT               m_viewport;
     float                        m_viewAspectRatio;
-    Hardware::DX::ConstantBuffer m_cbuf;
 };
 }

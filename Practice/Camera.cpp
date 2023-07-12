@@ -5,8 +5,7 @@ using namespace DirectX;
 namespace WO = World::Object;
 
 WO::Camera::Camera(float viewAspectRatio) noexcept
-    : m_viewAspectRatio(viewAspectRatio),
-      m_cbuf(sizeof(XMFLOAT4X4))
+    : m_viewAspectRatio(viewAspectRatio)
 {
     const auto& cr = DXResource::GetClientRectangle();
     SetViewport(static_cast<FLOAT>(cr.right), static_cast<FLOAT>(cr.bottom));
@@ -42,8 +41,4 @@ void WO::Camera::SetViewport(FLOAT width, FLOAT height) noexcept
 void WO::Camera::Bind() noexcept
 {
     DXResource::GetContext()->RSSetViewports(1u, &m_viewport);
-
-    const auto cameraRotation = XMMatrixTranspose(m_coordinate.GetModelRotation());
-    m_cbuf.Update(&cameraRotation);
-    m_cbuf.SetToVertexShader(1u);
 }

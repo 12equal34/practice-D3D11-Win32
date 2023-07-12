@@ -86,19 +86,22 @@ void App::RunFrame(float dt)
     using namespace Hardware::DX;
     auto& renderer = m_window.GetRenderer();
 
-    auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
-    directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
-    directionalLight->GetCoordinate().SetOrientation({-XM_PIDIV2, 0.0f, 0.0f});
-    directionalLight->Bind();
 
     std::vector<std::unique_ptr<World::Object::Object>> objects;
     auto waterSurface = std::make_unique<World::Object::WaterSurface>(
         150, 150, 0.5f,
         World::Object::WaterSurface::TestWaveGenerator(
             static_cast<float>(m_mainTimer.Time())));
-    waterSurface->Bind();
-
     objects.push_back(std::move(waterSurface));
+
+    for (auto& obj : objects) {
+        obj->Bind();
+    }
+
+    auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
+    directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
+    directionalLight->GetCoordinate().SetOrientation({ -XM_PIDIV2, 0.0f, 0.0f });
+    directionalLight->Bind();
 
     DXResource::GetContext()->IASetPrimitiveTopology(
         D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
