@@ -1,26 +1,60 @@
 #pragma once
-#include <DirectXMath.h>
+#include "Data3D.h"
 
 namespace gp::math
 {
-struct Vector3D {
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
+/* 나눗셈 연산은 모두 noexcept이기 때문에
+** 벡터의 모든 성분은 0.0f 으로 나누지 않는다고 가정한다.
+** 예외 조건에 대한 판별은 호출자에게 책임이 있다.
+*/
 
-    constexpr Vector3D() noexcept = default;
+struct Vector3D;
 
-    constexpr Vector3D(const Vector3D&) noexcept            = default;
-    constexpr Vector3D& operator=(const Vector3D&) noexcept = default;
+template <class L, class R, class ResultVec = Vector3D>
+constexpr ResultVec Vector3DAddition(const L& a, const R& b) noexcept
+{
+    return ResultVec { a.x + b.x, a.y + b.y, a.z + b.z };
+}
 
-    constexpr Vector3D(Vector3D&&) noexcept            = default;
-    constexpr Vector3D& operator=(Vector3D&&) noexcept = default;
+template <class L, class R, class ResultVec = Vector3D>
+constexpr ResultVec Vector3DSubtraction(const L& a, const R& b) noexcept
+{
+    return ResultVec { a.x - b.x, a.y - b.y, a.z - b.z };
+}
 
-    constexpr Vector3D(float _x, float _y, float _z) noexcept
-        : x(_x),
-          y(_y),
-          z(_z)
-    { }
+template <class L, class R, class ResultVec = Vector3D>
+constexpr ResultVec Vector3DMultiplication(const L& a, const R& b) noexcept
+{
+    return ResultVec { a.x * b.x, a.y * b.y, a.z * b.z };
+}
+
+template <class L, class R, class ResultVec = Vector3D>
+constexpr ResultVec Vector3DDivision(const L& a, const R& b) noexcept
+{
+    return ResultVec { a.x / b.x, a.y / b.y, a.z / b.z };
+}
+
+template <class L, class R>
+constexpr float Vector3DDot(const L& a, const R& b) noexcept
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+template <class L, class R, class ResultVec = Vector3D>
+constexpr ResultVec Vector3DCross(const L& a, const R& b) noexcept
+{
+    return ResultVec { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z,
+                      a.x * b.y - a.y * b.x };
+}
+
+template <class VectorType>
+constexpr VectorType Vector3DNegation(const VectorType& v) noexcept
+{
+    return VectorType { -v.x, -v.y, -v.z };
+}
+
+struct Vector3D : Data3D {
+    using Data3D::Data3D;
 
     template <class T>
     constexpr Vector3D& operator+=(const T& rhs) noexcept
@@ -49,7 +83,6 @@ struct Vector3D {
     template <class T>
     constexpr Vector3D& operator/=(const T& rhs) noexcept
     {
-        // 가정: rhs의 모든 성분이 0.f가 아니다.
         x /= rhs.x;
         y /= rhs.y;
         z /= rhs.z;
@@ -65,7 +98,6 @@ struct Vector3D {
     }
     constexpr Vector3D& operator/=(float scalar) noexcept
     {
-        // 가정: scalar는 0.f가 아니다.
         x /= scalar;
         y /= scalar;
         z /= scalar;
@@ -84,51 +116,33 @@ struct Vector3D {
 
     static constexpr float Dot(const Vector3D& a, const Vector3D& b) noexcept
     {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+        return Vector3DDot(a, b);
     }
 
     static constexpr Vector3D Cross(const Vector3D& a,
                                     const Vector3D& b) noexcept
     {
-        return Vector3D {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z,
-                         a.x * b.y - a.y * b.x};
-    }
-
-    // for SIMD
-    Vector3D(DirectX::FXMVECTOR v) noexcept
-    {
-        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3*>(this), v);
-    }
-    operator const DirectX::XMFLOAT3&() const noexcept
-    {
-        return reinterpret_cast<const DirectX::XMFLOAT3&>(*this);
-    }
-    operator DirectX::XMFLOAT3&() noexcept
-    {
-        return reinterpret_cast<DirectX::XMFLOAT3&>(*this);
+        return Vector3DCross(a, b);
     }
 };
 
 constexpr Vector3D operator+(const Vector3D& lhs, const Vector3D& rhs) noexcept
 {
-    auto result {lhs};
-    return result += rhs;
+    return Vector3DAddition(lhs, rhs);
 }
 
 constexpr Vector3D operator-(const Vector3D& lhs, const Vector3D& rhs) noexcept
 {
-    auto result {lhs};
-    return result -= rhs;
+    return Vector3DSubtraction(lhs, rhs);
 }
 constexpr Vector3D operator-(const Vector3D& v) noexcept
 {
-    return Vector3D {-v.x, -v.y, -v.z};
+    return Vector3DNegation(v);
 }
 
 constexpr Vector3D operator*(const Vector3D& lhs, const Vector3D& rhs) noexcept
 {
-    auto result {lhs};
-    return result *= rhs;
+    return Vector3DMultiplication(lhs, rhs);
 }
 constexpr Vector3D operator*(const Vector3D& lhs, float scalar) noexcept
 {
@@ -142,13 +156,10 @@ constexpr Vector3D operator*(float scalar, const Vector3D& rhs) noexcept
 
 constexpr Vector3D operator/(const Vector3D& lhs, const Vector3D& rhs) noexcept
 {
-    // 가정: rhs의 모든 성분이 0.f가 아니다.
-    auto result {lhs};
-    return result /= rhs;
+    return Vector3DDivision(lhs, rhs);
 }
 constexpr Vector3D operator/(const Vector3D& lhs, float scalar) noexcept
 {
-    // 가정: scalar는 0.f가 아니다.
     auto result {lhs};
     return result /= scalar;
 }

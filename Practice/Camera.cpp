@@ -13,11 +13,9 @@ WO::Camera::Camera(float viewAspectRatio) noexcept
 
 XMMATRIX WO::Camera::GetView() const noexcept
 {
-    auto forwardDir = m_coordinate.DirForward();
-
-    XMVECTOR eyePos = XMLoadFloat3(&m_coordinate.GetPosition());
-    XMVECTOR eyeDir = XMLoadFloat3(&forwardDir.r);
-    XMVECTOR headUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    auto eyeDir = m_coordinate.DirForward().Load();
+    auto eyePos = m_coordinate.GetPosition().Load();
+    auto headUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
     return XMMatrixLookToLH(eyePos, eyeDir, headUp);
 }

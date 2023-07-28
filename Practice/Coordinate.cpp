@@ -5,7 +5,8 @@
 using namespace DirectX;
 namespace woi = World::Object::Information;
 
-using Vector3D = woi::Coordinate::Vector3D;
+using Point3D     = woi::Coordinate::Point3D;
+using Direction3D = woi::Coordinate::Direction3D;
 
 woi::Coordinate::Coordinate() noexcept
     : Coordinate(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
@@ -27,16 +28,16 @@ woi::Coordinate::Coordinate(float x, float y, float z, float pitch, float yaw,
       m_roll(m_ori.z)
 { }
 
-void woi::Coordinate::Translate(const Vector3D& dpos) noexcept
+void woi::Coordinate::Translate(const Direction3D& dpos) noexcept
 {
     m_pos += dpos;
 }
-void woi::Coordinate::SetPosition(const Vector3D& pos) noexcept { m_pos = pos; }
+void woi::Coordinate::SetPosition(const Point3D& pos) noexcept { m_pos = pos; }
 void woi::Coordinate::SetPositionX(float x) noexcept { m_x = x; }
 void woi::Coordinate::SetPositionY(float y) noexcept { m_y = y; }
 void woi::Coordinate::SetPositionZ(float z) noexcept { m_z = z; }
 
-void woi::Coordinate::Rotate(const Vector3D& dori) noexcept
+void woi::Coordinate::Rotate(const Point3D& dori) noexcept
 {
     gp::math::add_or_leave(m_pitch, dori.x, -XM_PIDIV2, XM_PIDIV2);
 
@@ -46,7 +47,7 @@ void woi::Coordinate::Rotate(const Vector3D& dori) noexcept
     m_roll += dori.z;
     gp::math::mod_2PI(m_roll);
 }
-void woi::Coordinate::SetOrientation(const Vector3D& ori) noexcept
+void woi::Coordinate::SetOrientation(const Point3D& ori) noexcept
 {
     m_ori = ori;
 }
@@ -56,11 +57,9 @@ void woi::Coordinate::SetOrientationZ(float roll) noexcept { m_roll = roll; }
 
 void woi::Coordinate::LocalTranslate(int index, float scale) noexcept
 {
-    const auto dir          = LocalDirection(index);
-    const auto displacement = XMVectorScale(dir, scale);
+    auto dpos = static_cast<const Direction3D>(
+        XMVectorScale(LocalDirection(index), scale));
 
-    XMFLOAT3 dpos;
-    XMStoreFloat3(&dpos, displacement);
     m_pos += dpos;
 }
 
@@ -80,22 +79,22 @@ void woi::Coordinate::GoBackward(float minus_z) noexcept
     GoForward(-minus_z);
 }
 
-Vector3D& woi::Coordinate::GetPosition() noexcept
+Point3D& woi::Coordinate::GetPosition() noexcept
 {
-    return const_cast<Vector3D&>(
+    return const_cast<Point3D&>(
         static_cast<const woi::Coordinate*>(this)->GetPosition());
 }
-const Vector3D& woi::Coordinate::GetPosition() const noexcept { return m_pos; }
-float           woi::Coordinate::GetPositionX() const noexcept { return m_x; }
-float           woi::Coordinate::GetPositionY() const noexcept { return m_y; }
-float           woi::Coordinate::GetPositionZ() const noexcept { return m_z; }
+const Point3D& woi::Coordinate::GetPosition() const noexcept { return m_pos; }
+float          woi::Coordinate::GetPositionX() const noexcept { return m_x; }
+float          woi::Coordinate::GetPositionY() const noexcept { return m_y; }
+float          woi::Coordinate::GetPositionZ() const noexcept { return m_z; }
 
-Vector3D& woi::Coordinate::GetOrientation() noexcept
+Point3D& woi::Coordinate::GetOrientation() noexcept
 {
-    return const_cast<Vector3D&>(
+    return const_cast<Point3D&>(
         static_cast<const woi::Coordinate*>(this)->GetOrientation());
 }
-const Vector3D& woi::Coordinate::GetOrientation() const noexcept
+const Point3D& woi::Coordinate::GetOrientation() const noexcept
 {
     return m_ori;
 }
@@ -103,29 +102,29 @@ float woi::Coordinate::GetOrientationX() const noexcept { return m_pitch; }
 float woi::Coordinate::GetOrientationY() const noexcept { return m_yaw; }
 float woi::Coordinate::GetOrientationZ() const noexcept { return m_roll; }
 
-Vector3D woi::Coordinate::DirRight() const noexcept
+Direction3D woi::Coordinate::DirRight() const noexcept
 {
-    return Vector3D {LocalDirection(0)};
+    return Direction3D {LocalDirection(0)};
 }
-Vector3D woi::Coordinate::DirLeft() const noexcept
+Direction3D woi::Coordinate::DirLeft() const noexcept
 {
-    return Vector3D {-LocalDirection(0)};
+    return Direction3D {-LocalDirection(0)};
 }
-Vector3D woi::Coordinate::DirUp() const noexcept
+Direction3D woi::Coordinate::DirUp() const noexcept
 {
-    return Vector3D {LocalDirection(1)};
+    return Direction3D {LocalDirection(1)};
 }
-Vector3D woi::Coordinate::DirDown() const noexcept
+Direction3D woi::Coordinate::DirDown() const noexcept
 {
-    return Vector3D {-LocalDirection(1)};
+    return Direction3D {-LocalDirection(1)};
 }
-Vector3D woi::Coordinate::DirForward() const noexcept
+Direction3D woi::Coordinate::DirForward() const noexcept
 {
-    return Vector3D {LocalDirection(2)};
+    return Direction3D {LocalDirection(2)};
 }
-Vector3D woi::Coordinate::DirBackward() const noexcept
+Direction3D woi::Coordinate::DirBackward() const noexcept
 {
-    return Vector3D {-LocalDirection(2)};
+    return Direction3D {-LocalDirection(2)};
 }
 
 XMMATRIX woi::Coordinate::GetModelRotation() const noexcept
