@@ -191,7 +191,7 @@
     <ClInclude Include="Coordinatable.h">
       <Filter>Header Files\Object\Information</Filter>
     </ClInclude>
-    <ClInclude Include="vector3D.h">
+    <ClInclude Include="Vector3D.h">
       <Filter>Header Files\gp_math</Filter>
     </ClInclude>
     <ClInclude Include="numeric_utility_functions.h">
