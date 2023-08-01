@@ -3,9 +3,9 @@
 #include <d3dcompiler.h>
 #include "DXExceptionMacro.h"
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::PixelShader::PixelShader(std::wstring_view wsv)
+hdx::PixelShader::PixelShader(std::wstring_view wsv)
 {
     // create a pixel shader
     ThrowIfFailed(D3DReadFileToBlob(wsv.data(), &m_pBlob));
@@ -14,10 +14,10 @@ HDX::PixelShader::PixelShader(std::wstring_view wsv)
         &m_pPixelShader));
 }
 
-void HDX::PixelShader::Bind() noexcept
+void hdx::PixelShader::Bind() noexcept
 {
     // bind a pixel shader
     DXResource::GetContext()->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);
 }
 
-ID3D10Blob* HDX::PixelShader::GetBlob() noexcept { return m_pBlob.Get(); }
+ID3D10Blob* hdx::PixelShader::GetBlob() noexcept { return m_pBlob.Get(); }

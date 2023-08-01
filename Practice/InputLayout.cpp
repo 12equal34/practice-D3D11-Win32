@@ -1,9 +1,9 @@
 #include "InputLayout.h"
 #include "DXExceptionMacro.h"
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::InputLayout::InputLayout(VertexShader& vertexShader)
+hdx::InputLayout::InputLayout(VertexShader& vertexShader)
 {
     // create input layout
     const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
@@ -19,7 +19,7 @@ HDX::InputLayout::InputLayout(VertexShader& vertexShader)
         &m_pInputLayout));
 }
 
-void HDX::InputLayout::Bind() noexcept
+void hdx::InputLayout::Bind() noexcept
 {
     DXResource::GetContext()->IASetInputLayout(m_pInputLayout.Get());
 }

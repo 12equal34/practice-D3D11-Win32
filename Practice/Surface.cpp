@@ -40,8 +40,8 @@ std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer()
     vertices.reserve(numVertex);
     for (size_t i = 0; i < m_nx; ++i) {
         for (size_t j = 0; j < m_nz; ++j) {
-            float x = m_coordinate.GetPositionX() + m_gridSize * i;
-            float z = m_coordinate.GetPositionZ() + m_gridSize * j;
+            float x = m_coord.GetPositionX() + m_gridSize * i;
+            float z = m_coord.GetPositionZ() + m_gridSize * j;
             float y = m_H[i][j];
             vertices.emplace_back(x, y, z);
         }

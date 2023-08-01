@@ -47,6 +47,7 @@ public:
     void SetMouse(Hardware::Mouse* pMouse) noexcept;
     void SetTimer(Timer* pTimer) noexcept;
 
+    void                SetTitle(std::string_view titleName);
     void                SetTitle(std::wstring_view titleName);
     HWND                GetHwnd() const noexcept;
     Hardware::DX::Renderer& GetRenderer() const noexcept;

@@ -9,18 +9,17 @@ struct Data3D {
     float z = 0.f;
 
     constexpr Data3D() noexcept = default;
+    constexpr Data3D(float _x, float _y, float _z) noexcept
+        : x(_x),
+          y(_y),
+          z(_z)
+    { }
 
     constexpr Data3D(const Data3D&) noexcept            = default;
     constexpr Data3D& operator=(const Data3D&) noexcept = default;
 
     constexpr Data3D(Data3D&&) noexcept            = default;
     constexpr Data3D& operator=(Data3D&&) noexcept = default;
-
-    constexpr Data3D(float _x, float _y, float _z) noexcept
-        : x(_x),
-          y(_y),
-          z(_z)
-    { }
 
     // for SIMD
     Data3D(DirectX::FXMVECTOR v) noexcept

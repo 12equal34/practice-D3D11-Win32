@@ -14,6 +14,14 @@ bool Keyboard::KeyIsPressed(unsigned char code) const noexcept
     return m_keystates[code];
 }
 
+bool Keyboard::KeyIsPressed(std::u8string_view codes) const noexcept
+{
+    for (auto code : codes) {
+        if (!KeyIsPressed(code)) return false;
+    }
+    return true;
+}
+
 bool Keyboard::KeyIsEmpty() const noexcept { return m_keybuffer.empty(); }
 
 std::optional<Keyboard::Event> Keyboard::ReadKey() noexcept
@@ -69,13 +77,15 @@ void Keyboard::OnKeyPressed(unsigned char code) noexcept
     TrimBuffer(m_keybuffer);
 }
 
-void Keyboard::OnKeyReleased(unsigned char code) noexcept {
+void Keyboard::OnKeyReleased(unsigned char code) noexcept
+{
     m_keystates[code] = false;
     m_keybuffer.push(Keyboard::Event(Keyboard::Event::Type::Release, code));
     TrimBuffer(m_keybuffer);
 }
 
-void Keyboard::OnChar(char c) noexcept { 
+void Keyboard::OnChar(char c) noexcept
+{
     m_charbuffer.push(c);
     TrimBuffer(m_charbuffer);
 }
@@ -86,13 +96,10 @@ void Keyboard::Flush() noexcept
     FlushChar();
 }
 
-void Keyboard::ClearState() noexcept { 
-    m_keystates.reset();
-}
+void Keyboard::ClearState() noexcept { m_keystates.reset(); }
 //-----------------------------------------------------------------------------
 // Keyboard Interface Definitions
 //-----------------------------------------------------------------------------
 Hardware::Keyboard::Keyboard(Window* owner) noexcept
     : m_pOwner(owner)
-{
-}
+{ }

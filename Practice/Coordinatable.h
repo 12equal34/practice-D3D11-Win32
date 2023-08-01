@@ -9,6 +9,6 @@ public:
 	Information::Coordinate& GetCoordinate() noexcept;
 	const Information::Coordinate& GetCoordinate() const noexcept;
 protected:
-	Information::Coordinate m_coordinate;
+	Information::Coordinate m_coord;
 };
 }

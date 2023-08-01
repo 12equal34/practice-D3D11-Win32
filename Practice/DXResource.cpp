@@ -2,18 +2,18 @@
 #include "DXExceptionMacro.h"
 
 namespace wrl = Microsoft::WRL;
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::DXResource HDX::DXResource::Instance;
+hdx::DXResource hdx::DXResource::s_instance;
 
-void HDX::DXResource::Initialize(HWND hwnd)
+void hdx::DXResource::Initialize(HWND hwnd)
 {
     CreateDeviceAndSwapChain(hwnd);
     CreateRTV();
     CreateDSV();
 }
 
-void HDX::DXResource::CreateDeviceAndSwapChain(HWND hwnd)
+void hdx::DXResource::CreateDeviceAndSwapChain(HWND hwnd)
 {
     DXGI_SWAP_CHAIN_DESC scDesc               = {};
     scDesc.BufferDesc.Width                   = 0;
@@ -45,7 +45,7 @@ void HDX::DXResource::CreateDeviceAndSwapChain(HWND hwnd)
         &GetContext()));
 }
 
-void HDX::DXResource::CreateRTV()
+void hdx::DXResource::CreateRTV()
 {
     // gain access to texture subresource in swap chain (back buffer)
     wrl::ComPtr<ID3D11Resource> pBackBuffer;
@@ -55,7 +55,7 @@ void HDX::DXResource::CreateRTV()
                                                       nullptr, &GetRTV()));
 }
 
-void HDX::DXResource::CreateDSV()
+void hdx::DXResource::CreateDSV()
 {
     // create depth stencil desc
     D3D11_DEPTH_STENCIL_DESC dsDesc = {};
@@ -93,32 +93,42 @@ void HDX::DXResource::CreateDSV()
                                                       &dsvDesc, &GetDSV()));
 }
 
-wrl::ComPtr<ID3D11Device>& HDX::DXResource::GetDevice() noexcept
+wrl::ComPtr<ID3D11Device>& hdx::DXResource::GetDevice() noexcept
 {
-    return Instance.m_device;
+    return s_instance.m_device;
 }
 
-wrl::ComPtr<ID3D11DeviceContext>& HDX::DXResource::GetContext() noexcept
+wrl::ComPtr<ID3D11DeviceContext>& hdx::DXResource::GetContext() noexcept
 {
-    return Instance.m_context;
+    return s_instance.m_context;
 }
 
-wrl::ComPtr<IDXGISwapChain>& HDX::DXResource::GetSwapchain() noexcept
+wrl::ComPtr<IDXGISwapChain>& hdx::DXResource::GetSwapchain() noexcept
 {
-    return Instance.m_swapchain;
+    return s_instance.m_swapchain;
 }
 
-wrl::ComPtr<ID3D11RenderTargetView>& HDX::DXResource::GetRTV() noexcept
+wrl::ComPtr<ID3D11RenderTargetView>& hdx::DXResource::GetRTV() noexcept
 {
-    return Instance.m_rtv;
+    return s_instance.m_rtv;
 }
 
-wrl::ComPtr<ID3D11DepthStencilView>& HDX::DXResource::GetDSV() noexcept
+wrl::ComPtr<ID3D11DepthStencilView>& hdx::DXResource::GetDSV() noexcept
 {
-    return Instance.m_dsv;
+    return s_instance.m_dsv;
 }
 
-RECT& HDX::DXResource::GetClientRectangle() noexcept
+RECT& hdx::DXResource::GetClientRectangle() noexcept
 {
-    return Instance.m_clientRect;
+    return s_instance.m_clientRect;
+}
+
+LONG Hardware::DX::DXResource::GetWindowWidth() noexcept
+{
+    return s_instance.m_clientRect.right - s_instance.m_clientRect.left;
+}
+
+LONG Hardware::DX::DXResource::GetWindowHeight() noexcept
+{
+    return s_instance.m_clientRect.bottom - s_instance.m_clientRect.top;
 }

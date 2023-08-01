@@ -11,8 +11,8 @@ namespace World::Object
 class Object : public Hardware::DX::IBindable, public Information::Coordinatable
 {
 public:
-    DirectX::XMMATRIX GetModelRotation() const noexcept;
-    DirectX::XMMATRIX GetModelTranslation() const noexcept;
+    DirectX::XMMATRIX GetRotationMatrix() const noexcept;
+    DirectX::XMMATRIX GetTranslationMatrix() const noexcept;
     DirectX::XMMATRIX GetModelMatrix() const noexcept;
 
     virtual std::unique_ptr<Hardware::DX::VertexBuffer> GetVertexBuffer() = 0;

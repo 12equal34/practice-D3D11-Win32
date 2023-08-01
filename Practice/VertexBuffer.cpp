@@ -1,9 +1,9 @@
 #include "VertexBuffer.h"
 #include "DXExceptionMacro.h"
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::VertexBuffer::VertexBuffer(UINT numVertex,
+hdx::VertexBuffer::VertexBuffer(UINT numVertex,
                            UINT structureByteStride, const void* vertices)
     : m_structureByteStride(structureByteStride)
 {
@@ -21,7 +21,7 @@ HDX::VertexBuffer::VertexBuffer(UINT numVertex,
         DXResource::GetDevice()->CreateBuffer(&bd, &sd, &m_pVertexBuffer));
 }
 
-void HDX::VertexBuffer::Bind() noexcept
+void hdx::VertexBuffer::Bind() noexcept
 {
     // bind vertex buffer
     const UINT offset = 0u;

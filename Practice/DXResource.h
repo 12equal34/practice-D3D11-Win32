@@ -8,7 +8,7 @@ namespace Hardware::DX
 class DXResource final
 {
 private:
-    static DXResource Instance;
+    static DXResource s_instance;
 
 public:
     static void Initialize(HWND hwnd);
@@ -23,6 +23,8 @@ public:
     static Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& GetRTV() noexcept;
     static Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& GetDSV() noexcept;
     static RECT& GetClientRectangle() noexcept;
+    static LONG GetWindowWidth() noexcept;
+    static LONG GetWindowHeight() noexcept;
 private:
     DXResource() noexcept                    = default;
     ~DXResource()                            = default;

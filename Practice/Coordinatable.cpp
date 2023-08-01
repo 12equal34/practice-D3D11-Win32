@@ -10,5 +10,5 @@ woi::Coordinate& woi::Coordinatable::GetCoordinate() noexcept
 
 const woi::Coordinate& woi::Coordinatable::GetCoordinate() const noexcept
 {
-    return m_coordinate;
+    return m_coord;
 }

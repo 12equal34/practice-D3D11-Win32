@@ -99,6 +99,10 @@ void Window::SetKeyboard(Keyboard* pKeyboard) noexcept
 }
 void Window::SetMouse(Mouse* pMouse) noexcept { m_pMouse = pMouse; }
 void Window::SetTimer(Timer* pTimer) noexcept { m_pTimer = pTimer; }
+void Hardware::Window::SetTitle(std::string_view titleName)
+{
+    ThrowIfNull(SetWindowTextA(m_hwnd, titleName.data()));
+}
 void Window::SetTitle(std::wstring_view titleName)
 {
     ThrowIfNull(SetWindowTextW(m_hwnd, titleName.data()));

@@ -43,8 +43,9 @@ public:
     void Flush() noexcept;
 
     // key event
-    bool                 KeyIsPressed(unsigned char code) const noexcept;
-    bool                 KeyIsEmpty() const noexcept;
+    bool KeyIsPressed(unsigned char code) const noexcept;
+    bool KeyIsPressed(std::u8string_view codes) const noexcept;
+    bool KeyIsEmpty() const noexcept;
     std::optional<Event> ReadKey() noexcept;
     void                 FlushKey() noexcept;
 
@@ -69,7 +70,7 @@ private:
 private:
     static constexpr unsigned int sKeySize = 256u;
 
-    Window* m_pOwner;
+    Window*               m_pOwner;
     bool                  m_autorepeatedEnabled = false;
     std::bitset<sKeySize> m_keystates;
     std::queue<Event>     m_keybuffer;

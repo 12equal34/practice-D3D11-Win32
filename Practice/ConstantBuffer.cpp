@@ -1,9 +1,9 @@
 #include "ConstantBuffer.h"
 #include "DXExceptionMacro.h"
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::ConstantBuffer::ConstantBuffer(UINT byteWidth)
+hdx::ConstantBuffer::ConstantBuffer(UINT byteWidth)
 {
     D3D11_BUFFER_DESC cbd = {};
     cbd.Usage = D3D11_USAGE_DEFAULT;
@@ -16,7 +16,7 @@ HDX::ConstantBuffer::ConstantBuffer(UINT byteWidth)
         DXResource::GetDevice()->CreateBuffer(&cbd, nullptr, &m_pConstantBuffer));
 }
 
-HDX::ConstantBuffer::ConstantBuffer(UINT        byteWidth,
+hdx::ConstantBuffer::ConstantBuffer(UINT        byteWidth,
                                     const void* pConstantBufferData)
 {
     D3D11_BUFFER_DESC cbd      = {};
@@ -38,13 +38,13 @@ void Hardware::DX::ConstantBuffer::Update(const void* pSrcData)
                                                 nullptr, pSrcData, 0u, 0u);
 }
 
-void HDX::ConstantBuffer::SetToVertexShader(UINT startSlot) noexcept
+void hdx::ConstantBuffer::SetToVertexShader(UINT startSlot) noexcept
 {
     DXResource::GetContext()->VSSetConstantBuffers(
         startSlot, 1u, m_pConstantBuffer.GetAddressOf());
 }
 
-void HDX::ConstantBuffer::SetToPixelShader(UINT startSlot) noexcept
+void hdx::ConstantBuffer::SetToPixelShader(UINT startSlot) noexcept
 {
     DXResource::GetContext()->PSSetConstantBuffers(
         startSlot, 1u, m_pConstantBuffer.GetAddressOf());

@@ -4,11 +4,11 @@
 
 #pragma comment(lib, "dxguid.lib")
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::DxgiInfoManager HDX::DxgiInfoManager::Instance;
+hdx::DxgiInfoManager hdx::DxgiInfoManager::Instance;
 
-void HDX::DxgiInfoManager::Initialize()
+void hdx::DxgiInfoManager::Initialize()
 {
     // define function signature of DXGIGetDebugInterface
     typedef HRESULT(WINAPI * DXGIGetDebugInterface)(REFIID, void**);
@@ -35,14 +35,14 @@ void HDX::DxgiInfoManager::Initialize()
     }
 }
 
-void HDX::DxgiInfoManager::Set() noexcept
+void hdx::DxgiInfoManager::Set() noexcept
 {
     // set the index (next) so that the next all to GetMessages()
     // will only get errors generated after this call
     m_next = m_pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
 }
 
-std::vector<std::string> HDX::DxgiInfoManager::GetMessages() const
+std::vector<std::string> hdx::DxgiInfoManager::GetMessages() const
 {
     std::vector<std::string> messages;
     const auto end = m_pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
@@ -68,7 +68,7 @@ std::vector<std::string> HDX::DxgiInfoManager::GetMessages() const
     return messages;
 }
 
-void HDX::DxgiInfoManager::ThrowIfFailed(HRESULT hr, int line, const char* file)
+void hdx::DxgiInfoManager::ThrowIfFailed(HRESULT hr, int line, const char* file)
 {
     Instance.Set();
     if (FAILED(hr)) {
@@ -80,7 +80,7 @@ void HDX::DxgiInfoManager::ThrowIfFailed(HRESULT hr, int line, const char* file)
         }
     }
 }
-void HDX::DxgiInfoManager::ThrowIfInfoGot(int line, const char* file)
+void hdx::DxgiInfoManager::ThrowIfInfoGot(int line, const char* file)
 {
     auto v = Instance.GetMessages();
     if (!v.empty()) {
@@ -88,4 +88,4 @@ void HDX::DxgiInfoManager::ThrowIfInfoGot(int line, const char* file)
     }
 }
 
-void HDX::DxgiInfoManager::Setting() noexcept { Instance.Set(); }
+void hdx::DxgiInfoManager::Setting() noexcept { Instance.Set(); }

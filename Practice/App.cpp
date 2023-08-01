@@ -17,8 +17,8 @@ App::App()
     m_window.SetTimer(&m_mainTimer);
 
     auto& cameraCoord = m_camera.GetCoordinate();
-    cameraCoord.SetPosition({0.0f, 10.0f, 0.0f});
-    cameraCoord.SetOrientation({0.0f, 0.0f, 0.0f});
+    cameraCoord.SetPosition(0.0f, 10.0f, 0.0f);
+    cameraCoord.SetOrientation(0.0f, 0.0f, 0.0f);
 }
 
 App::~App() { }
@@ -51,32 +51,20 @@ int App::Run()
 
 void App::HandleInput(float dt)
 {
-    static constexpr float cameraRotationSpeed = 10.0f;
-    static constexpr float cameraMoveSpeed     = 10.0f;
-
     // keyboard input handles
     while (const auto e = m_keyboard.ReadKey()) {
         // omitted
     }
 
-    auto&      cameraCoord = m_camera.GetCoordinate();
-    const auto step        = cameraMoveSpeed * dt;
-    if (m_keyboard.KeyIsPressed('W')) cameraCoord.GoForward(step);
-    if (m_keyboard.KeyIsPressed('S')) cameraCoord.GoBackward(step);
-    if (m_keyboard.KeyIsPressed('Q')) cameraCoord.GoUp(step);
-    if (m_keyboard.KeyIsPressed('E')) cameraCoord.GoDown(step);
-    if (m_keyboard.KeyIsPressed('D')) cameraCoord.GoRight(step);
-    if (m_keyboard.KeyIsPressed('A')) cameraCoord.GoLeft(step);
+    m_camera.HandleInputFromKeyboard(m_keyboard, dt);
 
     // mouse input handles
     while (const auto xy = m_mouse.Read()) {
     }
-    while (const auto dxy = m_mouse.ReadDelta()) {
-        const auto& cr_xy = dxy.value();
-        auto dyaw   = cameraRotationSpeed * cr_xy.first / m_window.GetWidth();
-        auto dpitch = cameraRotationSpeed * cr_xy.second / m_window.GetHeight();
-        // m_camera.Rotate(dpitch, dyaw, 0.0f);
-        cameraCoord.Rotate({dpitch, dyaw, 0.0f});
+    while (const auto deltaMouseXY = m_mouse.ReadDelta()) {
+        const auto& [deltaMouseX, deltaMouseY] = deltaMouseXY.value();
+
+        m_camera.HandleInputFromMouseMovement(deltaMouseX, deltaMouseY);
     }
 }
 
@@ -85,7 +73,6 @@ void App::RunFrame(float dt)
     using namespace DirectX;
     using namespace Hardware::DX;
     auto& renderer = m_window.GetRenderer();
-
 
     std::vector<std::unique_ptr<World::Object::Object>> objects;
     auto waterSurface = std::make_unique<World::Object::WaterSurface>(
@@ -100,7 +87,7 @@ void App::RunFrame(float dt)
 
     auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
     directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
-    directionalLight->GetCoordinate().SetOrientation({ -XM_PIDIV2, 0.0f, 0.0f });
+    directionalLight->GetCoordinate().SetOrientation(-XM_PIDIV2, 0.0f, 0.0f);
     directionalLight->Bind();
 
     DXResource::GetContext()->IASetPrimitiveTopology(
@@ -115,15 +102,32 @@ void App::RunFrame(float dt)
 void App::DebugHelpWindowTitle(float dt)
 {
     // write times at the window title
-    double                  totalTime = m_mainTimer.TimeSinceStart();
-    static int              i         = 0;
-    static constexpr double interval  = 0.1;
-    static int              frames    = 0;
+    static double           prevTime       = 0.0;
+    static double           prevTimeForFPS = 0.0;
+    static constexpr double intervalTime   = 1.0;
+    static int              frames         = 0;
+
     ++frames;
-    if (totalTime > interval * i) {
-        double fps = frames / interval;
+
+    double totalTime       = m_mainTimer.TimeSinceStart();
+    double deltaTime       = totalTime - prevTime;
+    double deltaTimeForFPS = totalTime - prevTimeForFPS;
+
+    static std::string fpsStr;
+    if (1.0 < deltaTimeForFPS) {
+        prevTimeForFPS = totalTime;
+
+        double fps = frames;
         frames     = 0;
-        ++i;
+
+        std::stringstream wo;
+        wo << "fps: " << std::left << std::setw(16) << fps;
+        fpsStr = wo.str();
+    }
+
+    static std::string titleStr;
+    if (0.1 < deltaTime) {
+        prevTime = totalTime;
 
         std::stringstream mouseStr;
         mouseStr << '(' << m_mouse.GetNormalizedX() << ','
@@ -136,21 +140,19 @@ void App::DebugHelpWindowTitle(float dt)
                      << cameraCoord.GetPositionZ() << ')';
 
         std::stringstream cameraOriStr;
-        cameraOriStr << '(' << cameraCoord.GetOrientationX() << ','
-                     << cameraCoord.GetOrientationY() << ','
-                     << cameraCoord.GetOrientationZ() << ')';
+        cameraOriStr << '(' << m_camera.GetPitch() << ',' << m_camera.GetYaw()
+                     << ',' << 0.0f << ')';
 
         std::stringstream wo;
-        wo << "Timer : " << std::left << std::setw(16) << totalTime
-           << "fps: " << std::left << std::setw(16) << fps;
+        wo << "Timer : " << std::left << std::setw(16) << totalTime;
+
         wo << "Mouse : " << std::left << std::setw(30) << mouseStr.str();
         wo << "Camera.pos : " << std::left << std::setw(30)
            << cameraPosStr.str();
         wo << "Camera.ori : " << std::left << std::setw(30)
            << cameraOriStr.str();
 
-        auto         str = wo.str();
-        std::wstring title(str.begin(), str.end());
-        m_window.SetTitle(title);
+        titleStr = fpsStr + wo.str();
+        m_window.SetTitle(titleStr);
     }
 }

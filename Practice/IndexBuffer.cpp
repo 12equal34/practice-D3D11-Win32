@@ -1,9 +1,9 @@
 #include "IndexBuffer.h"
 #include "DXExceptionMacro.h"
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 
-HDX::IndexBuffer::IndexBuffer(UINT numIndex, UINT structureByteStride,
+hdx::IndexBuffer::IndexBuffer(UINT numIndex, UINT structureByteStride,
                               const void* indices)
     : m_numIndex(numIndex),
       m_structureByteStride(structureByteStride),
@@ -29,11 +29,11 @@ HDX::IndexBuffer::IndexBuffer(UINT numIndex, UINT structureByteStride,
         DXResource::GetDevice()->CreateBuffer(&bd, &sd, &m_pIndexBuffer));
 }
 
-void HDX::IndexBuffer::Bind() noexcept
+void hdx::IndexBuffer::Bind() noexcept
 {
     // bind index buffer
     DXResource::GetContext()->IASetIndexBuffer(m_pIndexBuffer.Get(),
                                               m_dxgiFormat, 0u);
 }
 
-UINT HDX::IndexBuffer::GetIndexCount() const noexcept { return m_numIndex; }
+UINT hdx::IndexBuffer::GetIndexCount() const noexcept { return m_numIndex; }

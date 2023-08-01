@@ -12,10 +12,10 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-namespace HDX = Hardware::DX;
+namespace hdx = Hardware::DX;
 using namespace DirectX;
 
-HDX::Renderer::Renderer(HWND hwnd)
+hdx::Renderer::Renderer(HWND hwnd)
 {
 #ifndef NDEBUG
     Hardware::DX::DxgiInfoManager::Initialize();
@@ -29,11 +29,11 @@ HDX::Renderer::Renderer(HWND hwnd)
     DXResource::GetContext()->OMSetRenderTargets(
         1u, DXResource::GetRTV().GetAddressOf(), DXResource::GetDSV().Get());
 }
-void HDX::Renderer::EndFrame()
+void hdx::Renderer::EndFrame()
 {
     ThrowIfFailed(DXResource::GetSwapchain()->Present(0u, 0u));
 }
-void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
+void hdx::Renderer::ClearBuffer(float r, float g, float b) noexcept
 {
     const float color[] = {r, g, b, 1.0f};
     DXResource::GetContext()->ClearRenderTargetView(DXResource::GetRTV().Get(),
@@ -42,7 +42,7 @@ void HDX::Renderer::ClearBuffer(float r, float g, float b) noexcept
         DXResource::GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
-void HDX::Renderer::DrawObjects(
+void hdx::Renderer::DrawObjects(
     const World::Object::Camera&                               camera,
     const std::vector<std::unique_ptr<World::Object::Object>>& objects)
 {
