@@ -4,9 +4,12 @@
 #include "Mouse.h"
 #include "Timer.h"
 #include "Camera.h"
+#include "Map.h"
 
 class App
 {
+public:
+    enum class AppState { Run, Initialize, Reset };
 public:
     App();
     ~App();
@@ -20,10 +23,16 @@ private:
 
     void DebugHelpWindowTitle(float dt);
 
+    void InitializeApp();
+    void ResetApp();
+
 private:
     Hardware::Window      m_window;
     Hardware::Keyboard    m_keyboard;
     Hardware::Mouse       m_mouse;
     Timer                 m_mainTimer;
     World::Object::Camera m_camera;
+    World::Map            m_map;
+
+    AppState m_appState;
 };

@@ -1,12 +1,12 @@
 #pragma once
-#include <DirectXMath.h>
 
-namespace gp
+namespace gp::math
 {
-namespace math
+class NumericUtilityFunc
 {
+public:
     // returns "x mod (b-a) in [a,b)"
-    void map_on_range(float& x, float a, float b) noexcept
+    static void map_on_range(float& x, float a, float b) noexcept
     {
         auto distance = b - a;
         while (true) {
@@ -19,5 +19,5 @@ namespace math
             }
         }
     }
-}
+};
 }

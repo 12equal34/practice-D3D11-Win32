@@ -3,49 +3,41 @@
 
 namespace hdx = Hardware::DX;
 
-hdx::ConstantBuffer::ConstantBuffer(UINT byteWidth)
+hdx::ConstantBuffer::ConstantBuffer(UINT byteWidth, const void* pInitialData)
 {
-    D3D11_BUFFER_DESC cbd = {};
-    cbd.Usage = D3D11_USAGE_DEFAULT;
-    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.CPUAccessFlags = 0u;
-    cbd.MiscFlags = 0u;
-    cbd.ByteWidth = byteWidth;
+    D3D11_BUFFER_DESC cbd   = {};
+    cbd.Usage               = D3D11_USAGE_DEFAULT;
+    cbd.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags      = 0u;
+    cbd.MiscFlags           = 0u;
+    cbd.ByteWidth           = byteWidth;
     cbd.StructureByteStride = 0u;
-    ThrowIfFailed(
-        DXResource::GetDevice()->CreateBuffer(&cbd, nullptr, &m_pConstantBuffer));
+
+    if (pInitialData == nullptr) {
+        ThrowIfFailed(DXResource::GetDevice()->CreateBuffer(
+            &cbd, nullptr, &m_pConstantBuffer));
+    } else {
+        D3D11_SUBRESOURCE_DATA csd = {};
+        csd.pSysMem                = pInitialData;
+        ThrowIfFailed(DXResource::GetDevice()->CreateBuffer(
+            &cbd, &csd, &m_pConstantBuffer));
+    }
 }
 
-hdx::ConstantBuffer::ConstantBuffer(UINT        byteWidth,
-                                    const void* pConstantBufferData)
+void Hardware::DX::ConstantBuffer::Update(const void* pNewSrcData)
 {
-    D3D11_BUFFER_DESC cbd      = {};
-    cbd.Usage                  = D3D11_USAGE_DEFAULT;
-    cbd.BindFlags              = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.CPUAccessFlags         = 0u;
-    cbd.MiscFlags              = 0u;
-    cbd.ByteWidth              = byteWidth;
-    cbd.StructureByteStride    = 0u;
-    D3D11_SUBRESOURCE_DATA csd = {};
-    csd.pSysMem                = pConstantBufferData;
-    ThrowIfFailed(
-        DXResource::GetDevice()->CreateBuffer(&cbd, &csd, &m_pConstantBuffer));
+    ThrowIfInfoGot(DXResource::GetContext()->UpdateSubresource(
+        m_pConstantBuffer.Get(), 0u, nullptr, pNewSrcData, 0u, 0u));
 }
 
-void Hardware::DX::ConstantBuffer::Update(const void* pSrcData)
+void hdx::ConstantBuffer::SetToVertexShader(UINT startSlot)
 {
-    DXResource::GetContext()->UpdateSubresource(m_pConstantBuffer.Get(), 0u,
-                                                nullptr, pSrcData, 0u, 0u);
+    ThrowIfInfoGot(DXResource::GetContext()->VSSetConstantBuffers(
+        startSlot, 1u, m_pConstantBuffer.GetAddressOf()));
 }
 
-void hdx::ConstantBuffer::SetToVertexShader(UINT startSlot) noexcept
+void hdx::ConstantBuffer::SetToPixelShader(UINT startSlot)
 {
-    DXResource::GetContext()->VSSetConstantBuffers(
-        startSlot, 1u, m_pConstantBuffer.GetAddressOf());
-}
-
-void hdx::ConstantBuffer::SetToPixelShader(UINT startSlot) noexcept
-{
-    DXResource::GetContext()->PSSetConstantBuffers(
-        startSlot, 1u, m_pConstantBuffer.GetAddressOf());
+    ThrowIfInfoGot(DXResource::GetContext()->PSSetConstantBuffers(
+        startSlot, 1u, m_pConstantBuffer.GetAddressOf()));
 }

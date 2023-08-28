@@ -14,7 +14,7 @@ hdx::PixelShader::PixelShader(std::wstring_view wsv)
         &m_pPixelShader));
 }
 
-void hdx::PixelShader::Bind() noexcept
+void hdx::PixelShader::Bind()
 {
     // bind a pixel shader
     DXResource::GetContext()->PSSetShader(m_pPixelShader.Get(), nullptr, 0u);

@@ -1,25 +1,20 @@
 #include "InputLayout.h"
 #include "DXExceptionMacro.h"
+#include "ConstantBuffers.h"
 
 namespace hdx = Hardware::DX;
 
-hdx::InputLayout::InputLayout(VertexShader& vertexShader)
+hdx::InputLayout::InputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDesc,
+                              UINT numElements, VertexShader& vertexShader)
 {
-    // create input layout
-    const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
-        {"Position", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u,
-         D3D11_INPUT_PER_VERTEX_DATA, 0u}
-    };
-
-    auto pVShaderBlob = vertexShader.GetBlob();
+    auto pVSShaderBlob = vertexShader.GetBlob();
 
     ThrowIfFailed(DXResource::GetDevice()->CreateInputLayout(
-        inputElementDesc, ARRAYSIZE(inputElementDesc),
-        pVShaderBlob->GetBufferPointer(), pVShaderBlob->GetBufferSize(),
-        &m_pInputLayout));
+        pInputElementDesc, numElements, pVSShaderBlob->GetBufferPointer(),
+        pVSShaderBlob->GetBufferSize(), &m_pInputLayout));
 }
 
-void hdx::InputLayout::Bind() noexcept
+void hdx::InputLayout::Bind()
 {
     DXResource::GetContext()->IASetInputLayout(m_pInputLayout.Get());
 }

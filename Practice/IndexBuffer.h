@@ -10,7 +10,7 @@ public:
     IndexBuffer(UINT numIndex, UINT structureByteStride,
                 const void* indices);
 
-    void Bind() noexcept override;
+    void Bind() override;
     UINT GetIndexCount() const noexcept;
 
 private:

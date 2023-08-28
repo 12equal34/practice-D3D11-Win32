@@ -5,12 +5,14 @@
 #include "DXResource.h"
 #include "DirectionalLight.h"
 #include "WaterSurface.h"
+#include "HemisphericAmbientLight.h"
 
 App::App()
     : m_window(1000, 600, L"Window Sample"),
       m_keyboard(&m_window),
       m_mouse(&m_window),
-      m_mainTimer()
+      m_mainTimer(),
+      m_appState(AppState::Initialize)
 {
     m_window.SetKeyboard(&m_keyboard);
     m_window.SetMouse(&m_mouse);
@@ -36,10 +38,24 @@ int App::Run()
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         } else {
-            float dt = static_cast<float>(m_mainTimer.Mark());
-            DebugHelpWindowTitle(dt);
-            HandleInput(dt);
-            RunFrame(dt);
+            switch (m_appState) {
+            case AppState::Run:
+            {
+                float dt = static_cast<float>(m_mainTimer.Mark());
+                RunFrame(dt);
+                break;
+            }
+            case AppState::Initialize:
+                InitializeApp();
+                m_appState = AppState::Run;
+                break;
+            case AppState::Reset:
+                ResetApp();
+                m_appState = AppState::Run;
+                break;
+            default:
+                break;
+            }
         }
     }
 
@@ -70,32 +86,22 @@ void App::HandleInput(float dt)
 
 void App::RunFrame(float dt)
 {
-    using namespace DirectX;
-    using namespace Hardware::DX;
+    DebugHelpWindowTitle(dt);
+    HandleInput(dt);
+
+    m_map.UpdateDynamicObject(dt);
+
+    m_map.Bind();
+    m_camera.Bind();
+
     auto& renderer = m_window.GetRenderer();
 
-    std::vector<std::unique_ptr<World::Object::Object>> objects;
-    auto waterSurface = std::make_unique<World::Object::WaterSurface>(
-        150, 150, 0.5f,
-        World::Object::WaterSurface::TestWaveGenerator(
-            static_cast<float>(m_mainTimer.Time())));
-    objects.push_back(std::move(waterSurface));
-
-    for (auto& obj : objects) {
-        obj->Bind();
-    }
-
-    auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
-    directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
-    directionalLight->GetCoordinate().SetOrientation(-XM_PIDIV2, 0.0f, 0.0f);
-    directionalLight->Bind();
-
-    DXResource::GetContext()->IASetPrimitiveTopology(
+    Hardware::DX::DXResource::GetContext()->IASetPrimitiveTopology(
         D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
-    m_camera.Bind();
-    renderer.DrawObjects(m_camera, objects);
+
+    renderer.DrawDynamicObjects(dt, m_camera, m_map.m_dynamicObjects);
     renderer.EndFrame();
 }
 
@@ -156,3 +162,29 @@ void App::DebugHelpWindowTitle(float dt)
         m_window.SetTitle(titleStr);
     }
 }
+
+void App::InitializeApp()
+{
+    auto gerstnerWaveGenerator =
+        World::Object::Simulation::GerstnerWaveContainer::TestWaveGenerator();
+    auto waterSurface = std::make_unique<World::Object::WaterSurface>(
+        150, 150, 0.5f, gerstnerWaveGenerator());
+
+    m_map.m_dynamicObjects.push_back(std::move(waterSurface));
+
+    auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
+    directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
+    directionalLight->GetCoordinate().SetOrientation(DirectX::XM_PIDIV2, 0.0f,
+                                                     0.0f);
+
+    m_map.m_directionalLightObjects.push_back(std::move(directionalLight));
+
+    auto ambientLight =
+        std::make_unique<World::Object::HemisphericAmbientLight>();
+    ambientLight->SetLightBaseColor(0.6f, 0.6f, 0.6f, 1.0f);
+    ambientLight->SetLightColorRange(0.3f, 0.3f, 0.3f, 1.0f);
+
+    m_map.m_ambientLightObjects.push_back(std::move(ambientLight));
+}
+
+void App::ResetApp() { }

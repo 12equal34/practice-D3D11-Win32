@@ -18,7 +18,7 @@ public:
     virtual std::unique_ptr<Hardware::DX::VertexBuffer> GetVertexBuffer() = 0;
     virtual std::unique_ptr<Hardware::DX::IndexBuffer>  GetIndexBuffer()  = 0;
     virtual UINT GetIndexCount() const noexcept                           = 0;
-    virtual void Bind() noexcept override                                 = 0;
+    virtual void Bind() override                                 = 0;
 
 protected:
     std::vector<std::unique_ptr<Hardware::DX::IBindable>> m_bindings;

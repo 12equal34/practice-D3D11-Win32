@@ -9,7 +9,7 @@ namespace Hardware::DX
 	{
 	public:
 		VertexShader(std::wstring_view wsv);
-		void Bind() noexcept override;
+		void Bind() override;
 
 		ID3D10Blob* GetBlob() noexcept;
 	private:

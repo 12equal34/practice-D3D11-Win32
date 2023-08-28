@@ -8,7 +8,7 @@ class Topology : public IBindable
 {
 public:
     Topology(D3D11_PRIMITIVE_TOPOLOGY topology);
-    void Bind() noexcept override;
+    void Bind() override;
 private:
     D3D11_PRIMITIVE_TOPOLOGY m_topology;
 };

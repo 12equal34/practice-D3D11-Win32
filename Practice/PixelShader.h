@@ -9,7 +9,7 @@ class PixelShader : public IBindable
 {
 public:
     PixelShader(std::wstring_view wsv);
-    void        Bind() noexcept override;
+    void        Bind() override;
     ID3D10Blob* GetBlob() noexcept;
 private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader;

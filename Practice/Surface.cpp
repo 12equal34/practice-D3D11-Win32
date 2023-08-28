@@ -2,7 +2,6 @@
 
 #include "Renderer.h"
 #include "VertexShader.h"
-#include "InputLayout.h"
 #include "PixelShader.h"
 
 using namespace Hardware::DX;
@@ -22,9 +21,12 @@ WO::Surface::Surface(int numZ, int numX, float gridSize)
 
     // vertex shader & input layout
     auto pVertexShader =
-        std::make_unique<VertexShader>(L"Shaders/VertexShader.cso");
-    m_bindings.push_back(
-        std::move(std::make_unique<InputLayout>(*pVertexShader.get())));
+        std::make_unique<VertexShader>(L"Shaders/GerstnerWaveVS.cso");
+
+    auto& vertexLayout = SimpleVertexLayout;
+
+    m_bindings.push_back(std::move(std::make_unique<InputLayout>(
+        vertexLayout, (UINT)std::size(vertexLayout), *pVertexShader.get())));
     m_bindings.push_back(std::move(pVertexShader));
 
     // pixel shader
@@ -40,10 +42,15 @@ std::unique_ptr<VertexBuffer> WO::Surface::GetVertexBuffer()
     vertices.reserve(numVertex);
     for (size_t i = 0; i < m_nx; ++i) {
         for (size_t j = 0; j < m_nz; ++j) {
-            float x = m_coord.GetPositionX() + m_gridSize * i;
-            float z = m_coord.GetPositionZ() + m_gridSize * j;
-            float y = m_H[i][j];
-            vertices.emplace_back(x, y, z);
+
+            DirectX::XMFLOAT3 position;
+            position.x = m_coord.GetPositionX() + m_gridSize * i;
+            position.z = m_coord.GetPositionZ() + m_gridSize * j;
+            position.y = m_H[i][j];
+
+            VertexType vertex {position};
+
+            vertices.push_back(std::move(vertex));
         }
     }
     return std::make_unique<VertexBuffer>(
@@ -79,7 +86,7 @@ std::unique_ptr<IndexBuffer> WO::Surface::GetIndexBuffer()
 
 UINT WO::Surface::GetIndexCount() const noexcept { return m_numIndex; }
 
-void WO::Surface::Bind() noexcept
+void WO::Surface::Bind()
 {
     for (auto& binding : m_bindings) {
         binding->Bind();

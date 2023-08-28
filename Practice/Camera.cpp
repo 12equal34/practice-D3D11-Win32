@@ -1,5 +1,5 @@
-#include <string_view>
 #include "Camera.h"
+#include "Mouse.h"
 #include "numeric_utility_functions.h"
 
 using namespace Hardware::DX;
@@ -43,14 +43,14 @@ void World::Object::Camera::SetViewport(FLOAT width, FLOAT height) noexcept
 
 void World::Object::Camera::SetPitchYaw(float pitch, float yaw) noexcept
 {
-    gp::math::map_on_range(pitch, 0.0f, XM_2PI);
+    gp::math::NumericUtilityFunc::map_on_range(std::ref(pitch), 0.0f, XM_2PI);
     if (XM_PI <= pitch) {
         yaw   += XM_PI;
         pitch -= XM_PI;
     }
     pitch -= XM_PIDIV2;
 
-    gp::math::map_on_range(yaw, -XM_PI, XM_PI);
+    gp::math::NumericUtilityFunc::map_on_range(std::ref(yaw), -XM_PI, XM_PI);
 
     m_pitch = pitch;
     m_yaw   = yaw;
@@ -144,7 +144,7 @@ void World::Object::Camera::HandleInputFromMouseMovement(
     m_coord.SetOrientation(m_pitch, m_yaw, 0.0f);
 }
 
-void World::Object::Camera::Bind() noexcept
+void World::Object::Camera::Bind()
 {
     DXResource::GetContext()->RSSetViewports(1u, &m_viewport);
 }

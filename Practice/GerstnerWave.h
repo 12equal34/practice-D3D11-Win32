@@ -1,34 +1,29 @@
 #pragma once
-#include <cmath>
+#include "ConstantBuffers.h"
 
 namespace World::Object::Simulation
 {
 class GerstnerWave
 {
 public:
-    GerstnerWave(float waveVecX, float waveVecZ, float waveAmp,
-                 float wavePhase) noexcept
-        : m_waveVecX(waveVecX),
-          m_waveVecZ(waveVecZ),
-          m_waveNumber(std::sqrtf(waveVecX * waveVecX + waveVecZ * waveVecZ)),
-          m_waveAngFreq(9.8f * m_waveNumber),
-          m_waveAmp(waveAmp),
-          m_wavePhase(wavePhase),
-          _1(NULL),
-          _2(NULL)
-    { }
+    GerstnerWave(float waveNumberX, float waveNumberZ, float waveAmp,
+                 float initWavePhase) noexcept;
 
     void SetWaveVector(float waveVecX, float waveVecZ) noexcept;
     void SetWaveAmplitude(float waveAmp) noexcept;
-    void SetWavePhase(float wavePhase) noexcept;
+    void SetWaveNextPhase(float dt) noexcept;
+
+    void ResetPhase(float initWavePhase) noexcept;
+
+    ConstantBufferGerstnerWaveParameters GetCbufData() const noexcept;
 
 private:
-    float m_waveVecX;
-    float m_waveVecZ;
+    float m_waveNumberX;
+    float m_waveNumberZ;
     float m_waveNumber;
     float m_waveAngFreq;
     float m_waveAmp;
+    float m_waveInitPhase;
     float m_wavePhase;
-    float _1,_2;
 };
 }

@@ -4,6 +4,8 @@
 #include <DirectXMath.h>
 #include "DXResource.h"
 #include "WinExceptionHelper.h"
+#include "ConstantBuffer.h"
+#include "ConstantBuffers.h"
 
 #ifndef NDEBUG
 #include "DXExceptionMacro.h"
@@ -46,19 +48,60 @@ void hdx::Renderer::DrawObjects(
     const World::Object::Camera&                               camera,
     const std::vector<std::unique_ptr<World::Object::Object>>& objects)
 {
-    XMMATRIX view     = camera.GetView();
-    XMMATRIX viewProj = view * camera.GetProjection();
+    XMMATRIX       proj[] = {XMMatrixTranspose(camera.GetProjection())};
+    ConstantBuffer projCbuf(sizeof(proj), &proj);
+    projCbuf.SetToVertexShader(1u);
+
+    XMMATRIX       view[] = {XMMatrixTranspose(camera.GetView())};
+    ConstantBuffer viewCbuf(sizeof(view), &view);
+    viewCbuf.SetToVertexShader(2u);
 
     for (const auto& obj : objects) {
-        XMMATRIX model         = obj->GetModelMatrix();
-        XMMATRIX modelView     = model * view;
-        XMMATRIX modelViewProj = model * viewProj;
+        XMFLOAT4X4 world;
+        XMStoreFloat4x4(&world, XMMatrixTranspose(obj->GetModelMatrix()));
 
-        const Transform transBufData = {XMMatrixTranspose(modelView),
-                                        XMMatrixTranspose(modelViewProj)};
+        ConstantBufferChangesEveryPrim worldCbufDatas = {
+            world /*,
+             {1.0f, 1.0f, 1.0f, 1.0f},
+             {1.0f, 1.0f, 1.0f, 1.0f},
+             {1.0f, 1.0f, 1.0f, 1.0f},*/
+        };
 
-        ConstantBuffer transformCbuf(sizeof(transBufData), &transBufData);
-        transformCbuf.SetToVertexShader(0u);
+        ConstantBuffer worldCbuf(sizeof(worldCbufDatas), &worldCbufDatas);
+        worldCbuf.SetToVertexShader(3u);
+
+        DXResource::GetContext()->DrawIndexed(obj->GetIndexCount(), 0u, 0u);
+    }
+}
+
+void hdx::Renderer::DrawDynamicObjects(
+    float dt, const World::Object::Camera& camera,
+    const std::vector<std::unique_ptr<World::Object::WaterSurface>>& objects)
+{
+    XMMATRIX       proj[] = {XMMatrixTranspose(camera.GetProjection())};
+    ConstantBuffer projCbuf(sizeof(proj), &proj);
+    projCbuf.SetToVertexShader(1u);
+
+    XMMATRIX       view[] = {XMMatrixTranspose(camera.GetView())};
+    ConstantBuffer viewCbuf(sizeof(view), &view);
+    viewCbuf.SetToVertexShader(2u);
+
+    for (const auto& obj : objects) {
+        obj->Simulate(dt);
+
+        XMFLOAT4X4 world;
+        XMStoreFloat4x4(&world, XMMatrixTranspose(obj->GetModelMatrix()));
+
+        ConstantBufferChangesEveryPrim worldCbufDatas = {
+            world,
+            {1.0f, 1.0f, 0.8f, 1.0f},
+            {0.3f, 0.3f, 0.8f, 1.0f},
+            {1.0f, 1.0f, 1.0f, 1.0f},
+        };
+
+        ConstantBuffer worldCbuf(sizeof(worldCbufDatas), &worldCbufDatas);
+        worldCbuf.SetToVertexShader(3u);
+        worldCbuf.SetToPixelShader(3u);
 
         DXResource::GetContext()->DrawIndexed(obj->GetIndexCount(), 0u, 0u);
     }

@@ -14,7 +14,7 @@ hdx::VertexShader::VertexShader(std::wstring_view wsv)
                   nullptr, &m_pVertexShader));
 }
 
-void hdx::VertexShader::Bind() noexcept
+void hdx::VertexShader::Bind()
 {
     // bind a vertex shader
     DXResource::GetContext()->VSSetShader(m_pVertexShader.Get(), nullptr, 0u);

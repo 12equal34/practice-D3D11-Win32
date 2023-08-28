@@ -21,7 +21,7 @@ hdx::VertexBuffer::VertexBuffer(UINT numVertex,
         DXResource::GetDevice()->CreateBuffer(&bd, &sd, &m_pVertexBuffer));
 }
 
-void hdx::VertexBuffer::Bind() noexcept
+void hdx::VertexBuffer::Bind()
 {
     // bind vertex buffer
     const UINT offset = 0u;

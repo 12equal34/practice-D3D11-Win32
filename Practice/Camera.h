@@ -1,11 +1,9 @@
 #pragma once
+#include "DXResource.h"
 #include <DirectXMath.h>
 #include "Coordinatable.h"
 #include "IBindable.h"
-#include "DXResource.h"
-#include "ConstantBuffer.h"
 #include "Keyboard.h"
-#include "Mouse.h"
 
 namespace World::Object
 {
@@ -29,7 +27,7 @@ public:
     void HandleInputFromMouseMovement(int deltaMouseX,
                                       int deltaMouseY) noexcept;
 
-    void Bind() noexcept override;
+    void Bind() override;
 private:
     D3D11_VIEWPORT m_viewport;
     float          m_viewAspectRatio;

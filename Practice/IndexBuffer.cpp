@@ -29,7 +29,7 @@ hdx::IndexBuffer::IndexBuffer(UINT numIndex, UINT structureByteStride,
         DXResource::GetDevice()->CreateBuffer(&bd, &sd, &m_pIndexBuffer));
 }
 
-void hdx::IndexBuffer::Bind() noexcept
+void hdx::IndexBuffer::Bind()
 {
     // bind index buffer
     DXResource::GetContext()->IASetIndexBuffer(m_pIndexBuffer.Get(),

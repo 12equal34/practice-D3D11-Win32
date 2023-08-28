@@ -10,7 +10,7 @@ public:
     VertexBuffer(UINT numVertex, UINT structureByteStride,
                  const void* vertices);
 
-    void Bind() noexcept override;
+    void Bind() override;
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer;
     UINT                                 m_structureByteStride;
