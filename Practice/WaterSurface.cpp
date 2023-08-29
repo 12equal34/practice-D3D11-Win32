@@ -7,7 +7,7 @@ World::Object::WaterSurface::WaterSurface(
     : Surface(numX, numZ, gridSize),
       m_waveContainer(std::move(waveContainer)),
       m_gerstnerWaveParamsCB(sizeof(ConstantBufferGerstnerWaveParameters) *
-                             m_waveContainer.GetNumOfWaves())
+                             (UINT)m_waveContainer.GetNumOfWaves())
 {
     m_gerstnerWaveParamsCB.SetToVertexShader(4u);
 }

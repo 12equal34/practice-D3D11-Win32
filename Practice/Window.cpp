@@ -10,6 +10,13 @@
 #include "WindowsMessageMap.h"
 #endif
 
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND   hWnd,
+                                                             UINT   msg,
+                                                             WPARAM wParam,
+                                                             LPARAM lParam);
+
 using namespace Hardware;
 using namespace Hardware::Win;
 //-----------------------------------------------------------------------------
@@ -111,7 +118,7 @@ HWND          Window::GetHwnd() const noexcept { return m_hwnd; }
 DX::Renderer& Window::GetRenderer() const noexcept { return *m_pRenderer; }
 int           Window::GetWidth() const noexcept { return m_width; }
 int           Window::GetHeight() const noexcept { return m_height; }
-float Hardware::Window::GetAspectRatio() const noexcept
+float         Hardware::Window::GetAspectRatio() const noexcept
 {
     return static_cast<float>(m_height) / m_width;
 }
@@ -161,6 +168,9 @@ LRESULT Window::HandleMsgAdapter(HWND hwnd, UINT msg, WPARAM wParam,
 LRESULT Window::HandleMsg(HWND hwnd, UINT msg, WPARAM wParam,
                           LPARAM lParam) noexcept
 {
+    // Handle messages for Dear Imgui
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) return true;
+
     switch (msg) {
 #pragma region Window Notification Handler
     case WM_ACTIVATEAPP:

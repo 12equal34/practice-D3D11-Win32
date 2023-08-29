@@ -20,8 +20,14 @@ public:
         const World::Object::Camera&                               camera,
         const std::vector<std::unique_ptr<World::Object::Object>>& objects);
     void DrawDynamicObjects(
-        float dt, const World::Object::Camera& camera,
+        const World::Object::Camera& camera,
         const std::vector<std::unique_ptr<World::Object::WaterSurface>>&
             objects);
+    void SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
+
+    D3D11_PRIMITIVE_TOPOLOGY GetPrimitiveTopology() const noexcept;
+
+private:
+    D3D11_PRIMITIVE_TOPOLOGY m_topology;
 };
 }

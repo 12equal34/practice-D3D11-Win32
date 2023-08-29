@@ -75,7 +75,7 @@ void hdx::Renderer::DrawObjects(
 }
 
 void hdx::Renderer::DrawDynamicObjects(
-    float dt, const World::Object::Camera& camera,
+    const World::Object::Camera&                                     camera,
     const std::vector<std::unique_ptr<World::Object::WaterSurface>>& objects)
 {
     XMMATRIX       proj[] = {XMMatrixTranspose(camera.GetProjection())};
@@ -87,8 +87,6 @@ void hdx::Renderer::DrawDynamicObjects(
     viewCbuf.SetToVertexShader(2u);
 
     for (const auto& obj : objects) {
-        obj->Simulate(dt);
-
         XMFLOAT4X4 world;
         XMStoreFloat4x4(&world, XMMatrixTranspose(obj->GetModelMatrix()));
 
@@ -106,3 +104,12 @@ void hdx::Renderer::DrawDynamicObjects(
         DXResource::GetContext()->DrawIndexed(obj->GetIndexCount(), 0u, 0u);
     }
 }
+
+void hdx::Renderer::SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology)
+{
+    m_topology = topology;
+    DXResource::GetContext()->IASetPrimitiveTopology(m_topology);
+}
+
+D3D11_PRIMITIVE_TOPOLOGY
+hdx::Renderer::GetPrimitiveTopology() const noexcept { return m_topology; }

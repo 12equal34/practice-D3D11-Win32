@@ -20,12 +20,16 @@ public:
 private:
     void HandleInput(float dt);
     void RunFrame(float dt);
+    void RenderFrame();
 
     void DebugHelpWindowTitle(float dt);
 
     void InitializeApp();
     void ResetApp();
 
+    void SetupImgui();
+    void CleanupImgui();
+    void RunImgui(float dt);
 private:
     Hardware::Window      m_window;
     Hardware::Keyboard    m_keyboard;
@@ -35,4 +39,5 @@ private:
     World::Map            m_map;
 
     AppState m_appState;
+    bool     m_shouldRenderImgui;
 };

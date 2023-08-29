@@ -1,7 +1,11 @@
 #include <sstream>
 #include "App.h"
-#include "ConstantBuffer.h"
 
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
+
+#include "ConstantBuffer.h"
 #include "DXResource.h"
 #include "DirectionalLight.h"
 #include "WaterSurface.h"
@@ -12,7 +16,8 @@ App::App()
       m_keyboard(&m_window),
       m_mouse(&m_window),
       m_mainTimer(),
-      m_appState(AppState::Initialize)
+      m_appState(AppState::Initialize),
+      m_shouldRenderImgui(true)
 {
     m_window.SetKeyboard(&m_keyboard);
     m_window.SetMouse(&m_mouse);
@@ -27,6 +32,8 @@ App::~App() { }
 
 int App::Run()
 {
+    SetupImgui();
+
     MSG msg {};
     msg.message = WM_NULL;
     BOOL bGotMsg;
@@ -59,6 +66,8 @@ int App::Run()
         }
     }
 
+    CleanupImgui();
+
     if (bGotMsg == -1) {
         throw Hardware::Window::HrException(__LINE__, __FILE__, GetLastError());
     }
@@ -86,22 +95,35 @@ void App::HandleInput(float dt)
 
 void App::RunFrame(float dt)
 {
+    if (m_shouldRenderImgui) {
+        RunImgui(dt);
+    }
+
     DebugHelpWindowTitle(dt);
     HandleInput(dt);
 
     m_map.UpdateDynamicObject(dt);
-
     m_map.Bind();
     m_camera.Bind();
 
-    auto& renderer = m_window.GetRenderer();
+    RenderFrame();
+}
 
-    Hardware::DX::DXResource::GetContext()->IASetPrimitiveTopology(
-        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+void App::RenderFrame()
+{
+    // Rendering
+    auto& renderer = m_window.GetRenderer();
 
     renderer.ClearBuffer(0.0f, 0.0f, 0.0f);
 
-    renderer.DrawDynamicObjects(dt, m_camera, m_map.m_dynamicObjects);
+    renderer.SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    renderer.DrawDynamicObjects(m_camera, m_map.m_dynamicObjects);
+
+    if (m_shouldRenderImgui) {
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
     renderer.EndFrame();
 }
 
@@ -173,7 +195,7 @@ void App::InitializeApp()
     m_map.m_dynamicObjects.push_back(std::move(waterSurface));
 
     auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
-    directionalLight->SetLightColor(0.6f, 0.7f, 0.7f, 1.0f);
+    directionalLight->SetLightColor(0.8f, 0.7f, 0.7f, 1.0f);
     directionalLight->GetCoordinate().SetOrientation(DirectX::XM_PIDIV2, 0.0f,
                                                      0.0f);
 
@@ -188,3 +210,61 @@ void App::InitializeApp()
 }
 
 void App::ResetApp() { }
+
+void App::SetupImgui()
+{
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |=
+        ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |=
+        ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(m_window.GetHwnd());
+    ImGui_ImplDX11_Init(Hardware::DX::DXResource::GetDevice().Get(),
+                        Hardware::DX::DXResource::GetContext().Get());
+}
+
+void App::CleanupImgui()
+{
+    // Cleanup Dear Imgui
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+}
+
+void App::RunImgui(float dt)
+{
+    // Start the Dear ImGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    // test imgui
+    {
+        static float f       = 0.0f;
+        static int   counter = 0;
+
+        ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!"
+                                       // and append into it.
+
+        ImGui::Text("This is some useful text."); // Display some text (you can
+                                                  // use a format strings too)
+
+        ImGui::SliderFloat(
+            "float", &f, 0.0f,
+            1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
+
+        if (ImGui::Button(
+                "Button")) // Buttons return true when clicked (most widgets
+                           // return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::End();
+    }
+}
