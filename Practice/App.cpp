@@ -78,7 +78,13 @@ void App::HandleInput(float dt)
 {
     // keyboard input handles
     while (const auto e = m_keyboard.ReadKey()) {
-        // omitted
+        const auto& kbEvent = e.value();
+
+        // Bind or Unbind camera rotation from mouse movement.
+        if (kbEvent.GetCode() == 'G' && kbEvent.IsRelease()) {
+            m_camera.SetBindingMouseDeltaInput(
+                !m_camera.IsBoundMouseDeltaInput());
+        }
     }
 
     m_camera.HandleInputFromKeyboard(m_keyboard, dt);
@@ -190,7 +196,8 @@ void App::InitializeApp()
     auto gerstnerWaveGenerator =
         World::Object::Simulation::GerstnerWaveContainer::TestWaveGenerator();
     auto waterSurface = std::make_unique<World::Object::WaterSurface>(
-        150, 150, 0.5f, gerstnerWaveGenerator());
+        500, 500, 0.5f, gerstnerWaveGenerator());
+    waterSurface->GetCoordinate().SetPosition(-100.f, 0.f, -100.f);
 
     m_map.m_dynamicObjects.push_back(std::move(waterSurface));
 
@@ -243,28 +250,12 @@ void App::RunImgui(float dt)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // test imgui
-    {
-        static float f       = 0.0f;
-        static int   counter = 0;
+    static gp::math::Orientation3D newOri;
 
-        ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!"
-                                       // and append into it.
+    ImGui::Begin("Directional Light");
 
-        ImGui::Text("This is some useful text."); // Display some text (you can
-                                                  // use a format strings too)
+    ImGui::DragFloat3("Orientation", newOri.data, 0.1f);
+    m_map.m_directionalLightObjects[0]->GetCoordinate().SetOrientation(newOri);
 
-        ImGui::SliderFloat(
-            "float", &f, 0.0f,
-            1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
-
-        if (ImGui::Button(
-                "Button")) // Buttons return true when clicked (most widgets
-                           // return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::End();
-    }
+    ImGui::End();
 }

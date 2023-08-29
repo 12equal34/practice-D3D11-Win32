@@ -307,6 +307,12 @@
     <ClInclude Include="..\imgui\backends\imgui_impl_win32.h">
       <Filter>Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="AffineSpaceTools.h">
+      <Filter>gp_math</Filter>
+    </ClInclude>
+    <ClInclude Include="Data3D.h">
+      <Filter>gp_math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Practice.rc">

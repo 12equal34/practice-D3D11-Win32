@@ -9,19 +9,19 @@ namespace World::Object
 class Surface : public Object
 {
 public:
-    using IndexType  = unsigned short;
+    using IndexType  = UINT;
     using VertexType = SimpleVertex;
 
 public:
-    Surface(int numX, int numZ, float gridSize = 1.0f);
+    Surface(size_t numXGrid, size_t numZGrid, float gridSize = 1.0f);
 
     std::unique_ptr<Hardware::DX::VertexBuffer> GetVertexBuffer() override;
     std::unique_ptr<Hardware::DX::IndexBuffer>  GetIndexBuffer() override;
     UINT GetIndexCount() const noexcept override;
     void Bind() override;
 protected:
-    int                             m_nx;
-    int                             m_nz;
+    size_t                          m_numXGrid;
+    size_t                          m_numZGrid;
     float                           m_gridSize;
     std::vector<std::vector<float>> m_H;
 };

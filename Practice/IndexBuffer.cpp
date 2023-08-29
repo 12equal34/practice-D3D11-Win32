@@ -10,9 +10,14 @@ hdx::IndexBuffer::IndexBuffer(UINT numIndex, UINT structureByteStride,
       m_dxgiFormat(DXGI_FORMAT_R16_UINT)
 {
     switch (m_structureByteStride) {
-    case (sizeof(unsigned short)):
+    case 2u:
         m_dxgiFormat = DXGI_FORMAT_R16_UINT;
         break;
+    case 4u:
+        m_dxgiFormat = DXGI_FORMAT_R32_UINT;
+        break;
+    default:
+        throw;
     }
 
     // create index buffer
@@ -33,7 +38,7 @@ void hdx::IndexBuffer::Bind()
 {
     // bind index buffer
     DXResource::GetContext()->IASetIndexBuffer(m_pIndexBuffer.Get(),
-                                              m_dxgiFormat, 0u);
+                                               m_dxgiFormat, 0u);
 }
 
 UINT hdx::IndexBuffer::GetIndexCount() const noexcept { return m_numIndex; }

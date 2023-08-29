@@ -16,11 +16,13 @@ public:
 
     float GetPitch() const noexcept;
     float GetYaw() const noexcept;
+    bool  IsBoundMouseDeltaInput() const noexcept;
 
     void SetViewport(FLOAT width, FLOAT height) noexcept;
     void SetPitchYaw(float pitch, float yaw) noexcept;
     void SetMoveSpeed(float moveSpeed) noexcept;
     void SetRotationSpeed(float rotationSpeed) noexcept;
+    void SetBindingMouseDeltaInput(bool canMouseDeltaInput = true) noexcept;
 
     void HandleInputFromKeyboard(const Hardware::Keyboard& keyboard,
                                  float                     dt) noexcept;
@@ -28,6 +30,7 @@ public:
                                       int deltaMouseY) noexcept;
 
     void Bind() override;
+
 private:
     D3D11_VIEWPORT m_viewport;
     float          m_viewAspectRatio;
@@ -37,5 +40,7 @@ private:
 
     float m_moveSpeed     = 10.0f;
     float m_rotationSpeed = 10.0f;
+
+    bool m_isBoundMouseDeltaInput = true;
 };
 }

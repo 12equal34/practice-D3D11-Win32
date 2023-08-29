@@ -2,9 +2,9 @@
 #include "ConstantBuffers.h"
 
 World::Object::WaterSurface::WaterSurface(
-    int numX, int numZ, float gridSize,
+    int numXGrid, int numZGrid, float gridSize,
     Simulation::GerstnerWaveContainer&& waveContainer)
-    : Surface(numX, numZ, gridSize),
+    : Surface(numXGrid, numZGrid, gridSize),
       m_waveContainer(std::move(waveContainer)),
       m_gerstnerWaveParamsCB(sizeof(ConstantBufferGerstnerWaveParameters) *
                              (UINT)m_waveContainer.GetNumOfWaves())

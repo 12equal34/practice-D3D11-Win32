@@ -1,12 +1,19 @@
 #pragma once
 #include <DirectXMath.h>
 
+#pragma warning(disable : 26495)
+
 namespace gp::math
 {
 struct Data3D {
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
+    union {
+        struct {
+            float x;
+            float y;
+            float z;
+        };
+        float data[3] = {0.f, 0.f, 0.f};
+    };
 
     constexpr Data3D() noexcept = default;
     constexpr Data3D(float _x, float _y, float _z) noexcept

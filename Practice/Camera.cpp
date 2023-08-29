@@ -30,6 +30,11 @@ float World::Object::Camera::GetPitch() const noexcept { return m_pitch; }
 
 float World::Object::Camera::GetYaw() const noexcept { return m_yaw; }
 
+bool World::Object::Camera::IsBoundMouseDeltaInput() const noexcept
+{
+    return m_isBoundMouseDeltaInput;
+}
+
 void World::Object::Camera::SetViewport(FLOAT width, FLOAT height) noexcept
 {
     // configure a viewport
@@ -66,6 +71,12 @@ void World::Object::Camera::SetMoveSpeed(float moveSpeed) noexcept
 void World::Object::Camera::SetRotationSpeed(float rotationSpeed) noexcept
 {
     m_rotationSpeed = rotationSpeed;
+}
+
+void World::Object::Camera::SetBindingMouseDeltaInput(
+    bool canMouseDeltaInput) noexcept
+{
+    m_isBoundMouseDeltaInput = canMouseDeltaInput;
 }
 
 void World::Object::Camera::HandleInputFromKeyboard(
@@ -124,6 +135,8 @@ void World::Object::Camera::HandleInputFromKeyboard(
 void World::Object::Camera::HandleInputFromMouseMovement(
     int deltaMouseX, int deltaMouseY) noexcept
 {
+    if (!m_isBoundMouseDeltaInput) return;
+
     const auto dyaw =
         m_rotationSpeed * deltaMouseX / DXResource::GetWindowWidth();
     const auto dpitch =

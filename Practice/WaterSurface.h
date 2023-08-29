@@ -8,7 +8,7 @@ namespace World::Object
 class WaterSurface : public Surface
 {
 public:
-    WaterSurface(int numX, int numZ, float gridSize,
+    WaterSurface(int numXGrid, int numZGrid, float gridSize,
                  Simulation::GerstnerWaveContainer&& waveContainer);
 
     void Simulate(float dt) noexcept;
