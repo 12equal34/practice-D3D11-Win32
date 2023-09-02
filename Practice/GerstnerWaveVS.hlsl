@@ -4,7 +4,7 @@
 SimplePixelShaderInput main(SimpleVertexShaderInput input)
 {
     SimplePixelShaderInput output = (SimplePixelShaderInput) 0;
-    float4 pos = input.position;
+    float4 pos = float4(input.position, 1.0f);
     
     float S_KxDkAS = 0.0f;
     float S_KzDkAS = 0.0f;
@@ -14,7 +14,7 @@ SimplePixelShaderInput main(SimpleVertexShaderInput input)
     float S_KzzDkAC = 0.0f;
     float S_KxAS = 0.0f;
     float S_KzAS = 0.0f;
-    for (int m = 0; m < numWave; ++m)
+    for (uint m = 0; m < numWave; ++m)
     {
         float a = wave[m].amplitude;
         float phi = wave[m].phase;
@@ -55,8 +55,8 @@ SimplePixelShaderInput main(SimpleVertexShaderInput input)
    
     output.position = mul(mul(mul(pos, world), view), projection);
     // output.textureUV = input.textureUV;
-    output.normal = normalize(mul(mul(normal, (float3x3) world), (float3x3) view));
     output.vertexToEye = -mul(mul(pos, world), view).xyz;
+    output.normal = mul(mul(normal, (float3x3) world), (float3x3) view);
     
     return output;
 }

@@ -10,17 +10,16 @@ class HemisphericAmbientLight : public Information::Coordinatable,
 {
 public:
     HemisphericAmbientLight(
-        DirectX::XMFLOAT4 lightBaseColor  = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f,
-                                                              0.0f),
-        DirectX::XMFLOAT4 lightColorRange = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f,
+        DirectX::XMFLOAT3 lightBaseColor  = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+        DirectX::XMFLOAT3 lightColorRange = DirectX::XMFLOAT3(0.0f, 0.0f,
                                                               0.0f));
 
     void Bind() override;
     void SetLightBaseColor(float r, float g, float b, float a) noexcept;
     void SetLightColorRange(float r, float g, float b, float a) noexcept;
 private:
-    DirectX::XMFLOAT4            m_ambientLightBaseColor;
-    DirectX::XMFLOAT4            m_ambientLightColorRange;
+    DirectX::XMFLOAT3            m_ambientLightBaseColor;
+    DirectX::XMFLOAT3            m_ambientLightColorRange;
     Hardware::DX::ConstantBuffer m_ambientLightCB;
 };
 }

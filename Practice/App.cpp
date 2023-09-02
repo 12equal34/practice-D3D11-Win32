@@ -250,37 +250,47 @@ void App::RunImgui(float dt)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    static gp::math::Orientation3D newDirLightOri {DirectX::XM_PIDIV2, 0.0f,
+    static gp::math::Orientation3D newDirLightOri {DirectX::XM_PIDIV4, 0.0f,
                                                    0.0f};
-    static DirectX::XMFLOAT4       newDirLightColor {1.0f, 1.0f, 1.0f, 1.0f};
-    static DirectX::XMFLOAT4 newAmbientLightBaseColor {0.6f, 0.6f, 0.6f, 1.0f};
-    static DirectX::XMFLOAT4 newAmbientLightColorRange {0.3f, 0.3f, 0.3f, 1.0f};
+    static DirectX::XMFLOAT4       newDirLightColor {1.0f, 0.9f, 0.8f, 1.0f};
+    static DirectX::XMFLOAT4 newAmbientLightBaseColor {0.3f, 0.3f, 0.8f, 1.0f};
+    static DirectX::XMFLOAT4 newAmbientLightColorRange {0.2f, 0.2f, 0.2f, 1.0f};
 
-    ImGui::Begin("Directional Light");
+    if (!ImGui::Begin("Water Simulation Program Written By Gyeongrok Min")) {
+        // Early out if the window is collapsed, as an optimization.
+        ImGui::End();
+        return;
+    }
 
-    ImGui::DragFloat3("DirLightOrientation", newDirLightOri.data, 0.1f);
-    m_map.m_directionalLightObjects[0]->GetCoordinate().SetOrientation(
-        newDirLightOri);
+    if (ImGui::CollapsingHeader("Help", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::SeparatorText("How to Control the Camera in Map:");
+        ImGui::BulletText("camera movement : Input 'WASDQE' keys!");
+        ImGui::BulletText("camera orientation : Move your mouse cursor!");
+        ImGui::BulletText("camera orientation fix/unfix : Input a 'G' key!");
+    }
 
-    ImGui::DragFloat4("DirLightColor", (float*)&newDirLightColor, 0.01f, 0.0f,
-                      1.0f);
-    m_map.m_directionalLightObjects[0]->SetLightColor(
-        newDirLightColor.x, newDirLightColor.y, newDirLightColor.z,
-        newDirLightColor.z);
+    if (ImGui::CollapsingHeader("Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::SeparatorText("Directional Light");
+        ImGui::DragFloat3("Orientation", newDirLightOri.data, 0.1f);
+        m_map.m_directionalLightObjects[0]->GetCoordinate().SetOrientation(
+            newDirLightOri);
 
-    ImGui::DragFloat4("AmbientBaseColor", (float*)&newAmbientLightBaseColor,
-                      0.01f, 0.0f, 1.0f);
-    m_map.m_ambientLightObjects[0]->SetLightBaseColor(
-        newAmbientLightBaseColor.x, newAmbientLightBaseColor.y,
-        newAmbientLightBaseColor.z, newAmbientLightBaseColor.z);
+        ImGui::ColorEdit4("Color", (float*)&newDirLightColor);
+        m_map.m_directionalLightObjects[0]->SetLightColor(
+            newDirLightColor.x, newDirLightColor.y, newDirLightColor.z,
+            newDirLightColor.w);
 
-    ImGui::DragFloat4("AmbientColorRange", (float*)&newAmbientLightColorRange,
-                      0.01f, 0.0f, 1.0f);
-    m_map.m_ambientLightObjects[0]->SetLightColorRange(
-        newAmbientLightColorRange.x, newAmbientLightColorRange.y,
-        newAmbientLightColorRange.z, newAmbientLightColorRange.z);
+        ImGui::SeparatorText("Ambient Light");
+        ImGui::ColorEdit4("Base Color", (float*)&newAmbientLightBaseColor);
+        m_map.m_ambientLightObjects[0]->SetLightBaseColor(
+            newAmbientLightBaseColor.x, newAmbientLightBaseColor.y,
+            newAmbientLightBaseColor.z, newAmbientLightBaseColor.w);
 
-    // ImGui::InputFloat4()
+        ImGui::ColorEdit4("Color Range", (float*)&newAmbientLightColorRange);
+        m_map.m_ambientLightObjects[0]->SetLightColorRange(
+            newAmbientLightColorRange.x, newAmbientLightColorRange.y,
+            newAmbientLightColorRange.z, newAmbientLightColorRange.w);
+    }
 
     ImGui::End();
 }

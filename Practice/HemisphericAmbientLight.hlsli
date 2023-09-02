@@ -1,12 +1,12 @@
 cbuffer HemisphericAmbientLight : register(b4)
 {
-    float4 ambientLightBaseColor;
-    float4 ambientLightColorRange;
+    float3 ambientLightBaseColor;
+    float3 ambientLightColorRange;
 }
 
-float4 CalculateAmbientLight(float3 normal, float4 color)
+float3 CalculateAmbientLight(float3 normal, float3 color)
 {
     float up = normal.y * 0.5f + 0.5f;
-    float4 ambientLightColor = ambientLightBaseColor + up * ambientLightColorRange;
+    float3 ambientLightColor = ambientLightBaseColor + up * ambientLightColorRange;
     return ambientLightColor * color;
 }

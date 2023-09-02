@@ -3,8 +3,8 @@ SamplerState linearSampler : register(s0);
 
 cbuffer ConstantBufferNeverChanges : register(b0)
 {
-    float3 dirToDirectionalLight : packoffset(c0);
-    float4 directionalLightColor : packoffset(c1);
+    float3 dirToDirectionalLight;
+    float3 directionalLightColor;
 }
 
 cbuffer ConstantBufferChangeOnResize : register(b1)
@@ -20,10 +20,11 @@ cbuffer ConstantBufferChangesEveryFrame : register(b2)
 cbuffer ConstantBufferChangesEveryPrim : register(b3)
 {
     matrix world;
-    float4 meshColor;
-    float4 diffuseColor;
-    float4 specularColor;
-    //float specularExponent;
+    float3 meshColor;
+    float3 diffuseColor;
+    float3 specularColor;
+    float specularExponent;
+    float specularIntensity;
 };
 
 struct VertexShaderInput
@@ -43,12 +44,27 @@ struct PixelShaderInput
 
 struct SimpleVertexShaderInput
 {
-    float4 position : POSITION;
+    float3 position : POSITION;
 };
 
 struct SimplePixelShaderInput
 {
     float4 position : SV_Position;
+    float3 vertexToEye : POSITION;
     float3 normal : NORMAL;
-    float3 vertexToEye : TEXCOORD1;
 };
+
+
+float3 CalculateDirectionalLight(const in float3 normal, const in float3 vertexToEye)
+{
+    float diffuseLuminance = saturate(dot(dirToDirectionalLight, normal));
+    float3 diffuse = diffuseColor * diffuseLuminance;
+ 
+    float NormalDotHalf = saturate(dot(
+                normal, normalize(vertexToEye + dirToDirectionalLight)));
+    float specularLuminance = pow(NormalDotHalf, specularExponent)
+                               * specularIntensity;
+    float3 specular = directionalLightColor * specularColor * specularLuminance;
+    
+    return diffuse * 0.5f + specular * 0.5f;
+}

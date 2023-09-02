@@ -3,7 +3,7 @@
 
 struct ConstantBufferNeverChanges {
     alignas(16) DirectX::XMFLOAT3 dirToDirectionalLight;
-    DirectX::XMFLOAT4 directionalLightColor;
+    alignas(16) DirectX::XMFLOAT3 directionalLightColor;
 };
 
 struct ConstantBufferChangeOnResize {
@@ -23,13 +23,14 @@ struct ConstantBufferGerstnerWaveParameters {
 
 struct ConstantBufferChangesEveryPrim {
     DirectX::XMFLOAT4X4 worldMatrix;
-    DirectX::XMFLOAT4   meshColor;
-    DirectX::XMFLOAT4   diffuseColor;
-    DirectX::XMFLOAT4   specularColor;
-    // float               specularPower;
+    alignas(16) DirectX::XMFLOAT3 meshColor;
+    alignas(16) DirectX::XMFLOAT3 diffuseColor;
+    alignas(16) DirectX::XMFLOAT3 specularColor;
+    float specularExponent;
+    float specularIntensity;
 };
 
 struct ConstantBufferHemisphericAmbientLight {
-    DirectX::XMFLOAT4 ambientLightBaseColor;
-    DirectX::XMFLOAT4 ambientLightColorRange;
+    alignas(16) DirectX::XMFLOAT3 ambientLightBaseColor;
+    alignas(16) DirectX::XMFLOAT3 ambientLightColorRange;
 };

@@ -61,14 +61,17 @@ void hdx::Renderer::DrawObjects(
         XMStoreFloat4x4(&world, XMMatrixTranspose(obj->GetModelMatrix()));
 
         ConstantBufferChangesEveryPrim worldCbufDatas = {
-            world /*,
-             {1.0f, 1.0f, 1.0f, 1.0f},
-             {1.0f, 1.0f, 1.0f, 1.0f},
-             {1.0f, 1.0f, 1.0f, 1.0f},*/
+            world,
+            {1.0f, 1.0f, 1.0f},
+            {0.8f, 0.8f, 1.0f},
+            {1.0f, 1.0f, 1.0f},
+            1.0f,
+            1.0f,
         };
 
         ConstantBuffer worldCbuf(sizeof(worldCbufDatas), &worldCbufDatas);
         worldCbuf.SetToVertexShader(3u);
+        worldCbuf.SetToPixelShader(3u);
 
         DXResource::GetContext()->DrawIndexed(obj->GetIndexCount(), 0u, 0u);
     }
@@ -92,9 +95,11 @@ void hdx::Renderer::DrawDynamicObjects(
 
         ConstantBufferChangesEveryPrim worldCbufDatas = {
             world,
-            {1.0f, 1.0f, 0.8f, 1.0f},
-            {0.3f, 0.3f, 0.8f, 1.0f},
-            {1.0f, 1.0f, 1.0f, 1.0f},
+            {1.0f, 1.0f, 1.0f},
+            {0.8f, 0.8f, 1.0f},
+            {1.0f, 1.0f, 1.0f},
+            1.0f,
+            1.0f,
         };
 
         ConstantBuffer worldCbuf(sizeof(worldCbufDatas), &worldCbufDatas);

@@ -4,7 +4,7 @@
 namespace WO  = World::Object;
 namespace hdx = Hardware::DX;
 
-WO::DirectionalLight::DirectionalLight(DirectX::XMFLOAT4 lightColor)
+WO::DirectionalLight::DirectionalLight(DirectX::XMFLOAT3 lightColor)
     : m_directionalLightColor(lightColor),
       m_directionalLightCB(sizeof(ConstantBufferNeverChanges))
 {
@@ -21,8 +21,7 @@ void World::Object::DirectionalLight::Bind()
 void WO::DirectionalLight::SetLightColor(float r, float g, float b,
                                          float a) noexcept
 {
-    m_directionalLightColor.x = r;
-    m_directionalLightColor.y = g;
-    m_directionalLightColor.z = b;
-    m_directionalLightColor.w = a;
+    m_directionalLightColor.x = r * a;
+    m_directionalLightColor.y = g * a;
+    m_directionalLightColor.z = b * a;
 }

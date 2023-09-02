@@ -2,7 +2,7 @@
 #include "ConstantBuffers.h"
 
 World::Object::HemisphericAmbientLight::HemisphericAmbientLight(
-    DirectX::XMFLOAT4 lightBaseColor, DirectX::XMFLOAT4 lightColorRange)
+    DirectX::XMFLOAT3 lightBaseColor, DirectX::XMFLOAT3 lightColorRange)
     : m_ambientLightBaseColor(lightBaseColor),
       m_ambientLightColorRange(lightColorRange),
       m_ambientLightCB(sizeof(ConstantBufferHemisphericAmbientLight))
@@ -21,11 +21,15 @@ void World::Object::HemisphericAmbientLight::SetLightBaseColor(float r, float g,
                                                                float b,
                                                                float a) noexcept
 {
-    m_ambientLightBaseColor = DirectX::XMFLOAT4(r, g, b, a);
+    m_ambientLightBaseColor.x = r * a;
+    m_ambientLightBaseColor.y = g * a;
+    m_ambientLightBaseColor.z = b * a;
 }
 
 void World::Object::HemisphericAmbientLight::SetLightColorRange(
     float r, float g, float b, float a) noexcept
 {
-    m_ambientLightColorRange = DirectX::XMFLOAT4(r, g, b, a);
+    m_ambientLightColorRange.x = r * a;
+    m_ambientLightColorRange.y = g * a;
+    m_ambientLightColorRange.z = b * a;
 }
