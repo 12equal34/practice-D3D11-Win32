@@ -19,6 +19,13 @@ public:
     std::unique_ptr<Hardware::DX::IndexBuffer>  GetIndexBuffer() override;
     UINT GetIndexCount() const noexcept override;
     void Bind() override;
+
+    Information::Coordinate::Point3D GetCenterPosition() const noexcept;
+    float                            GetLengthX() const noexcept;
+    float                            GetLengthZ() const noexcept;
+
+    void SetCenterPosition(
+        const Information::Coordinate::Point3D& newCenterPos) noexcept;
 protected:
     size_t                          m_numXGrid;
     size_t                          m_numZGrid;

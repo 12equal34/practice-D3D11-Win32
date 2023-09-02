@@ -23,7 +23,32 @@ XMMATRIX World::Object::Camera::GetView() const noexcept
 
 XMMATRIX World::Object::Camera::GetProjection() const noexcept
 {
-    return XMMatrixPerspectiveLH(1.0f, m_viewAspectRatio, 0.5f, 100.0f);
+    return XMMatrixPerspectiveLH(1.0f, m_viewAspectRatio, m_nearZ, m_farZ);
+}
+
+void World::Object::Camera::SetNearZ(float zValue) noexcept
+{
+    assert((0.0f < zValue && zValue < m_farZ) &&
+           "you can't set a nearZ value not less than the farZ");
+
+    m_nearZ = zValue;
+}
+
+void World::Object::Camera::SetFarZ(float zValue) noexcept
+{
+    assert((m_nearZ < zValue) &&
+           "you can't set a farZ value not greater than the nearZ");
+
+    m_farZ = zValue;
+}
+
+void World::Object::Camera::SetNearFarZ(float nearZ, float farZ) noexcept
+{
+    assert((0 < nearZ && nearZ < farZ) &&
+           "you have to set a nearZ less than a farZ and greater than zero");
+
+    m_nearZ = nearZ;
+    m_farZ  = farZ;
 }
 
 float World::Object::Camera::GetPitch() const noexcept { return m_pitch; }

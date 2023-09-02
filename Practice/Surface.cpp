@@ -71,16 +71,16 @@ std::unique_ptr<IndexBuffer> WO::Surface::GetIndexBuffer()
             // a lower triangle
             // 1 (offset+1)  * (offset+1+numZVertex)
             // 0 (offset)    2 (offset+numZVertex)
-            indices.push_back(offset);
-            indices.push_back(offset + 1);
-            indices.push_back(offset + numZVertex);
+            indices.push_back(static_cast<IndexType>(offset));
+            indices.push_back(static_cast<IndexType>(offset + 1));
+            indices.push_back(static_cast<IndexType>(offset + numZVertex));
 
             // a upper triangle
             // 1 (offset+1)  2 (offset+1+numZVertex)
             // * (offset)    0 (offset+numZVertex)
-            indices.push_back(offset + numZVertex);
-            indices.push_back(offset + 1);
-            indices.push_back(offset + 1 + numZVertex);
+            indices.push_back(static_cast<IndexType>(offset + numZVertex));
+            indices.push_back(static_cast<IndexType>(offset + 1));
+            indices.push_back(static_cast<IndexType>(offset + 1 + numZVertex));
 
             ++offset;
         }
@@ -96,4 +96,34 @@ void WO::Surface::Bind()
     for (auto& binding : m_bindings) {
         binding->Bind();
     }
+}
+
+WO::Information::Coordinate::Point3D
+WO::Surface::GetCenterPosition() const noexcept
+{
+    float centerX = GetLengthX() / 2.0f;
+    float centerY = m_coord.GetPositionY();
+    float centerZ = GetLengthZ() / 2.0f;
+
+    return Information::Coordinate::Point3D {centerX, centerY, centerZ};
+}
+
+float WO::Surface::GetLengthX() const noexcept
+{
+    return m_numXGrid * m_gridSize;
+}
+
+float WO::Surface::GetLengthZ() const noexcept
+{
+    return m_numZGrid * m_gridSize;
+}
+
+void WO::Surface::SetCenterPosition(
+    const Information::Coordinate::Point3D& newCenterPos) noexcept
+{
+    float posX = newCenterPos.x - GetLengthX() / 2.0f;
+    float posY = newCenterPos.y;
+    float posZ = newCenterPos.z - GetLengthZ() / 2.0f;
+
+    m_coord.SetPosition(posX, posY, posZ);
 }

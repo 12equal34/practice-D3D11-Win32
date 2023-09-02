@@ -23,6 +23,8 @@ App::App()
     m_window.SetMouse(&m_mouse);
     m_window.SetTimer(&m_mainTimer);
 
+    m_camera.SetNearFarZ(0.5f, 200.0f);
+
     auto& cameraCoord = m_camera.GetCoordinate();
     cameraCoord.SetPosition(0.0f, 10.0f, 0.0f);
     cameraCoord.SetOrientation(0.0f, 0.0f, 0.0f);
@@ -196,8 +198,9 @@ void App::InitializeApp()
     auto gerstnerWaveGenerator =
         World::Object::Simulation::GerstnerWaveContainer::TestWaveGenerator();
     auto waterSurface = std::make_unique<World::Object::WaterSurface>(
-        500, 500, 0.5f, gerstnerWaveGenerator());
-    waterSurface->GetCoordinate().SetPosition(-100.f, 0.f, -100.f);
+        1000, 1000, 0.5f, gerstnerWaveGenerator());
+    waterSurface->SetCenterPosition(m_camera.GetCoordinate().GetPosition());
+    waterSurface->GetCoordinate().SetPositionY(0.0f);
 
     m_map.m_dynamicObjects.push_back(std::move(waterSurface));
 

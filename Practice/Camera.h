@@ -14,6 +14,10 @@ public:
     DirectX::XMMATRIX GetView() const noexcept;
     DirectX::XMMATRIX GetProjection() const noexcept;
 
+    void SetNearZ(float zValue) noexcept;
+    void SetFarZ(float zValue) noexcept;
+    void SetNearFarZ(float nearZ, float farZ) noexcept;
+
     float GetPitch() const noexcept;
     float GetYaw() const noexcept;
     bool  IsBoundMouseDeltaInput() const noexcept;
@@ -34,6 +38,8 @@ public:
 private:
     D3D11_VIEWPORT m_viewport;
     float          m_viewAspectRatio;
+    float          m_nearZ = 0.5f;
+    float          m_farZ  = 100.0f;
 
     float m_pitch = 0.f;
     float m_yaw   = 0.f;
