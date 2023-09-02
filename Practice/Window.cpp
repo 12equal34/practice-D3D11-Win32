@@ -56,8 +56,8 @@ Window::WindowClass::~WindowClass()
 // window for App
 //-----------------------------------------------------------------------------
 Window::Window(int width, int height, std::wstring_view titleName)
-    : m_width(width),
-      m_height(height),
+    : m_width(0),
+      m_height(0),
       m_titleName(titleName),
       m_hwnd(nullptr),
       m_pKeyboard(nullptr),
@@ -71,17 +71,18 @@ Window::Window(int width, int height, std::wstring_view titleName)
     RECT wr   = {0};
     wr.left   = 100;
     wr.top    = 100;
-    wr.right  = wr.left + m_width;
-    wr.bottom = wr.top + m_height;
+    wr.right  = wr.left + width;
+    wr.bottom = wr.top + height;
     ThrowIfNull(AdjustWindowRect(&wr, dwStyle, false));
 
-    width  = wr.right - wr.left;
-    height = wr.bottom - wr.top;
+    m_width  = wr.right - wr.left;
+    m_height = wr.bottom - wr.top;
+    ThrowIfNull(SetCursorPos(wr.left + m_width / 2, wr.top + m_height / 2));
 
     // create window & get hwnd
     ThrowIfNull(m_hwnd = CreateWindow(WindowClass::GetName(), titleName.data(),
-                                      dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
-                                      width, height, nullptr, nullptr,
+                                      dwStyle, wr.left, wr.top, m_width,
+                                      m_height, nullptr, nullptr,
                                       WindowClass::GetInstance(), this));
 
     // register mouse raw input device

@@ -17,8 +17,8 @@ namespace Object::Information
         Coordinate(float x, float y, float z) noexcept;
         Coordinate(float x, float y, float z, float pitch, float yaw,
                    float roll) noexcept;
-        Coordinate(const Point3D& pos, const Orientation3D& ori =
-                                                     Orientation3D {}) noexcept;
+        Coordinate(const Point3D&       pos,
+                   const Orientation3D& ori = Orientation3D {}) noexcept;
 
         void SetPosition(const Point3D& pos) noexcept;
         void SetPosition(float x, float y, float z) noexcept;
@@ -28,8 +28,7 @@ namespace Object::Information
 
         void SetOrientation(DirectX::FXMVECTOR eulerAngles) noexcept;
         void SetOrientation(const Orientation3D& ori) noexcept;
-        void SetOrientation(float pitch, float yaw,
-                                      float roll) noexcept;
+        void SetOrientation(float pitch, float yaw, float roll) noexcept;
 
         void Translate(const Direction3D& dpos) noexcept;
 
@@ -45,7 +44,7 @@ namespace Object::Information
         void GoForward(float dz) noexcept;
         void GoBackward(float dz) noexcept;
 
-        Point3D&                 GetPosition() noexcept;
+        Point3D&       GetPosition() noexcept;
         const Point3D& GetPosition() const noexcept;
         float          GetPositionX() const noexcept;
         float          GetPositionY() const noexcept;

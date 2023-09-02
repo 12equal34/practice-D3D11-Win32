@@ -26,8 +26,8 @@ App::App()
     m_camera.SetNearFarZ(0.5f, 200.0f);
 
     auto& cameraCoord = m_camera.GetCoordinate();
-    cameraCoord.SetPosition(0.0f, 10.0f, 0.0f);
-    cameraCoord.SetOrientation(0.0f, 0.0f, 0.0f);
+    cameraCoord.SetPosition(0.0f, 30.0f, 0.0f);
+    m_camera.SetPitchYaw(-DirectX::XM_PIDIV4, 0.0f);
 }
 
 App::~App() { }
@@ -170,7 +170,7 @@ void App::DebugHelpWindowTitle(float dt)
                  << m_mouse.GetNormalizedY() << ')';
 
         std::stringstream cameraPosStr;
-        auto&             cameraCoord = m_camera.GetCoordinate();
+        const auto&       cameraCoord = m_camera.GetCoordinate();
         cameraPosStr << '(' << cameraCoord.GetPositionX() << ','
                      << cameraCoord.GetPositionY() << ','
                      << cameraCoord.GetPositionZ() << ')';
@@ -205,9 +205,6 @@ void App::InitializeApp()
     m_map.m_dynamicObjects.push_back(std::move(waterSurface));
 
     auto directionalLight = std::make_unique<World::Object::DirectionalLight>();
-    directionalLight->SetLightColor(0.8f, 0.7f, 0.7f, 1.0f);
-    directionalLight->GetCoordinate().SetOrientation(DirectX::XM_PIDIV2, 0.0f,
-                                                     0.0f);
 
     m_map.m_directionalLightObjects.push_back(std::move(directionalLight));
 
@@ -253,12 +250,37 @@ void App::RunImgui(float dt)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    static gp::math::Orientation3D newOri;
+    static gp::math::Orientation3D newDirLightOri {DirectX::XM_PIDIV2, 0.0f,
+                                                   0.0f};
+    static DirectX::XMFLOAT4       newDirLightColor {1.0f, 1.0f, 1.0f, 1.0f};
+    static DirectX::XMFLOAT4 newAmbientLightBaseColor {0.6f, 0.6f, 0.6f, 1.0f};
+    static DirectX::XMFLOAT4 newAmbientLightColorRange {0.3f, 0.3f, 0.3f, 1.0f};
 
     ImGui::Begin("Directional Light");
 
-    ImGui::DragFloat3("Orientation", newOri.data, 0.1f);
-    m_map.m_directionalLightObjects[0]->GetCoordinate().SetOrientation(newOri);
+    ImGui::DragFloat3("DirLightOrientation", newDirLightOri.data, 0.1f);
+    m_map.m_directionalLightObjects[0]->GetCoordinate().SetOrientation(
+        newDirLightOri);
+
+    ImGui::DragFloat4("DirLightColor", (float*)&newDirLightColor, 0.01f, 0.0f,
+                      1.0f);
+    m_map.m_directionalLightObjects[0]->SetLightColor(
+        newDirLightColor.x, newDirLightColor.y, newDirLightColor.z,
+        newDirLightColor.z);
+
+    ImGui::DragFloat4("AmbientBaseColor", (float*)&newAmbientLightBaseColor,
+                      0.01f, 0.0f, 1.0f);
+    m_map.m_ambientLightObjects[0]->SetLightBaseColor(
+        newAmbientLightBaseColor.x, newAmbientLightBaseColor.y,
+        newAmbientLightBaseColor.z, newAmbientLightBaseColor.z);
+
+    ImGui::DragFloat4("AmbientColorRange", (float*)&newAmbientLightColorRange,
+                      0.01f, 0.0f, 1.0f);
+    m_map.m_ambientLightObjects[0]->SetLightColorRange(
+        newAmbientLightColorRange.x, newAmbientLightColorRange.y,
+        newAmbientLightColorRange.z, newAmbientLightColorRange.z);
+
+    // ImGui::InputFloat4()
 
     ImGui::End();
 }

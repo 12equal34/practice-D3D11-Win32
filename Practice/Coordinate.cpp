@@ -101,7 +101,9 @@ void woi::Coordinate::SetOrientation(const Orientation3D& ori) noexcept
 void woi::Coordinate::SetOrientation(float pitch, float yaw,
                                      float roll) noexcept
 {
-    SetOrientation(Orientation3D {pitch, yaw, roll});
+    auto newModelMatrix =
+        XMMatrixRotationRollPitchYaw(pitch, yaw, roll) * GetTranslationMatrix();
+    XMStoreFloat4x4(&m_modelMatrix, newModelMatrix);
 }
 
 void woi::Coordinate::GoRight(float dx) noexcept { m_pos += DirRight() * dx; }

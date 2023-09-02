@@ -12,8 +12,8 @@ float4 main(SimplePixelShaderInput input) : SV_TARGET
     float specularLuminance =
         pow(max(0.0f, dot(input.normal, normalize(input.vertexToEye + dirToDirectionalLight))), specularExponent);
     
-    float4 diffuse = diffuseColor * diffuseLuminance;
-    float4 specular = specularColor * specularLuminance;
+    float4 diffuse = directionalLightColor * diffuseColor * diffuseLuminance;
+    float4 specular = directionalLightColor * specularColor * specularLuminance;
     float4 ambient = CalculateAmbientLight(input.normal, diffuseColor);
     
     return ambient + diffuse * 0.5f + specular * 0.5f;
