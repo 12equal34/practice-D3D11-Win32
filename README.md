@@ -13,5 +13,5 @@
 Window, Keyboard, Mouse, Exception 클래스들은 다른 자료들을 참고하여 만들었고,
 나머지 클래스들은 모두 직접 구현하였습니다.
 
-Gerstner Waves 관련해서 이전에 작성했던 프로젝트(experiment-Water)와 함께 졸업논문을 작성했습니다.
+이전에 Gerstner Waves 관련해서 작성했던 프로젝트(experiment-Gerstner_Waves)와 함께 졸업논문을 작성한 적이 있습니다.
 [graduation_thesis_201710327_GyeongRok_Min.pdf](https://github.com/12equal34/practice-D3D11-Win32/files/12505889/graduation_thesis_201710327_GyeongRok_Min.pdf)
