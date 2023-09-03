@@ -255,6 +255,8 @@ void App::RunImgui(float dt)
     static DirectX::XMFLOAT4       newDirLightColor {1.0f, 0.9f, 0.8f, 1.0f};
     static DirectX::XMFLOAT4 newAmbientLightBaseColor {0.3f, 0.3f, 0.8f, 1.0f};
     static DirectX::XMFLOAT4 newAmbientLightColorRange {0.2f, 0.2f, 0.2f, 1.0f};
+    static float             newCameraMovementSpeed = 40.0f;
+    static float             newCameraRotationSpeed = 10.0f;
 
     if (!ImGui::Begin("Water Simulation Program Written By Gyeongrok Min")) {
         // Early out if the window is collapsed, as an optimization.
@@ -262,11 +264,19 @@ void App::RunImgui(float dt)
         return;
     }
 
-    if (ImGui::CollapsingHeader("Help", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::SeparatorText("How to Control the Camera in Map:");
         ImGui::BulletText("camera movement : Input 'WASDQE' keys!");
         ImGui::BulletText("camera orientation : Move your mouse cursor!");
         ImGui::BulletText("camera orientation fix/unfix : Input a 'G' key!");
+
+        ImGui::SeparatorText("Camera Controller:");
+        ImGui::SliderFloat("camera movement speed", &newCameraMovementSpeed,
+                           10.0f, 100.0f);
+        m_camera.SetMoveSpeed(newCameraMovementSpeed);
+        ImGui::SliderFloat("camera rotation speed", &newCameraRotationSpeed,
+                           5.0f, 30.0f);
+        m_camera.SetRotationSpeed(newCameraRotationSpeed);
     }
 
     if (ImGui::CollapsingHeader("Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
