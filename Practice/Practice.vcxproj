@@ -225,7 +225,6 @@
     <ClInclude Include="Data3D.h" />
     <ClInclude Include="GerstnerWave.h" />
     <ClInclude Include="GerstnerWaveContainer.h" />
-    <ClInclude Include="Vector3D.h" />
     <ClInclude Include="HemisphericAmbientLight.h" />
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="Camera.h" />

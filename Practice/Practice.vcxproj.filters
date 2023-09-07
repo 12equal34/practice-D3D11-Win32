@@ -310,9 +310,6 @@
     <ClInclude Include="Data3D.h">
       <Filter>gp_math</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3D.h">
-      <Filter>gp_math</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Practice.rc">
