@@ -225,6 +225,7 @@
     <ClInclude Include="Data3D.h" />
     <ClInclude Include="GerstnerWave.h" />
     <ClInclude Include="GerstnerWaveContainer.h" />
+    <ClInclude Include="Vector3D.h" />
     <ClInclude Include="HemisphericAmbientLight.h" />
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="Camera.h" />
@@ -249,7 +250,6 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Topology.h" />
-    <ClInclude Include="Vector3D.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="WaterSurface.h" />

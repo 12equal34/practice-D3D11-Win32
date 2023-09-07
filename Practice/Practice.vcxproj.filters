@@ -223,9 +223,6 @@
     <ClInclude Include="Coordinatable.h">
       <Filter>World\Object\Information</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3D.h">
-      <Filter>gp_math</Filter>
-    </ClInclude>
     <ClInclude Include="numeric_utility_functions.h">
       <Filter>gp_math</Filter>
     </ClInclude>
@@ -311,6 +308,9 @@
       <Filter>gp_math</Filter>
     </ClInclude>
     <ClInclude Include="Data3D.h">
+      <Filter>gp_math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3D.h">
       <Filter>gp_math</Filter>
     </ClInclude>
   </ItemGroup>

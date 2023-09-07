@@ -3,35 +3,30 @@
 
 namespace gp::math
 {
-/* 나눗셈 연산은 모두 noexcept이기 때문에
-** 벡터의 모든 성분은 0.0f 으로 나누지 않는다고 가정한다.
-** 예외 조건에 대한 판별은 호출자에게 책임이 있다.
-*/
-
 struct Vector3D;
 
 template <class L, class R, class ResultVec = Vector3D>
 constexpr ResultVec Vector3DAddition(const L& a, const R& b) noexcept
 {
-    return ResultVec { a.x + b.x, a.y + b.y, a.z + b.z };
+    return ResultVec {a.x + b.x, a.y + b.y, a.z + b.z};
 }
 
 template <class L, class R, class ResultVec = Vector3D>
 constexpr ResultVec Vector3DSubtraction(const L& a, const R& b) noexcept
 {
-    return ResultVec { a.x - b.x, a.y - b.y, a.z - b.z };
+    return ResultVec {a.x - b.x, a.y - b.y, a.z - b.z};
 }
 
 template <class L, class R, class ResultVec = Vector3D>
 constexpr ResultVec Vector3DMultiplication(const L& a, const R& b) noexcept
 {
-    return ResultVec { a.x * b.x, a.y * b.y, a.z * b.z };
+    return ResultVec {a.x * b.x, a.y * b.y, a.z * b.z};
 }
 
 template <class L, class R, class ResultVec = Vector3D>
 constexpr ResultVec Vector3DDivision(const L& a, const R& b) noexcept
 {
-    return ResultVec { a.x / b.x, a.y / b.y, a.z / b.z };
+    return ResultVec {a.x / b.x, a.y / b.y, a.z / b.z};
 }
 
 template <class L, class R>
@@ -43,14 +38,14 @@ constexpr float Vector3DDot(const L& a, const R& b) noexcept
 template <class L, class R, class ResultVec = Vector3D>
 constexpr ResultVec Vector3DCross(const L& a, const R& b) noexcept
 {
-    return ResultVec { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z,
-                      a.x * b.y - a.y * b.x };
+    return ResultVec {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z,
+                      a.x * b.y - a.y * b.x};
 }
 
 template <class VectorType>
 constexpr VectorType Vector3DNegation(const VectorType& v) noexcept
 {
-    return VectorType { -v.x, -v.y, -v.z };
+    return VectorType {-v.x, -v.y, -v.z};
 }
 
 struct Vector3D : Data3D {
