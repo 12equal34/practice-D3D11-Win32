@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practice", "Practice\Practice.vcxproj", "{B5636688-A6DB-4D0F-8926-6BF032172C92}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WaterSimulationSample", "Practice\Practice.vcxproj", "{B5636688-A6DB-4D0F-8926-6BF032172C92}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7DF0CC8D-C5A2-4CCF-9C2E-DA8B398AFED9}"
-	ProjectSection(SolutionItems) = preProject
-		.clang-format = .clang-format
-		.gitignore = .gitignore
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPerformance", "Test\Test.vcxproj", "{C90B8E03-6A7D-41A4-8042-AB70881AE9CD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{C90B8E03-6A7D-41A4-8042-AB70881AE9CD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLibrary", "CoreLibrary\CoreLibrary.vcxproj", "{6B9F5410-DDD2-45FF-B7C6-7CC129890140}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{E0E50925-BF4D-47D6-B7A0-08BC1A06D61A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{3E3BC634-0B56-446A-9791-059070C7D19A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{67A9187C-D68F-4CAE-B13A-AFD7BD0AB181}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,12 +39,22 @@ Global
 		{C90B8E03-6A7D-41A4-8042-AB70881AE9CD}.Release|x64.Build.0 = Release|x64
 		{C90B8E03-6A7D-41A4-8042-AB70881AE9CD}.Release|x86.ActiveCfg = Release|Win32
 		{C90B8E03-6A7D-41A4-8042-AB70881AE9CD}.Release|x86.Build.0 = Release|Win32
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Debug|x64.ActiveCfg = Debug|x64
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Debug|x64.Build.0 = Debug|x64
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Debug|x86.ActiveCfg = Debug|Win32
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Debug|x86.Build.0 = Debug|Win32
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Release|x64.ActiveCfg = Release|x64
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Release|x64.Build.0 = Release|x64
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Release|x86.ActiveCfg = Release|Win32
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B5636688-A6DB-4D0F-8926-6BF032172C92} = {7DF0CC8D-C5A2-4CCF-9C2E-DA8B398AFED9}
+		{B5636688-A6DB-4D0F-8926-6BF032172C92} = {3E3BC634-0B56-446A-9791-059070C7D19A}
+		{C90B8E03-6A7D-41A4-8042-AB70881AE9CD} = {67A9187C-D68F-4CAE-B13A-AFD7BD0AB181}
+		{6B9F5410-DDD2-45FF-B7C6-7CC129890140} = {E0E50925-BF4D-47D6-B7A0-08BC1A06D61A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {88C4715C-3E71-47F7-8C33-065FE6E2396D}
