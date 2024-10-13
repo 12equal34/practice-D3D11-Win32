@@ -1,3 +1,4 @@
+#include "WindowClass.h"
 #include <sstream>
 #include "Window.h"
 #include "resource.h"
