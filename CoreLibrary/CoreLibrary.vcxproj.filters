@@ -1,57 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Other Files">
+      <UniqueIdentifier>{2354e564-682a-474a-b75a-5b20414c10a9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Header Files\Windows">
+      <UniqueIdentifier>{ac03b37b-920a-46cf-9131-a26301a65901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Windows\D3D11">
+      <UniqueIdentifier>{a258c0c1-78c5-40eb-9d86-af541e1c2c4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Windows">
+      <UniqueIdentifier>{571660c7-89c9-4d4b-8433-eb98e9f7de3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows\D3D11">
+      <UniqueIdentifier>{5c5e97be-7009-4457-974a-0d22adbff029}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="App.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="WindowClass.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Resources.h">
+      <Filter>Header Files\Windows\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Viewport.h">
+      <Filter>Header Files\Windows\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Other Files</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Other Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CoreLibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="App.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="WindowClass.cpp">
+      <Filter>Source Files\Windows</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="WindowClass.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Resources.cpp">
+      <Filter>Source Files\Windows\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Viewport.cpp">
+      <Filter>Source Files\Windows\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Other Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

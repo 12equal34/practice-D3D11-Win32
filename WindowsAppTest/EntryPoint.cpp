@@ -1,3 +1,3 @@
 #include "App.h"
 
-WindowsAppEntryPoint();
+WindowsAppEntryPoint;

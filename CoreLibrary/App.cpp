@@ -13,10 +13,10 @@ Windows::App::App()
 	, _windowsMsg()
 {
 	RECT windowRect{};
-	windowRect.left = 100;
-	windowRect.top = 100;
-	windowRect.right = 300;
-	windowRect.bottom = 300;
+	windowRect.left = 400;
+	windowRect.top = 400;
+	windowRect.right = 700;
+	windowRect.bottom = 700;
 	_mainWindowClass = std::make_unique<Windows::WindowClass>(L"main_window");
 	_mainWindow = std::make_unique<Windows::Window>(windowRect, L"window title", _mainWindowClass.get());
 	_timer = std::make_unique<Windows::Timer>();
@@ -49,8 +49,8 @@ WPARAM Windows::App::MessagePump()
 			}
 			case AppState::Run:
 			{
-				double dt = _timer->ElapsedSeconds();
-				Run(dt);
+				double deltaSeconds = _timer->ElapsedSeconds();
+				Run(deltaSeconds);
 				break;
 			}
 			case AppState::Reset:
@@ -90,7 +90,7 @@ void Windows::App::Init()
 
 }
 
-void Windows::App::Run(double dt)
+void Windows::App::Run(double deltaSeconds)
 {
 
 }
