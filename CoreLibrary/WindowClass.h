@@ -8,7 +8,7 @@ class WindowClass
 {
 	friend class Window;
 public:
-	WindowClass(const wchar_t* name);
+	WindowClass(const std::wstring& name);
 	~WindowClass();
 	WindowClass(const WindowClass&) = delete;
 	WindowClass& operator=(const WindowClass&) = delete;

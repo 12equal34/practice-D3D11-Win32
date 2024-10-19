@@ -1,3 +1,4 @@
 #include "App.h"
+#include "Framework.h"
 
-WindowsAppEntryPoint;
+AppEntryPoint(Framework);

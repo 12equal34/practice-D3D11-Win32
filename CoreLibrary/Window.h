@@ -9,7 +9,7 @@ class WindowClass;
 class Window
 {
 public:
-	Window(RECT& windowRect, const wchar_t* name, WindowClass* windowClass);
+	Window(RECT& windowRect, const std::wstring& name, WindowClass* windowClass);
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
@@ -19,7 +19,9 @@ public:
 	bool HandleMsg_Keyboard(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool HandleMsg_Mouse(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool HandleMsg_RawInput(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+public:
 	const wchar_t* GetName() const;
+	FORCEINLINE HWND GetHwnd() const { return _hwnd; }
 private:
 	int _width;
 	int _height;

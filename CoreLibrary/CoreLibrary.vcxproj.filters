@@ -24,6 +24,18 @@
     <Filter Include="Source Files\Windows\D3D11">
       <UniqueIdentifier>{5c5e97be-7009-4457-974a-0d22adbff029}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d112845a-4f5a-4cbc-a192-08e0bdbb108d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Framework">
+      <UniqueIdentifier>{da4b5a9f-c395-4e99-bb2e-c28994844679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Framework">
+      <UniqueIdentifier>{04e67aca-8fc2-44d0-8c57-6db8d16a3c52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\VS">
+      <UniqueIdentifier>{333b55a9-d4d4-4a6b-8cf9-a6e1a91fe655}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -50,6 +62,9 @@
     <ClInclude Include="framework.h">
       <Filter>Other Files</Filter>
     </ClInclude>
+    <ClInclude Include="BaseFramework.h">
+      <Filter>Header Files\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowClass.cpp">
@@ -73,5 +88,16 @@
     <ClCompile Include="pch.cpp">
       <Filter>Other Files</Filter>
     </ClCompile>
+    <ClCompile Include="BaseFramework.cpp">
+      <Filter>Source Files\Framework</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ConstantBuffers.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="vsMeshDefault.hlsl">
+      <Filter>Shaders\VS</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

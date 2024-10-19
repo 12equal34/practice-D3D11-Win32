@@ -9,7 +9,7 @@
 
 #define ThrowIfNull(x) if ((x) == NULL) { throw std::exception{}; }
 
-Windows::Window::Window(RECT& windowRect, const wchar_t* name, WindowClass* windowClass)
+Windows::Window::Window(RECT& windowRect, const std::wstring& name, WindowClass* windowClass)
 	: _name(name)
 	, _class(windowClass)
 {

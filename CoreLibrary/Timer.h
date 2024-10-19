@@ -10,8 +10,8 @@ public:
 	Timer();
 public:
 	void Reset();
-	double ElapsedSeconds() const;
-	double ElapsedMiliseconds() const;
+	float ElapsedSeconds() const;
+	float ElapsedMiliseconds() const;
 private:
 	LARGE_INTEGER _frequency;
 	LARGE_INTEGER _startTimeCount;

@@ -7,7 +7,7 @@
 
 #define ThrowIfNull(x) if ((x) == NULL) { throw std::exception{}; }
 
-Windows::WindowClass::WindowClass(const wchar_t* name)
+Windows::WindowClass::WindowClass(const std::wstring& name)
 	: _hInst(GetModuleHandleW(nullptr))
     , _name(name)
 {

@@ -12,16 +12,16 @@ void Windows::Timer::Reset()
 	QueryPerformanceCounter(&_startTimeCount);
 }
 
-double Windows::Timer::ElapsedSeconds() const
+float Windows::Timer::ElapsedSeconds() const
 {
 	LARGE_INTEGER timeCount;
 	QueryPerformanceCounter(&timeCount);
 	LONGLONG deltaTimeCount = timeCount.QuadPart - _startTimeCount.QuadPart;
-	double elapsedSeconds = deltaTimeCount / static_cast<double>(_frequency.QuadPart);
+	float elapsedSeconds = deltaTimeCount / static_cast<float>(_frequency.QuadPart);
 	return elapsedSeconds;
 }
 
-double Windows::Timer::ElapsedMiliseconds() const
+float Windows::Timer::ElapsedMiliseconds() const
 {
-	return ElapsedSeconds() / 1000.0;
+	return ElapsedSeconds() / 1000.f;
 }
