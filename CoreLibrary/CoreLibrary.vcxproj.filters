@@ -36,6 +36,12 @@
     <Filter Include="Shaders\VS">
       <UniqueIdentifier>{333b55a9-d4d4-4a6b-8cf9-a6e1a91fe655}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\PS">
+      <UniqueIdentifier>{152c365f-874c-44a8-9a93-93463fd9ceb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Common">
+      <UniqueIdentifier>{3c6cb310-d4a1-4576-880d-3bcf99e94119}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -93,11 +99,31 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ConstantBuffers.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="vsMeshDefault.hlsl">
       <Filter>Shaders\VS</Filter>
     </FxCompile>
+    <FxCompile Include="psMeshBlinnPhong.hlsl">
+      <Filter>Shaders\PS</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ConstantBuffers.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="DataStructs.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="CommonFunctions.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="CommonBuffers.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="VSInputStructs.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="PSInputStructs.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
   </ItemGroup>
 </Project>
